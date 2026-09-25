@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/auth/store/auth.store";
 import { Link, useLocation } from "react-router-dom";
 
 const links = [
@@ -7,6 +8,7 @@ const links = [
 
 export const Navbar = () => {
   const { pathname } = useLocation();
+  const { logout } = useAuthStore();
   return (
     <header className="border-b border-[#eeeeee] bg-white">
       <nav
@@ -44,12 +46,12 @@ export const Navbar = () => {
           })}
         </div>
         <div className="flex items-stretch gap-1 sm:gap-7">
-          <Link
-            to="/"
+          <button
+            onClick={logout}
             className="flex items-center  font-medium text-[#241d2b] hover:text-[#6800b8]"
           >
             Cerrar sesión
-          </Link>
+          </button>
         </div>
       </nav>
     </header>

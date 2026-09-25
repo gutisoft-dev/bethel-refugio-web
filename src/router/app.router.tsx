@@ -4,7 +4,8 @@ import { PanelLayout } from "@/panel/layouts/PanelLayout";
 import { Biblia } from "@/panel/pages/Biblia";
 import { Home } from "@/panel/pages/Home";
 import { Profile } from "@/panel/pages/Profile";
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
+import { AuthenticatedRoute, NotAuthenticatedRoute } from "./protected.router";
 
 export const appRouter = createBrowserRouter([
   {
@@ -20,8 +21,9 @@ export const appRouter = createBrowserRouter([
   {
     path: "/profile",
     element: (
-      // <AuthenticatedRoute>
-      <PanelLayout />
+      <AuthenticatedRoute>
+        <PanelLayout />
+      </AuthenticatedRoute>
     ),
     children: [
       {
@@ -33,8 +35,9 @@ export const appRouter = createBrowserRouter([
   {
     path: "/biblia",
     element: (
-      // <AuthenticatedRoute>
-      <PanelLayout />
+      <AuthenticatedRoute>
+        <PanelLayout />
+      </AuthenticatedRoute>
     ),
     children: [
       {
@@ -46,15 +49,11 @@ export const appRouter = createBrowserRouter([
   {
     path: "/auth",
     element: (
-      // <NotAuthenticatedRoute>
-      <AuthLayout />
-      // </NotAuthenticatedRoute>
+      <NotAuthenticatedRoute>
+        <AuthLayout />
+      </NotAuthenticatedRoute>
     ),
     children: [
-      {
-        index: true,
-        element: <Navigate to="/auth/login" />,
-      },
       {
         path: "login",
         element: <Login />,
