@@ -1,9 +1,10 @@
-import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { useAuthStore } from "../store/auth.store";
 import { toast } from "@/components/ui/toast";
+import { useState } from "react";
+import { ButtonSubmit } from "./ButtonSubmit";
 
 interface FormData {
   email: string;
@@ -19,11 +20,14 @@ export const FormEmail = ({ handleEmail, handleStep }: Props) => {
     formState: { errors },
   } = useForm<FormData>();
   const { login } = useAuthStore();
+  const [isPosting, setIsPosting] = useState(false);
 
   const onSubmit = async (data: FormData) => {
+    setIsPosting(true);
     handleEmail(data.email);
     const resp = await login(data.email);
     if (!resp) {
+      setIsPosting(false);
       toast.add({
         type: "error",
         description: "Error al iniciar sesion",
@@ -32,6 +36,7 @@ export const FormEmail = ({ handleEmail, handleStep }: Props) => {
       return;
     }
 
+    setIsPosting(false);
     handleStep();
   };
 
@@ -69,9 +74,7 @@ export const FormEmail = ({ handleEmail, handleStep }: Props) => {
           {errors.email.message}
         </p>
       )}
-      <Button type="submit" className="h-10 cursor-pointer w-full ">
-        Enviar código
-      </Button>
+      <ButtonSubmit isPosting={isPosting} text="Enviar codigo" />
     </form>
   );
 };

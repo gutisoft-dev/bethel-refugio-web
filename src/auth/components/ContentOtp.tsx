@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import {
   InputOTP,
   InputOTPGroup,
@@ -7,6 +7,7 @@ import {
 import { Left } from "@/icons/Left";
 import { Controller, useForm } from "react-hook-form";
 import { useAuthStore } from "../store/auth.store";
+import { ButtonSubmit } from "./ButtonSubmit";
 
 interface FormData {
   otp: string;
@@ -23,10 +24,12 @@ export const ContentOtp = ({ handleresetFlow, email }: Props) => {
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>();
-  const {loginOtp}=useAuthStore();
-
-  const onSubmit = (data: FormData) => {
-    loginOtp(email, data.otp);
+  const { loginOtp } = useAuthStore();
+ const [isPosting, setIsPosting] = useState(false);
+  const onSubmit = async (data: FormData) => {
+    setIsPosting(true);
+   await  loginOtp(email, data.otp);
+    setIsPosting(false);
   };
 
   return (
@@ -100,9 +103,7 @@ export const ContentOtp = ({ handleresetFlow, email }: Props) => {
           {errors.otp.message}
         </p>
       )}
-      <Button type="submit" className="h-10 cursor-pointer w-full">
-        Validar código
-      </Button>
+      <ButtonSubmit isPosting={isPosting} text="Continuar" />
     </form>
   );
 };

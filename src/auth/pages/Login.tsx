@@ -1,11 +1,12 @@
 
-import { Check } from "@/icons/Check";
 import {  useState,  } from "react";
 import { FormEmail } from "../components/FormEmail";
 import { ContentOtp } from "../components/ContentOtp";
+import type { StepAuth } from "../interface/step";
+import { StepContent } from "../components/StepContent";
 
 export const Login = () => {
-  const [step, setStep] = useState<"email" | "otp">("email");
+  const [step, setStep] = useState<StepAuth>("email");
   const [email, setEmail] = useState("");
 
   const handleEmail = (email: string) => setEmail(email);
@@ -37,32 +38,7 @@ export const Login = () => {
           </span>
         </div>
         <>
-          <div
-            className="mb-8 flex items-center gap-3"
-            aria-label={`Paso ${step === "email" ? "1" : "2"} de 2`}
-          >
-            <div className="flex items-center gap-2">
-              <span className="grid size-7 place-items-center rounded-full bg-[#7209b7] text-xs font-bold text-white">
-                {step === "email" ? "1" : <Check aria-hidden="true" />}
-              </span>
-              <span className="text-xs font-semibold text-[#7209b7]">
-                Tu email
-              </span>
-            </div>
-            <div className="h-px w-10 bg-[#e6d9ed] sm:w-16" />
-            <div className="flex items-center gap-2">
-              <span
-                className={`grid size-7 place-items-center rounded-full text-xs font-bold ${step === "otp" ? "bg-[#7209b7] text-white" : "bg-[#f3edf6] text-[#a795b0]"}`}
-              >
-                2
-              </span>
-              <span
-                className={`text-xs font-semibold ${step === "otp" ? "text-[#7209b7]" : "text-[#a795b0]"}`}
-              >
-                Código
-              </span>
-            </div>
-          </div>
+         <StepContent step={step} />
 
           {step === "email" ? (
             <FormEmail handleEmail={handleEmail} handleStep={handleStep} />
