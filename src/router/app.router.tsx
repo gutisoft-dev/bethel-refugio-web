@@ -1,7 +1,7 @@
 import { AuthLayout } from "@/auth/layout/AuthLayout";
 import { Login } from "@/auth/pages/Login";
 import { PanelLayout } from "@/panel/layouts/PanelLayout";
-import { Biblia } from "@/panel/pages/Biblia";
+import { Biblie } from "@/panel/pages/Biblie";
 import { Home } from "@/panel/pages/Home";
 import { Profile } from "@/panel/pages/Profile";
 import { createBrowserRouter } from "react-router-dom";
@@ -42,7 +42,7 @@ export const appRouter = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Biblia />,
+        element: <Biblie />,
       },
     ],
   },
