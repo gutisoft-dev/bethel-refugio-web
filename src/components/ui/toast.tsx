@@ -3,7 +3,6 @@ import { Toast as ToastPrimitive } from "@base-ui/react/toast"
 import { cn } from "cn"
 
 import { Button } from "@/components/ui/button"
-import { XIcon, CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
 
 const toast = ToastPrimitive.createToastManager()
 
@@ -124,7 +123,10 @@ function ToastClose({
       {...props}
     >
       {children ?? (
-        <XIcon aria-hidden="true" />
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m18 6-12 12" />
+          <path d="m6 6 12 12" />
+        </svg>
       )}
     </ToastPrimitive.Close>
   )
@@ -134,33 +136,23 @@ function ToastIcon({ type }: { type: string | undefined }) {
   let icon: React.ReactNode = null
 
   if (type === "success") {
-    icon = (
-      <CircleCheckIcon aria-hidden="true" />
-    )
+    icon = <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>
   }
 
   if (type === "info") {
-    icon = (
-      <InfoIcon aria-hidden="true" />
-    )
+    icon = <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
   }
 
   if (type === "warning") {
-    icon = (
-      <TriangleAlertIcon aria-hidden="true" />
-    )
+    icon = <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m10.3 3.9-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3.1l-8-14a2 2 0 0 0-3.4 0Z" /><path d="M12 9v4" /><path d="M12 17h.01" /></svg>
   }
 
   if (type === "error") {
-    icon = (
-      <OctagonXIcon className="text-destructive" aria-hidden="true" />
-    )
+    icon = <svg className="text-destructive" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7.86 2h8.28L22 7.86v8.28L16.14 22H7.86L2 16.14V7.86z" /><path d="m15 9-6 6" /><path d="m9 9 6 6" /></svg>
   }
 
   if (type === "loading") {
-    icon = (
-      <Loader2Icon className="animate-spin" aria-hidden="true" />
-    )
+    icon = <svg className="animate-spin" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v4" /><path d="m16.2 7.8 2.9-2.9" /><path d="M18 12h4" /><path d="m16.2 16.2 2.9 2.9" /><path d="M12 18v4" /><path d="m4.9 19.1 2.9-2.9" /><path d="M2 12h4" /><path d="m4.9 4.9 2.9 2.9" /></svg>
   }
 
   if (!icon) {

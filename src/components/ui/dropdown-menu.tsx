@@ -1,7 +1,6 @@
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 import { cn } from "cn"
-import { ChevronRightIcon, CheckIcon } from "lucide-react"
 
 function DropdownMenu({ ...props }: MenuPrimitive.Root.Props) {
   return <MenuPrimitive.Root data-slot="dropdown-menu" {...props} />
@@ -116,7 +115,9 @@ function DropdownMenuSubTrigger({
       {...props}
     >
       {children}
-      <ChevronRightIcon className="ml-auto" />
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-auto size-3.5">
+        <path d="m9 18 6-6-6-6" />
+      </svg>
     </MenuPrimitive.SubmenuTrigger>
   )
 }
@@ -167,8 +168,9 @@ function DropdownMenuCheckboxItem({
         data-slot="dropdown-menu-checkbox-item-indicator"
       >
         <MenuPrimitive.CheckboxItemIndicator>
-          <CheckIcon
-          />
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-3.5">
+            <path d="m20 6-11 11-5-5" />
+          </svg>
         </MenuPrimitive.CheckboxItemIndicator>
       </span>
       {children}
@@ -208,8 +210,9 @@ function DropdownMenuRadioItem({
         data-slot="dropdown-menu-radio-item-indicator"
       >
         <MenuPrimitive.RadioItemIndicator>
-          <CheckIcon
-          />
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-3.5">
+            <path d="m20 6-11 11-5-5" />
+          </svg>
         </MenuPrimitive.RadioItemIndicator>
       </span>
       {children}
