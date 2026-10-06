@@ -14,6 +14,20 @@ export const appRouter = createBrowserRouter([
     children: [
       {
         index: true,
+        element: <Biblie />,
+      },
+    ],
+  },
+  {
+    path: "/history",
+    element: (
+      <AuthenticatedRoute>
+        <PanelLayout />,
+      </AuthenticatedRoute>
+    ),
+    children: [
+      {
+        index: true,
         element: <Home />,
       },
     ],
@@ -32,20 +46,7 @@ export const appRouter = createBrowserRouter([
       },
     ],
   },
-  {
-    path: "/biblia",
-    element: (
-      <AuthenticatedRoute>
-        <PanelLayout />
-      </AuthenticatedRoute>
-    ),
-    children: [
-      {
-        index: true,
-        element: <Biblie />,
-      },
-    ],
-  },
+
   {
     path: "/auth",
     element: (
