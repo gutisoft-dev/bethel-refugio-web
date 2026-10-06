@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { LoaderCircle } from "lucide-react";
 import axios from "axios";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -83,7 +82,21 @@ const SaveFavoriteButton = ({ verse }: SaveFavoriteButtonProps) => {
     >
       {isSaving ? (
         <>
-          <LoaderCircle className="mr-1.5 animate-spin" aria-hidden="true" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            className="mr-1.5 animate-spin"
+            aria-hidden="true"
+          >
+            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+          </svg>
           Guardando...
         </>
       ) : isSaved ? (
@@ -203,11 +216,11 @@ export const BibleResults = ({
                       <TooltipTrigger
                         render={
                           <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => onProject(result)}
-                          className="
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => onProject(result)}
+                            className="
                             h-7
                             rounded-md
                             border-purple-300

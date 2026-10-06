@@ -3,7 +3,6 @@ import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
 import { cn } from "cn"
 
 import { Button } from "@/components/ui/button"
-import { XIcon } from "lucide-react"
 
 function Dialog({ ...props }: DialogPrimitive.Root.Props) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />
@@ -68,8 +67,10 @@ function DialogContent({
               />
             }
           >
-            <XIcon
-            />
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-4">
+              <path d="m18 6-12 12" />
+              <path d="m6 6 12 12" />
+            </svg>
             <span className="sr-only">Close</span>
           </DialogPrimitive.Close>
         )}
