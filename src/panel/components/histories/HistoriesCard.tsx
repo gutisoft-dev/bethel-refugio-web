@@ -1,249 +1,332 @@
-import { Badge } from "@/components/ui/badge";
+import { useEffect, useState } from "react";
+import {
+  getStoriesPublic,
+  type PublicStory,
+} from "@/panel/actions/history/storyPublic";
 
 interface Historia {
   id: string;
   initials: string;
   author: string;
   username: string;
-  role: string;
-  verified?: boolean;
   reference: string;
-  version: string;
   verse: string;
-  description: string;
-  likes: number;
-  comments: number;
-  views: number;
+  description: string | null;
+  position: number;
+  totalVerses: number;
   remaining: string;
-  tone: "purple" | "slate";
 }
 
-const historias: Historia[] = [
-  {
-    id: "HIST-8842",
-    initials: "MD",
-    author: "Mateo Devocional",
-    username: "@mateo_devocional",
-    role: "Historia 1 de 3",
-    verified: true,
-    reference: "Filipenses 4:13",
-    version: "RVR1960",
-    verse: "Todo lo puedo en Cristo que me fortalece.",
-    description:
-      "Mi versículo de aliento para hoy al enfrentar nuevos retos en la congregación. Que su gracia sea suficiente en cada paso.",
-    likes: 89,
-    comments: 142,
-    views: 1204,
-    remaining: "Quedan 18h",
-    tone: "purple",
-  },
-  {
-    id: "HIST-8843",
-    initials: "SR",
-    author: "Sara Rut",
-    username: "@sara_rut_estudios",
-    role: "Historia 2 de 4",
-    verified: false,
-    reference: "Jeremías 29:11",
-    version: "RVR1960",
-    verse:
-      "Porque yo sé los pensamientos que tengo acerca de vosotros, dice Jehová, pensamientos de paz, y no de mal.",
-    description:
-      "Descansando en su perfecta voluntad y propósito soberano. Aunque el camino sea incierto, sus planes son bendición y esperanza.",
-    likes: 144,
-    comments: 210,
-    views: 1890,
-    remaining: "Quedan 16h",
-    tone: "purple",
-  },
-  {
-    id: "HIST-8844",
-    initials: "DP",
-    author: "David Pastor",
-    username: "@david_p",
-    role: "Historia 1 de 2",
-    verified: false,
-    reference: "Proverbios 3:5-6",
-    version: "RVR1960",
-    verse:
-      "Fíate de Jehová de todo tu corazón, y no te apoyes en tu propia prudencia. Reconócelo en todos tus caminos, y él enderezará tus veredas.",
-    description:
-      "Para tomar decisiones sabias este fin de semana en familia y ministerio. Dejemos que Él guíe nuestro rumbo.",
-    likes: 110,
-    comments: 188,
-    views: 1530,
-    remaining: "Quedan 20h",
-    tone: "slate",
-  },
-];
+const getRemainingTime = (expiresAt: string) => {
+  const expiresAtMs = Date.parse(expiresAt);
+
+  if (Number.isNaN(expiresAtMs)) return "Historia pública";
+
+  const remainingHours = Math.max(
+    0,
+    Math.ceil((expiresAtMs - Date.now()) / (1000 * 60 * 60)),
+  );
+
+  return `Quedan ${remainingHours}h`;
+};
+
+const toSlides = (stories: PublicStory[]): Historia[] =>
+  stories.flatMap((story) => {
+    const username = story.user.username.replace(/^@/, "").trim() || "usuario";
+    const author = username;
+    const initials = username.slice(0, 2).toLocaleUpperCase("es");
+    const verses = [...story.verses].sort(
+      (first, second) => first.position - second.position,
+    );
+
+    return verses.map((item, index) => ({
+      id: `${story.id}-${item.position}`,
+      initials,
+      author,
+      username,
+      reference: item.verse.reference || item.verse.normalized_reference,
+      verse: item.verse.text,
+      description: item.caption,
+      position: index + 1,
+      totalVerses: verses.length,
+      remaining: getRemainingTime(story.expires_at),
+    }));
+  });
 
 export const HistoriasCards = () => {
+  const [historias, setHistorias] = useState<Historia[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    const loadStories = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const response = await getStoriesPublic();
+        if (!isCurrent) return;
+
+        setHistorias(toSlides(response.results));
+        setActiveIndex(0);
+      } catch {
+        if (!isCurrent) return;
+
+        setError("No se pudieron cargar las historias públicas.");
+      } finally {
+        if (isCurrent) setIsLoading(false);
+      }
+    };
+
+    void loadStories();
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [reloadKey]);
+
+  const goPrevious = () => {
+    setActiveIndex((index) =>
+      historias.length ? (index + historias.length - 1) % historias.length : 0,
+    );
+  };
+
+  const goNext = () => {
+    setActiveIndex((index) =>
+      historias.length ? (index + 1) % historias.length : 0,
+    );
+  };
+
+  const totalSlides = historias.length;
+
+  useEffect(() => {
+    if (totalSlides < 2) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target;
+      if (
+        target instanceof HTMLElement &&
+        target.closest("input, textarea, [contenteditable='true']")
+      ) {
+        return;
+      }
+
+      if (event.key === "ArrowLeft") {
+        setActiveIndex((index) => (index + totalSlides - 1) % totalSlides);
+      }
+      if (event.key === "ArrowRight") {
+        setActiveIndex((index) => (index + 1) % totalSlides);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [totalSlides]);
+
+  const current = historias[activeIndex];
+  const previous = historias.length
+    ? historias[(activeIndex + historias.length - 1) % historias.length]
+    : undefined;
+  const next = historias.length
+    ? historias[(activeIndex + 1) % historias.length]
+    : undefined;
+
   return (
-    <div className="mx-auto w-full space-y-3 lg:relative lg:left-1/2 lg:mx-0 lg:w-[60vw] lg:-translate-x-1/2">
-      {historias.map((historia) => (
-        <article
-          key={historia.id}
-          className={`overflow-hidden rounded-lg border border-white/20 text-white shadow-md ${
-            historia.tone === "purple"
-              ? "bg-gradient-to-b from-[#4b0879] via-[#350657] to-[#160d20]"
-              : "bg-gradient-to-b from-[#494949] via-[#333333] to-[#171717]"
-          }`}
-        >
-          {/* Progreso de las historias de esta publicación */}
-          <div className="flex gap-[3px] px-2 pt-2" aria-hidden="true">
-            {Array.from({ length: Number(historia.role.match(/de (\d+)/)?.[1] ?? 1) }).map((_, index) => (
-              <span
-                key={index}
-                className={`h-[2px] flex-1 rounded-full ${index === 0 ? "bg-white" : "bg-white/35"}`}
-              />
-            ))}
-          </div>
-
-          {/* Usuario */}
-          <div className="flex items-center justify-between px-3 pt-2.5 pb-1.5">
-            <div className="flex min-w-0 items-center gap-2">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-[10px] font-bold text-purple-800">
-                {historia.initials}
-              </div>
-
-              <div className="min-w-0">
-                <div className="flex items-center gap-1">
-                    <span className="truncate text-xs font-semibold">
-                    {historia.author}
+    <section
+      className="relative flex h-full min-h-0 w-full flex-col justify-center overflow-hidden bg-slate-50 px-2 py-3 text-slate-900 sm:px-4"
+      aria-label="Historias bíblicas públicas"
+    >
+      {isLoading ? (
+        <div className="flex flex-1 items-center justify-center" role="status">
+          <p className="text-sm font-medium text-slate-600">
+            Cargando historias públicas…
+          </p>
+        </div>
+      ) : error ? (
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
+          <p className="text-sm text-slate-700" role="alert">
+            {error}
+          </p>
+          <button
+            type="button"
+            onClick={() => setReloadKey((key) => key + 1)}
+            className="rounded-md bg-purple-700 px-3 py-2 text-sm font-medium text-white hover:bg-purple-800"
+          >
+            Reintentar
+          </button>
+        </div>
+      ) : !current ? (
+        <div className="flex flex-1 items-center justify-center text-center">
+          <p className="text-sm text-slate-600">
+            Aún no hay historias públicas para mostrar.
+          </p>
+        </div>
+      ) : (
+        <div className="flex min-h-0 w-full flex-1 items-center justify-center px-1 sm:px-2">
+          <div className="flex h-full w-full items-center justify-center gap-2 sm:gap-4 lg:gap-5">
+            {historias.length > 1 && previous && (
+              <button
+                type="button"
+                onClick={goPrevious}
+                aria-label={`Ver historia anterior de ${previous.author}`}
+                className="group relative hidden h-[min(420px,100%)] w-[min(165px,18vw)] shrink-0 flex-col overflow-hidden rounded-xl border border-white/10 bg-[#1a1022]/70 p-3 text-left text-white opacity-50 transition hover:opacity-80 lg:flex"
+              >
+                <span className="flex items-center gap-2 text-[9px] font-semibold">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-300 text-[8px] text-slate-900">
+                    {previous.initials}
                   </span>
-
-                  {historia.verified && (
-                    <Badge className="rounded-full bg-purple-200/20 px-1.5 py-0 text-[8px] text-purple-100">
-                      Verificado
-                    </Badge>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-1 text-[9px] text-purple-200">
-                  <span>{historia.username}</span>
-                  <span>•</span>
-                  <span>{historia.role}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col items-end gap-1">
-              <Badge className="bg-purple-700 px-1.5 py-0.5 text-[8px]">
-                #{historia.id}
-              </Badge>
-              <span className="flex items-center gap-1 text-[9px] text-purple-200">
-                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-2.5 w-2.5">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-                {historia.remaining}
-              </span>
-            </div>
-          </div>
-
-          {/* Versículo */}
-          <div className={`mx-3 rounded-lg p-3 ${historia.tone === "purple" ? "bg-[#25063b]/75" : "bg-black/35"}`}>
-            <div className="mb-2 flex items-center justify-between">
-              <span className="flex items-center gap-1 text-[10px] font-semibold text-white">
-                <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="h-3 w-3">
-                  <path d="M7.17 6A4.17 4.17 0 0 0 3 10.17V18h7v-7H6.2A1.2 1.2 0 0 1 7.4 9.8H9V6H7.17Zm10 0A4.17 4.17 0 0 0 13 10.17V18h7v-7h-3.8a1.2 1.2 0 0 1 1.2-1.2H19V6h-1.83Z" />
-                </svg>
-                {historia.reference}
-              </span>
-
-              <Badge className="bg-slate-700 px-1.5 py-0.5 text-[8px]">
-                {historia.version}
-              </Badge>
-            </div>
-
-            <blockquote className="border-l-2 border-white pl-2 text-xs font-medium italic leading-[1.5]">
-              "{historia.verse}"
-            </blockquote>
-
-            <p className="mt-2 text-[10px] leading-[1.45] text-slate-300">
-              {historia.description}
-            </p>
-          </div>
-
-          {/* Acciones */}
-          <div className="mt-2 flex items-center justify-between border-t border-white/10 px-3.5 py-2.5">
-            <div className="flex items-center gap-3.5">
-              <button className="flex items-center gap-1 text-[9px] text-slate-300 transition hover:text-white">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-3 w-3"
-                >
-                  <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />{" "}
-                </svg>
-                {historia.comments}
+                  <span className="truncate">{previous.author}</span>
+                </span>
+                <span className="mt-1 text-[8px] text-white/50">
+                  {previous.reference}
+                </span>
+                <span className="mt-auto line-clamp-3 text-center text-[10px] italic text-white/60">
+                  “{previous.verse}”
+                </span>
+                <span className="mt-8 rounded-full bg-black/20 px-2 py-1 text-center text-[8px] text-white/60">
+                  Anterior
+                </span>
               </button>
+            )}
 
-              <button className="flex items-center gap-1 text-[9px] text-slate-300 transition hover:text-white">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-3 w-3"
-                >
-                  {" "}
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />{" "}
-                </svg>
-
-                {historia.likes}
-              </button>
-
-              <button className="flex items-center gap-1 text-[9px] text-slate-300 transition hover:text-white">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-3 w-3"
-                >
-                  {" "}
-                  <circle cx="18" cy="5" r="3" />{" "}
-                  <circle cx="6" cy="12" r="3" />{" "}
-                  <circle cx="18" cy="19" r="3" />{" "}
-                  <line x1="8.59" x2="15.42" y1="13.51" y2="17.49" />{" "}
-                  <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />{" "}
-                </svg>
-                Compartir
-              </button>
-            </div>
-
-            <div className="flex items-center gap-1 text-[9px] text-slate-400">
+            <button
+              type="button"
+              onClick={goPrevious}
+              aria-label="Historia anterior"
+              disabled={historias.length < 2}
+              className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-300 bg-slate-100 text-slate-600 hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-50 lg:flex"
+            >
               <svg
-                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="h-3 w-3"
+                className="h-4 w-4"
               >
-                {" "}
-                <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />{" "}
-                <circle cx="12" cy="12" r="3" />{" "}
+                <path d="m15 18-6-6 6-6" />
               </svg>
-              {historia.views.toLocaleString()} vistas
-            </div>
+            </button>
+
+            <article
+              aria-label={`Historia de ${current.author}: ${current.reference}`}
+              className="relative flex h-[min(590px,100%)] min-h-0 w-[min(390px,calc(100vw-28px))] shrink-0 flex-col overflow-hidden rounded-[22px] border border-purple-300/30 bg-linear-to-b from-[#310b48] via-[#4c0877] to-[#110c17] text-white shadow-[0_0_38px_rgba(98,24,145,0.24)]"
+            >
+              <div className="flex gap-1 px-3 pt-2.5" aria-hidden="true">
+                {Array.from({ length: current.totalVerses }).map((_, index) => (
+                  <span
+                    key={index}
+                    className={`h-0.75 flex-1 rounded-full ${index < current.position ? "bg-white" : "bg-white/25"}`}
+                  />
+                ))}
+              </div>
+
+              <header className="flex items-center justify-between gap-2 px-3 pt-2">
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-purple-300 bg-white/10 text-[10px] font-bold">
+                    {current.initials}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-[11px] font-bold">
+                      {current.author}
+                    </p>
+                    <p className="truncate text-[8px] text-white/60">
+                      @{current.username} · {current.remaining}
+                    </p>
+                  </div>
+                </div>
+              </header>
+
+              <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-8 pb-2 text-center">
+                <span className="mb-4 inline-flex max-w-full items-center gap-1.5 truncate rounded-full border border-purple-200/20 bg-purple-200/10 px-3 py-1 text-[9px] font-semibold text-purple-100">
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="h-3 w-3 shrink-0 text-amber-300"
+                  >
+                    <path d="M7.17 6A4.17 4.17 0 0 0 3 10.17V18h7v-7H6.2A1.2 1.2 0 0 1 7.4 9.8H9V6H7.17Zm10 0A4.17 4.17 0 0 0 13 10.17V18h7v-7h-3.8a1.2 1.2 0 0 1 1.2-1.2H19V6h-1.83Z" />
+                  </svg>
+                  {current.reference}
+                </span>
+                <div className="relative pr-5">
+                  <span
+                    aria-hidden="true"
+                    className="absolute -top-2 left-0 text-3xl font-black text-purple-200/40"
+                  >
+                    ”
+                  </span>
+                  <blockquote className="font-serif text-[22px] font-semibold italic leading-tight text-white">
+                    “{current.verse}”
+                  </blockquote>
+                </div>
+                {current.description && (
+                  <>
+                    <div className="my-4 h-px w-10 bg-purple-200/30" />
+                    <p className="max-w-72.5 rounded-xl border border-white/10 bg-black/20 px-3 py-3 text-[12px] leading-[1.45] text-white/85">
+                      {current.description}
+                    </p>
+                  </>
+                )}
+              </div>
+            </article>
+
+            <button
+              type="button"
+              onClick={goNext}
+              aria-label="Historia siguiente"
+              disabled={historias.length < 2}
+              className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-300 bg-slate-100 text-slate-600 hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-50 lg:flex"
+            >
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4"
+              >
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </button>
+
+            {historias.length > 1 && next && (
+              <button
+                type="button"
+                onClick={goNext}
+                aria-label={`Ver historia siguiente de ${next.author}`}
+                className="group relative hidden h-[min(420px,100%)] w-[min(165px,18vw)] shrink-0 flex-col overflow-hidden rounded-xl border border-white/10 bg-[#1a1022]/70 p-3 text-left text-white opacity-50 transition hover:opacity-80 lg:flex"
+              >
+                <span className="flex items-center gap-2 text-[9px] font-semibold">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-300 text-[8px] text-slate-900">
+                    {next.initials}
+                  </span>
+                  <span className="truncate">{next.author}</span>
+                </span>
+                <span className="mt-1 text-[8px] text-white/50">
+                  {next.reference}
+                </span>
+                <span className="mt-auto line-clamp-3 text-center text-[10px] italic text-white/60">
+                  “{next.verse}”
+                </span>
+                <span className="mt-8 rounded-full bg-black/20 px-2 py-1 text-center text-[8px] text-white/60">
+                  Siguiente
+                </span>
+              </button>
+            )}
           </div>
-        </article>
-      ))}
-    </div>
+        </div>
+      )}
+    </section>
   );
 };
+
+export { HistoriasCards as HistoriesCard };
