@@ -8,6 +8,7 @@ export const PanelLayout = () => {
   return (
     <div
       className={
+        
         isHistoryPage
           ? "flex h-dvh min-h-0 flex-col overflow-hidden bg-slate-50"
           : "min-h-screen"
