@@ -18,7 +18,7 @@ export const BibleExplorer = ({
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    timeoutRef.current = setTimeout(() => onSearch(query), 300);
+    timeoutRef.current = setTimeout(() => onSearch(query), 700);
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };

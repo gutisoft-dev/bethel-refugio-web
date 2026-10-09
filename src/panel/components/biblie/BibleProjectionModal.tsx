@@ -4,7 +4,6 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { useEffect } from "react";
 
 interface BibleProjectionModalProps {
@@ -43,7 +42,6 @@ export const BibleProjectionModal = ({
         event.preventDefault();
         onNext?.();
       }
-
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -91,8 +89,7 @@ export const BibleProjectionModal = ({
           Proyección de {verse.reference}
         </DialogTitle>
 
-        <div className="relative flex h-screen w-screen flex-col overflow-hidden">
-
+        <div className="relative flex h-dvh w-screen flex-col overflow-hidden">
           <div className="absolute left-5 top-4 z-20">
             <Button
               type="button"
@@ -103,9 +100,9 @@ export const BibleProjectionModal = ({
                 h-8
                 px-2
                 text-[11px]
-                text-slate-400
-                hover:bg-white/5
-                hover:text-white
+                text-black
+                bg-white
+                cursor-pointer
               "
             >
               <svg
@@ -126,10 +123,10 @@ export const BibleProjectionModal = ({
             </Button>
           </div>
 
-
-          <div className="flex flex-1 flex-col items-center justify-center px-6 pb-24 pt-16">
+          <div className="flex min-h-0 flex-1 flex-col items-center px-6 pb-24 pt-16">
             <Badge
               className="
+                shrink-0
                 mb-5
                 rounded-full
                 border-0
@@ -144,31 +141,32 @@ export const BibleProjectionModal = ({
               "
             >
               ● {verse.reference}
-              <Separator
-                orientation="vertical"
-                className="mx-2 h-3 bg-purple-300"
-              />
-              REINA-VALERA 1960
             </Badge>
 
-            <div className="w-full max-w-5xl text-center">
-              <p
-                className="
-                  text-4xl
-                  font-medium
-                  leading-[1.18]
-                  tracking-tight
-                  text-white
-                  md:text-5xl
-                  lg:text-6xl
-                  xl:text-7xl
-                "
-              >
-                «{verse.text}»
-              </p>
+            <div className="min-h-0 w-full max-w-5xl flex-1 overflow-y-auto overscroll-contain text-center [scrollbar-color:rgba(255,255,255,0.35)_transparent] scrollbar-thin">
+              <div className="flex min-h-full items-center justify-center py-3">
+                <p
+                  className="
+                    text-4xl
+                    font-medium
+                    leading-[1.18]
+                    tracking-tight
+                    text-white
+                    md:text-5xl
+                    lg:text-6xl
+                    xl:text-7xl
+                  "
+                >
+                  «{verse.text}»
+                </p>
+              </div>
             </div>
 
-            <div className="mt-6 flex items-center gap-2" aria-live="polite" aria-atomic="true">
+            <div
+              className="mt-6 flex items-center gap-2"
+              aria-live="polite"
+              aria-atomic="true"
+            >
               <Badge
                 variant="outline"
                 className="
@@ -210,9 +208,9 @@ export const BibleProjectionModal = ({
                   className="
                     h-7
                     text-[10px]
-                    text-slate-300
-                    hover:bg-white/5
-                    hover:text-white
+                    text-black
+                    bg-white
+                    cursor-pointer
                   "
                 >
                   ← Anterior
@@ -233,7 +231,9 @@ export const BibleProjectionModal = ({
                     →
                   </Badge>
 
-                  <span className="text-[9px] text-slate-400">Usa las flechas ← →</span>
+                  <span className="text-[9px] text-slate-400">
+                    Usa las flechas
+                  </span>
                 </div>
 
                 <Button
@@ -245,9 +245,9 @@ export const BibleProjectionModal = ({
                   className="
                     h-7
                     text-[10px]
-                    text-slate-300
-                    hover:bg-white/5
-                    hover:text-white
+                   text-black
+                    bg-white
+                    cursor-pointer
                   "
                 >
                   Siguiente →

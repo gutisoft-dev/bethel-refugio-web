@@ -16,6 +16,7 @@ import {
   AddBibleVerseToStoryDialog,
   type StoryVisibilityOption,
 } from "@/panel/components/biblie/AddBibleVerseToStoryDialog";
+import type { BibleVersePileItem } from "@/panel/components/biblie/bibleVersePile";
 
 interface SaveFavoriteButtonProps {
   verse: BibleVerse;
@@ -119,6 +120,8 @@ interface BibleResultsProps {
   onProject: (verse: BibleVerse) => void;
   onRetryLoadMore: () => void;
   storyVisibilityOptions: StoryVisibilityOption[];
+  versePile: BibleVersePileItem[];
+  onAddVerseToPile: (item: BibleVersePileItem) => void;
 }
 
 export const BibleResults = ({
@@ -132,6 +135,8 @@ export const BibleResults = ({
   onProject,
   onRetryLoadMore,
   storyVisibilityOptions,
+  versePile,
+  onAddVerseToPile,
 }: BibleResultsProps) => {
   if (results.length === 0) {
     return null;
@@ -149,6 +154,15 @@ export const BibleResults = ({
             <Badge variant="secondary" className="rounded-full text-[10px]">
               {totalResults} versículos encontrados
             </Badge>
+            {versePile.length > 0 && (
+              <Badge
+                variant="outline"
+                className="rounded-full border-purple-300 text-[10px] text-purple-700"
+                aria-live="polite"
+              >
+                Pila: {versePile.length}
+              </Badge>
+            )}
           </div>
 
           <span className="text-[10px] text-slate-500" aria-live="polite">
@@ -171,7 +185,7 @@ export const BibleResults = ({
               <CardContent className="p-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-2">
-                    <h3 className="text-sm font-bold text-slate-900">
+                    <h3 className="text-sm text-slate-900">
                       {result.reference}
                     </h3>
 
@@ -260,12 +274,24 @@ export const BibleResults = ({
                     <AddBibleVerseToStoryDialog
                       verse={result}
                       visibilityOptions={storyVisibilityOptions}
+                      mode="pile"
+                      isVerseInPile={versePile.some(
+                        (item) =>
+                          item.verse.normalized_reference ===
+                          result.normalized_reference,
+                      )}
+                      onAddToPile={onAddVerseToPile}
+                    />
+
+                    <AddBibleVerseToStoryDialog
+                      verse={result}
+                      visibilityOptions={storyVisibilityOptions}
                     />
                   </div>
                 </div>
 
                 <div className="mt-4 border-l border-purple-300 pl-3">
-                  <p className="text-xs italic leading-6 text-slate-700">
+                  <p className="text-xl italic leading-6 text-slate-700">
                     "{result.text}"
                   </p>
                 </div>

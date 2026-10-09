@@ -22,11 +22,9 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
 
-import {
-  createBibleStory,
-  type StoryVisibility,
-} from "@/panel/actions/biblie/story.action";
 import type { BibleVerse } from "@/panel/actions/biblie/search.action";
+import type { BibleVersePileItem } from "@/panel/components/biblie/bibleVersePile";
+import { createBibleStory, type StoryVisibility } from "@/panel/actions/history/story.action";
 
 export interface StoryVisibilityOption {
   value: StoryVisibility;
@@ -36,6 +34,9 @@ export interface StoryVisibilityOption {
 interface AddBibleVerseToStoryDialogProps {
   verse: BibleVerse;
   visibilityOptions: StoryVisibilityOption[];
+  mode?: "story" | "pile";
+  isVerseInPile?: boolean;
+  onAddToPile?: (item: BibleVersePileItem) => void;
 }
 
 interface CreateStoryErrorResponse {
@@ -47,6 +48,9 @@ interface CreateStoryErrorResponse {
 export const AddBibleVerseToStoryDialog = ({
   verse,
   visibilityOptions,
+  mode = "story",
+  isVerseInPile = false,
+  onAddToPile,
 }: AddBibleVerseToStoryDialogProps) => {
   const [open, setOpen] = useState(false);
 
@@ -58,6 +62,19 @@ export const AddBibleVerseToStoryDialog = ({
   const [isCreating, setIsCreating] = useState(false);
 
   const handleCreateStory = async () => {
+    if (mode === "pile") {
+      onAddToPile?.({ verse, caption: caption.trim() });
+      toast.add({
+        type: "success",
+        description: `${verse.reference} se agregó a la pila.`,
+        priority: "high",
+        timeout: 3000,
+      });
+      setOpen(false);
+      setCaption("");
+      return;
+    }
+
     if (!visibility || isCreating) return;
 
     setIsCreating(true);
@@ -120,7 +137,11 @@ export const AddBibleVerseToStoryDialog = ({
         onClick={() => setOpen(true)}
         className="h-7 rounded-md bg-purple-700 px-3 text-[10px] text-white hover:bg-purple-800"
       >
-        Añadir a historia
+        {mode === "pile"
+          ? isVerseInPile
+            ? "En la pila"
+            : "Agregar a pila"
+          : "Añadir a historia"}
       </Button>
 
       <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -174,7 +195,7 @@ export const AddBibleVerseToStoryDialog = ({
 
               <div className="min-w-0 pt-0.5">
                 <DialogTitle className="text-base font-semibold leading-tight">
-                  Añadir a Historia
+                  {mode === "pile" ? "Agregar a pila" : "Añadir a Historia"}
                 </DialogTitle>
 
                 <DialogDescription className="mt-0.5 flex items-center gap-1 text-[10px]">
@@ -244,45 +265,47 @@ export const AddBibleVerseToStoryDialog = ({
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <Label
-                htmlFor={`story-visibility-${verse.normalized_reference}`}
-                className="text-xs font-semibold"
-              >
-                Visibilidad / Tipo de historia
-              </Label>
-
-              <Select
-                value={visibility}
-                onValueChange={(value) => {
-                  if (value === "public" || value === "followers") {
-                    setVisibility(value);
-                  }
-                }}
-                disabled={isCreating}
-              >
-                <SelectTrigger
-                  id={`story-visibility-${verse.normalized_reference}`}
-                  className="h-12 rounded-xl bg-background px-4 text-sm"
+            {mode === "story" && (
+              <div className="space-y-1.5">
+                <Label
+                  htmlFor={`story-visibility-${verse.normalized_reference}`}
+                  className="text-xs font-semibold"
                 >
-                  <SelectValue>
-                    {(selectedValue: StoryVisibility | null) =>
-                      visibilityOptions.find(
-                        (option) => option.value === selectedValue,
-                      )?.label ?? "Selecciona una visibilidad"
-                    }
-                  </SelectValue>
-                </SelectTrigger>
+                  Visibilidad / Tipo de historia
+                </Label>
 
-                <SelectContent>
-                  {visibilityOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                <Select
+                  value={visibility}
+                  onValueChange={(value) => {
+                    if (value === "public" || value === "followers") {
+                      setVisibility(value);
+                    }
+                  }}
+                  disabled={isCreating}
+                >
+                  <SelectTrigger
+                    id={`story-visibility-${verse.normalized_reference}`}
+                    className="h-12 rounded-xl bg-background px-4 text-sm"
+                  >
+                    <SelectValue>
+                      {(selectedValue: StoryVisibility | null) =>
+                        visibilityOptions.find(
+                          (option) => option.value === selectedValue,
+                        )?.label ?? "Selecciona una visibilidad"
+                      }
+                    </SelectValue>
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {visibilityOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -382,7 +405,11 @@ export const AddBibleVerseToStoryDialog = ({
                 <path d="M22 2 11 13" />
               </svg>
 
-              {isCreating ? "Creando…" : "Crear historia"}
+              {mode === "pile"
+                ? "Agregar a pila"
+                : isCreating
+                  ? "Creando…"
+                  : "Crear historia"}
             </Button>
           </DialogFooter>
         </DialogContent>

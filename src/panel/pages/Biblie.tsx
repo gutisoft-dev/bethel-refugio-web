@@ -1,10 +1,12 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useBibleProjection } from "../hooks/useBibleProjection";
 import { useBibleSearch } from "../hooks/useBibleSearch";
 import { BibleExplorer } from "../components/biblie/BibleExplorer";
 import { BibleProjectionModal } from "../components/biblie/BibleProjectionModal";
 import { BibleResults } from "../components/biblie/BiblieResults";
 import type { StoryVisibilityOption } from "../components/biblie/AddBibleVerseToStoryDialog";
+import type { BibleVersePileItem } from "../components/biblie/bibleVersePile";
+import { PublishBibleStoryPileDialog } from "../components/biblie/PublishBibleStoryPileDialog";
 
 const storyVisibilityOptions: StoryVisibilityOption[] = [
   { value: "public", label: "Pública" },
@@ -13,6 +15,7 @@ const storyVisibilityOptions: StoryVisibilityOption[] = [
 
 export const Biblie = () => {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const [versePile, setVersePile] = useState<BibleVersePileItem[]>([]);
   const {
     results,
     query,
@@ -27,6 +30,30 @@ export const Biblie = () => {
     loadNextPage,
   } = useBibleSearch();
   const projection = useBibleProjection(query, results);
+
+  const addVerseToPile = (item: BibleVersePileItem) => {
+    setVersePile((currentPile) => {
+      const existingIndex = currentPile.findIndex(
+        (currentItem) =>
+          currentItem.verse.normalized_reference ===
+          item.verse.normalized_reference,
+      );
+
+      if (existingIndex < 0) return [...currentPile, item];
+
+      return currentPile.map((currentItem, index) =>
+        index === existingIndex ? item : currentItem,
+      );
+    });
+  };
+
+  const removeVerseFromPile = (normalizedReference: string) => {
+    setVersePile((currentPile) =>
+      currentPile.filter(
+        (item) => item.verse.normalized_reference !== normalizedReference,
+      ),
+    );
+  };
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -81,8 +108,16 @@ export const Biblie = () => {
             onProject={projection.project}
             onRetryLoadMore={loadNextPage}
             storyVisibilityOptions={storyVisibilityOptions}
+            versePile={versePile}
+            onAddVerseToPile={addVerseToPile}
           />
         )}
+
+        <PublishBibleStoryPileDialog
+          items={versePile}
+          onRemove={removeVerseFromPile}
+          onPublished={() => setVersePile([])}
+        />
 
         <BibleProjectionModal
           verse={projection.projectedVerse}

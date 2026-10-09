@@ -1,24 +1,47 @@
 import { Button } from "@/components/ui/button";
 
-const tabs = ["Para ti", "Seguidos", "Guardados", "Mis Historias (2)"];
+export type HistoryFeed = "public" | "following" | "mine";
 
-export const HistoriasHeader = () => (
+interface HistoriasHeaderProps {
+  activeFeed: HistoryFeed;
+  onFeedChange: (feed: HistoryFeed) => void;
+}
+
+const tabs = ["Público", "Seguidos", "Guardados", "Mis Historias"];
+
+export const HistoriasHeader = ({
+  activeFeed,
+  onFeedChange,
+}: HistoriasHeaderProps) => (
   <header className="relative z-10 flex w-full items-center justify-center bg-slate-50 px-3 py-3 text-slate-900">
     <nav
       aria-label="Secciones de historias"
       className="pointer-events-auto flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-slate-200 bg-slate-50 p-1 shadow-sm"
     >
-      {tabs.map((tab, index) => (
+      {tabs.map((tab, index) => {
+        const feed =
+          index === 0
+            ? "public"
+            : index === 1
+              ? "following"
+              : index === 3
+                ? "mine"
+                : null;
+        const isActive = feed === activeFeed;
+
+        return (
         <Button
           key={tab}
           type="button"
           variant="ghost"
           size="sm"
-          aria-current={index === 0 ? "page" : undefined}
+          disabled={!feed}
+          onClick={() => feed && onFeedChange(feed)}
+          aria-current={isActive ? "page" : undefined}
           className={`h-7 shrink-0 rounded-full px-3 text-[10px] ${
-            index === 0
+            isActive
               ? "bg-purple-700 text-white hover:bg-purple-600"
-              : "text-slate-600 hover:bg-slate-100 hover:text-slate-950"
+              : "text-slate-600 hover:bg-slate-100 hover:text-slate-950 disabled:opacity-50"
           }`}
         >
           {index === 0 && (
@@ -66,7 +89,7 @@ export const HistoriasHeader = () => (
               <path d="M6 4h12v17l-6-4-6 4z" />
             </svg>
           )}
-          {index === 3 && (
+          {/* {index === 3 && (
             <svg
               aria-hidden="true"
               viewBox="0 0 24 24"
@@ -81,10 +104,11 @@ export const HistoriasHeader = () => (
               <path d="M16 9a5 5 0 0 1 0 7" />
               <path d="M19 5a10 10 0 0 1 0 15" />
             </svg>
-          )}
+          )} */}
           {tab}
         </Button>
-      ))}
+        );
+      })}
     </nav>
   </header>
 );
