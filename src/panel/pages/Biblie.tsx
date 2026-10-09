@@ -70,7 +70,7 @@ export const Biblie = () => {
   }, [hasNext, loadNextPage]);
 
   return (
-    <main className="min-h-screen bg-slate-50 p-5 shadow-[0_0_0_100vmax_#f8fafc] [clip-path:inset(0_-100vmax)] md:p-8">
+    <div className="min-h-[calc(100dvh-3.5rem)] bg-slate-50 p-5 shadow-[0_0_0_100vmax_#f8fafc] [clip-path:inset(0_-100vmax)] md:p-8">
       <div className="mx-auto max-w-7xl">
         <BibleExplorer onSearch={search} isSearching={isSearching} />
 
@@ -130,6 +130,6 @@ export const Biblie = () => {
           onNext={projection.next}
         />
       </div>
-    </main>
+    </div>
   );
 };

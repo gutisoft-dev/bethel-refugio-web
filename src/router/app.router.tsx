@@ -22,7 +22,7 @@ export const appRouter = createBrowserRouter([
     path: "/history",
     element: (
       <AuthenticatedRoute>
-        <PanelLayout />,
+        <PanelLayout />
       </AuthenticatedRoute>
     ),
     children: [
