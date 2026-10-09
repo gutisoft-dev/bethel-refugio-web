@@ -21,9 +21,7 @@ export const appRouter = createBrowserRouter([
   {
     path: "/history",
     element: (
-      <AuthenticatedRoute>
-        <PanelLayout />
-      </AuthenticatedRoute>
+      <PanelLayout />
     ),
     children: [
       {
