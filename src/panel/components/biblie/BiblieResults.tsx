@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,11 +31,16 @@ interface FavoriteErrorResponse {
 }
 
 const SaveFavoriteButton = ({ verse }: SaveFavoriteButtonProps) => {
+  const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
 
   const handleSave = async () => {
     if (isSaving || isSaved) return;
+    if (!localStorage.getItem("token-access")) {
+      navigate("/auth/login");
+      return;
+    }
 
     setIsSaving(true);
     try {

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -52,6 +53,7 @@ export const AddBibleVerseToStoryDialog = ({
   isVerseInPile = false,
   onAddToPile,
 }: AddBibleVerseToStoryDialogProps) => {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
   const [visibility, setVisibility] = useState(
@@ -129,12 +131,21 @@ export const AddBibleVerseToStoryDialog = ({
     }
   };
 
+  const handleOpen = () => {
+    if (!localStorage.getItem("token-access")) {
+      navigate("/auth/login");
+      return;
+    }
+
+    setOpen(true);
+  };
+
   return (
     <>
       <Button
         type="button"
         size="sm"
-        onClick={() => setOpen(true)}
+        onClick={handleOpen}
         className="h-7 rounded-md bg-purple-700 px-3 text-[10px] text-white hover:bg-purple-800"
       >
         {mode === "pile"
