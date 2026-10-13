@@ -38,6 +38,9 @@ interface Historia {
 
 interface HistoriasCardsProps {
   feed?: HistoryFeed;
+  initialStoryId?: string;
+  initialStories?: PublicStory[];
+  initialCursor?: string | null;
 }
 
 interface StoriesApiError {
@@ -95,7 +98,12 @@ const toSlides = (stories: PublicStory[], isMine = false): Historia[] =>
     }));
   });
 
-export const HistoriasCards = ({ feed = "public" }: HistoriasCardsProps) => {
+export const HistoriasCards = ({
+  feed = "public",
+  initialStoryId,
+  initialStories,
+  initialCursor,
+}: HistoriasCardsProps) => {
   const [historias, setHistorias] = useState<Historia[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -132,6 +140,19 @@ export const HistoriasCards = ({ feed = "public" }: HistoriasCardsProps) => {
           return;
         }
 
+        if (initialStories) {
+          const slides = toSlides(initialStories, feed === "mine");
+          if (!isCurrent) return;
+          setHistorias(slides);
+          setNextCursor(initialCursor ?? null);
+          const initialIndex = initialStoryId
+            ? slides.findIndex((slide) => slide.storyId === initialStoryId)
+            : -1;
+          setActiveIndex(initialIndex >= 0 ? initialIndex : 0);
+          setLoadedFeed(feed);
+          return;
+        }
+
         const response =
           feed === "mine"
             ? await getMyStories()
@@ -144,9 +165,13 @@ export const HistoriasCards = ({ feed = "public" }: HistoriasCardsProps) => {
           throw new Error("El servicio devolvió una respuesta inesperada.");
         }
 
-        setHistorias(toSlides(response.results, feed === "mine"));
+        const slides = toSlides(response.results, feed === "mine");
+        setHistorias(slides);
         setNextCursor(response.next);
-        setActiveIndex(0);
+        const initialIndex = initialStoryId
+          ? slides.findIndex((slide) => slide.storyId === initialStoryId)
+          : -1;
+        setActiveIndex(initialIndex >= 0 ? initialIndex : 0);
         setLoadedFeed(feed);
       } catch (requestError) {
         if (!isCurrent) return;
@@ -200,7 +225,7 @@ export const HistoriasCards = ({ feed = "public" }: HistoriasCardsProps) => {
     return () => {
       isCurrent = false;
     };
-  }, [feed, reloadKey]);
+  }, [feed, initialCursor, initialStories, initialStoryId, reloadKey]);
 
   const loadNextPage = useCallback(async () => {
     if (!nextCursor || isLoadingMore) return;
@@ -244,6 +269,9 @@ export const HistoriasCards = ({ feed = "public" }: HistoriasCardsProps) => {
       setActiveIndex(0);
     }
   }, [activeIndex, feed, loadNextPage, nextCursor, totalSlides]);
+
+  const hasAutomaticNext =
+    activeIndex < totalSlides - 1 || Boolean(nextCursor);
 
   const handleTouchStart = (event: TouchEvent<HTMLDivElement>) => {
     if ((event.target as HTMLElement).closest("button, a, [role='dialog']")) {
@@ -298,6 +326,29 @@ export const HistoriasCards = ({ feed = "public" }: HistoriasCardsProps) => {
   const next = historias.length
     ? historias[(activeIndex + 1) % historias.length]
     : undefined;
+
+  useEffect(() => {
+    if (!current || isLoading || isLoadingMore || !hasAutomaticNext) return;
+
+    const timeoutId = window.setTimeout(() => {
+      if (activeIndex < totalSlides - 1) {
+        setActiveIndex((index) => index + 1);
+      } else if (nextCursor) {
+        void loadNextPage();
+      }
+    }, 10000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [
+    activeIndex,
+    current,
+    hasAutomaticNext,
+    isLoading,
+    isLoadingMore,
+    loadNextPage,
+    nextCursor,
+    totalSlides,
+  ]);
 
   useEffect(() => {
     if (
@@ -436,9 +487,17 @@ export const HistoriasCards = ({ feed = "public" }: HistoriasCardsProps) => {
               <div className="flex gap-1 px-3 pt-2.5" aria-hidden="true">
                 {Array.from({ length: current.totalVerses }).map((_, index) => (
                   <span
-                    key={index}
-                    className={`h-0.75 flex-1 rounded-full ${index < current.position ? "bg-white" : "bg-white/25"}`}
-                  />
+                    key={`${current.id}-${index}`}
+                    className="h-0.75 flex-1 overflow-hidden rounded-full bg-white/25"
+                  >
+                    {index < current.position - 1 ? (
+                      <span className="block h-full w-full rounded-full bg-white" />
+                    ) : index === current.position - 1 ? (
+                      <span
+                        className={`block h-full rounded-full bg-white ${hasAutomaticNext ? "origin-left animate-[story-progress_10s_linear_forwards]" : "w-full"}`}
+                      />
+                    ) : null}
+                  </span>
                 ))}
               </div>
 

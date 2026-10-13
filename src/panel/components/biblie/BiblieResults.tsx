@@ -117,6 +117,7 @@ const SaveFavoriteButton = ({ verse }: SaveFavoriteButtonProps) => {
 
 interface BibleResultsProps {
   results: BibleVerse[];
+  query: string;
   totalResults: number;
   loadedResults: number;
   isLoadingMore?: boolean;
@@ -132,6 +133,7 @@ interface BibleResultsProps {
 
 export const BibleResults = ({
   results,
+  query,
   totalResults,
   loadedResults,
   isLoadingMore = false,
@@ -144,6 +146,8 @@ export const BibleResults = ({
   versePile,
   onAddVerseToPile,
 }: BibleResultsProps) => {
+  const isVerseRangeQuery = /\b\d+\s*:\s*\d+\s*[-–—]\s*\d+\b/.test(query);
+
   if (results.length === 0) {
     return null;
   }
@@ -191,32 +195,6 @@ export const BibleResults = ({
               <CardContent className="p-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-2">
-                    <h3 className="text-sm text-slate-900">
-                      {result.reference}
-                    </h3>
-
-                    <Badge
-                      variant="secondary"
-                      className="
-                        rounded
-                        bg-slate-100
-                        px-1.5
-                        py-0.5
-                        text-[8px]
-                        font-medium
-                        text-slate-500
-                        hover:bg-slate-100
-                      "
-                    >
-                      {result.normalized_reference}
-                    </Badge>
-                  </div>
-
-                  <div
-                    className="flex flex-wrap items-center gap-2"
-                    role="group"
-                    aria-label={`Acciones para ${result.reference}`}
-                  >
                     <Badge
                       className="
                         rounded-full
@@ -229,8 +207,29 @@ export const BibleResults = ({
                         hover:bg-purple-100
                       "
                     >
-                      {result.book.name}
+                      {result.normalized_reference}
                     </Badge>
+                  </div>
+
+                  <div
+                    className="flex flex-wrap items-center gap-2"
+                    role="group"
+                    aria-label={`Acciones para ${result.reference}`}
+                  >
+                    {/* <Badge
+                      className="
+                        rounded-full
+                        bg-purple-100
+                        px-2.5
+                        py-0.5
+                        text-[9px]
+                        font-medium
+                        text-purple-700
+                        hover:bg-purple-100
+                      "
+                    >
+                      {result.book.name}
+                    </Badge> */}
 
                     <Tooltip>
                       <TooltipTrigger
@@ -277,17 +276,19 @@ export const BibleResults = ({
 
                     <SaveFavoriteButton verse={result} />
 
-                    <AddBibleVerseToStoryDialog
-                      verse={result}
-                      visibilityOptions={storyVisibilityOptions}
-                      mode="pile"
-                      isVerseInPile={versePile.some(
-                        (item) =>
-                          item.verse.normalized_reference ===
-                          result.normalized_reference,
-                      )}
-                      onAddToPile={onAddVerseToPile}
-                    />
+                    {isVerseRangeQuery && (
+                      <AddBibleVerseToStoryDialog
+                        verse={result}
+                        visibilityOptions={storyVisibilityOptions}
+                        mode="pile"
+                        isVerseInPile={versePile.some(
+                          (item) =>
+                            item.verse.normalized_reference ===
+                            result.normalized_reference,
+                        )}
+                        onAddToPile={onAddVerseToPile}
+                      />
+                    )}
 
                     <AddBibleVerseToStoryDialog
                       verse={result}
@@ -302,7 +303,7 @@ export const BibleResults = ({
                   </p>
                 </div>
 
-                <div className="mt-3 grid grid-cols-3 rounded-md bg-slate-100 px-2 py-2.5">
+                {/* <div className="mt-3 grid grid-cols-3 rounded-md bg-slate-100 px-2 py-2.5">
                   <div>
                     <p className="text-[8px] font-medium uppercase tracking-wide text-slate-500">
                       Libro
@@ -332,7 +333,7 @@ export const BibleResults = ({
                       {result.verse}
                     </p>
                   </div>
-                </div>
+                </div> */}
               </CardContent>
             </Card>
           ))}

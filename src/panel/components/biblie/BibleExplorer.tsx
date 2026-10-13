@@ -3,21 +3,55 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 interface BibleExplorerProps {
   onSearch: (query: string) => void;
   isSearching?: boolean;
+  hasResults?: boolean;
 }
 
 export const BibleExplorer = ({
   onSearch,
   isSearching = false,
+  hasResults = false,
 }: BibleExplorerProps) => {
   const [query, setQuery] = useState("");
+  const [isPinned, setIsPinned] = useState(false);
+  const [stickyHeight, setStickyHeight] = useState(0);
+  const stickySentinelRef = useRef<HTMLDivElement | null>(null);
+  const explorerRef = useRef<HTMLElement | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const skipNextEmptySearchRef = useRef(false);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
+    const sentinel = stickySentinelRef.current;
+    if (!hasResults || !sentinel) {
+      setIsPinned(false);
+      return;
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry) {
+        const shouldPin =
+          !entry.isIntersecting && entry.boundingClientRect.top < 0;
+        if (shouldPin && explorerRef.current) {
+          setStickyHeight(explorerRef.current.getBoundingClientRect().height);
+        }
+        setIsPinned(shouldPin);
+      }
+    });
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasResults]);
+
+  useEffect(() => {
+    if (skipNextEmptySearchRef.current) {
+      skipNextEmptySearchRef.current = false;
+      if (!query) return;
+    }
+
     timeoutRef.current = setTimeout(() => onSearch(query), 700);
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -30,9 +64,27 @@ export const BibleExplorer = ({
     onSearch(query);
   };
 
-  return (
-    <section className="w-full" aria-busy={isSearching}>
+  const handleClearSearch = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    skipNextEmptySearchRef.current = true;
+    setIsPinned(false);
+    setQuery("");
+    onSearch("");
+    searchInputRef.current?.focus();
+  };
 
+  return (
+    <>
+    {hasResults && <div ref={stickySentinelRef} aria-hidden="true" className="h-px" />}
+    <div className="w-full" style={isPinned ? { height: stickyHeight } : undefined}>
+    <section
+      ref={explorerRef}
+      className={isPinned
+        ? "fixed inset-x-0 top-0 z-40 w-full bg-white px-5 md:px-8"
+        : "w-full py-3"}
+      aria-busy={isSearching}
+    >
+{/* 
       <div className="mb-8">
         <Badge
           variant="secondary"
@@ -70,23 +122,21 @@ export const BibleExplorer = ({
           Biblia
         </Badge>
 
-        <h1 className="text-2xl font-bold tracking-tight text-slate-950 md:text-3xl">
-          Explorador de la Biblia
-        </h1>
-
-        <p className="mt-1 text-sm text-slate-600 md:text-base">
-          Busca libros canónicos y versículos de las Sagradas Escrituras por
-          referencia o concordancia textual.
-        </p>
-      </div>
+      </div> */}
 
 
-      <Card className="border-slate-200 bg-white shadow-sm">
-        <CardContent className="p-5 md:p-6">
+      <Card className="mx-auto w-full max-w-7xl border-0 bg-white py-0 shadow-none ring-0">
+        <CardContent className={isPinned ? "p-2" : "p-2 md:p-4"}>
           <form className="flex flex-col gap-4" onSubmit={handleSearch}>
-            <div className="flex flex-col gap-3 sm:flex-row">
+            <div
+              className={
+                isPinned
+                  ? "flex min-w-0 flex-row items-center gap-2"
+                  : "flex flex-col gap-3 sm:flex-row"
+              }
+            >
 
-              <div className="relative flex-1">
+              <div className="relative min-w-0 flex-1">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="20"
@@ -113,38 +163,55 @@ export const BibleExplorer = ({
 
                 <Input
                   id="bible-search"
+                  ref={searchInputRef}
                   aria-label="Buscar en la Biblia"
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder='Buscar versículo o referencia bíblica (ej. Juan 3:16, Salmos 23 o "amor")...'
-                  className="
-                    h-12
+                  className={`${isPinned ? "h-10" : "h-12"}
                     rounded-xl
-                    border-slate-200
+                    ${isPinned ? "border-transparent shadow-none" : "border-slate-200"}
                     pl-12
-                    pr-4
+                    pr-10
                     text-sm
-                    shadow-sm
                     placeholder:text-slate-400
                     focus-visible:ring-2
                     focus-visible:ring-purple-500
-                  "
+                  `}
                 />
+                {query.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleClearSearch}
+                    aria-label="Limpiar búsqueda"
+                    className="absolute right-3 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded-full text-slate-500 hover:bg-slate-200 hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="size-4"
+                    >
+                      <path d="m18 6-12 12M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
               </div>
 
               <Button
                 type="submit"
                 disabled={isSearching}
-                className="
-                  h-12
+                className={`${isPinned ? "h-10 min-w-0 px-3 sm:min-w-0" : "h-12 px-7 sm:min-w-34.5"}
                   rounded-xl
                   bg-purple-700
-                  px-7
                   font-semibold
                   text-white
                   hover:bg-purple-800
-                  sm:min-w-34.5
-                "
+                `}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -170,5 +237,7 @@ export const BibleExplorer = ({
         </CardContent>
       </Card>
     </section>
+    </div>
+    </>
   );
 };

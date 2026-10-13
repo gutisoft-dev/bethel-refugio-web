@@ -70,9 +70,13 @@ export const Biblie = () => {
   }, [hasNext, loadNextPage]);
 
   return (
-    <div className="min-h-[calc(100dvh-3.5rem)] bg-slate-50 p-5 shadow-[0_0_0_100vmax_#f8fafc] [clip-path:inset(0_-100vmax)] md:p-8">
+    <div className="min-h-[calc(100dvh-3.5rem)] bg-slate-50 p-5 md:p-8">
       <div className="mx-auto max-w-7xl">
-        <BibleExplorer onSearch={search} isSearching={isSearching} />
+        <BibleExplorer
+          onSearch={search}
+          isSearching={isSearching}
+          hasResults={results.length > 0}
+        />
 
         {isSearching && (
           <p
@@ -99,6 +103,7 @@ export const Biblie = () => {
         {results.length > 0 && (
           <BibleResults
             results={results}
+            query={query}
             totalResults={totalResults}
             loadedResults={results.length}
             isLoadingMore={isLoadingMore}
