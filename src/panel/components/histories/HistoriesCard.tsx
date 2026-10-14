@@ -29,6 +29,7 @@ interface Historia {
   position: number;
   totalVerses: number;
   remaining: string;
+  elapsed: string;
   favorites: number;
   reactions: number;
   views: number;
@@ -62,8 +63,25 @@ const getRemainingTime = (expiresAt: string) => {
   return `Quedan ${remainingHours}h`;
 };
 
+const getElapsedTime = (createdAt: string) => {
+  const createdAtMs = Date.parse(createdAt);
+  if (Number.isNaN(createdAtMs)) return "";
+
+  const minutes = Math.max(0, Math.floor((Date.now() - createdAtMs) / 60_000));
+  if (minutes < 1) return "Ahora";
+  if (minutes < 60) return `Hace ${minutes} min`;
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return hours === 1 ? "Hace 1 h" : `Hace ${hours} h`;
+
+  const days = Math.floor(hours / 24);
+  if (days < 7) return days === 1 ? "Hace 1 día" : `Hace ${days} días`;
+  const weeks = Math.floor(days / 7);
+  return weeks === 1 ? "Hace 1 sem" : `Hace ${weeks} sem`;
+};
+
 const getVerseFontSize = (text: string) =>
-  Math.max(12, Math.min(22, 22 * Math.sqrt(180 / Math.max(180, text.length))));
+  Math.max(16, Math.min(36, 36 * Math.sqrt(100 / Math.max(100, text.length))));
 
 const toSlides = (stories: PublicStory[], isMine = false): Historia[] =>
   stories.flatMap((story) => {
@@ -90,6 +108,7 @@ const toSlides = (stories: PublicStory[], isMine = false): Historia[] =>
       position: item.position || index + 1,
       totalVerses: verses.length,
       remaining: getRemainingTime(story.expires_at),
+      elapsed: getElapsedTime(story.created_at),
       favorites: item.count_favorite,
       reactions: item.count_reaction,
       views: item.views_count,
@@ -265,8 +284,6 @@ export const HistoriasCards = ({
       setActiveIndex((index) => index + 1);
     } else if (nextCursor) {
       void loadNextPage();
-    } else {
-      setActiveIndex(0);
     }
   }, [activeIndex, feed, loadNextPage, nextCursor, totalSlides]);
 
@@ -274,7 +291,10 @@ export const HistoriasCards = ({
     activeIndex < totalSlides - 1 || Boolean(nextCursor);
 
   const handleTouchStart = (event: TouchEvent<HTMLDivElement>) => {
-    if ((event.target as HTMLElement).closest("button, a, [role='dialog']")) {
+    // HistoriesCard can itself be rendered inside a dialog (for example from
+    // HistoriesGrid). Only skip gestures that start on an interactive control;
+    // checking for any dialog ancestor disables swiping for the whole card.
+    if ((event.target as HTMLElement).closest("button, a, input, textarea")) {
       touchStart.current = null;
       return;
     }
@@ -323,8 +343,8 @@ export const HistoriasCards = ({
   const previous = historias.length
     ? historias[(activeIndex + historias.length - 1) % historias.length]
     : undefined;
-  const next = historias.length
-    ? historias[(activeIndex + 1) % historias.length]
+  const next = activeIndex < historias.length - 1
+    ? historias[activeIndex + 1]
     : undefined;
 
   useEffect(() => {
@@ -372,7 +392,7 @@ export const HistoriasCards = ({
 
   return (
     <section
-      className="relative flex h-full min-h-0 w-full flex-col justify-center overflow-hidden bg-slate-50 px-2 py-3 text-slate-900 sm:px-4"
+      className="relative flex h-full min-h-0 w-full flex-col justify-center overflow-hidden bg-transparent px-0 py-0 text-slate-900"
       aria-label={
         feed === "mine"
           ? "Mis historias"
@@ -400,7 +420,7 @@ export const HistoriasCards = ({
           {needsAuthentication ? (
             <Link
               to="/auth/login"
-              className="rounded-md bg-purple-700 px-3 py-2 text-sm font-medium text-white hover:bg-purple-800"
+              className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
               Iniciar sesión
             </Link>
@@ -408,7 +428,7 @@ export const HistoriasCards = ({
             <button
               type="button"
               onClick={() => setReloadKey((key) => key + 1)}
-              className="rounded-md bg-purple-700 px-3 py-2 text-sm font-medium text-white hover:bg-purple-800"
+              className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
               Reintentar
             </button>
@@ -427,7 +447,7 @@ export const HistoriasCards = ({
       ) : (
         <div className="flex min-h-0 w-full flex-1 items-center justify-center px-1 sm:px-2">
           <div
-            className="flex h-full w-full touch-pan-y items-center justify-center gap-2 sm:gap-4 lg:gap-5"
+            className="relative flex h-full w-full touch-pan-y items-center justify-center gap-2 sm:gap-4 lg:gap-5"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
             onTouchCancel={() => {
@@ -439,7 +459,7 @@ export const HistoriasCards = ({
                 type="button"
                 onClick={goPrevious}
                 aria-label={`Ver historia anterior de ${previous.author}`}
-                className="group relative hidden h-[min(420px,100%)] w-[min(165px,18vw)] shrink-0 flex-col overflow-hidden rounded-xl border border-white/10 bg-[#1a1022]/70 p-3 text-left text-white opacity-50 transition hover:opacity-80 lg:flex"
+              className="histories-grid-card group relative hidden h-[min(520px,100%)] w-[min(195px,18vw)] shrink-0 flex-col overflow-hidden rounded-xl border border-primary-foreground/10 p-3 text-left text-primary-foreground opacity-50 transition hover:opacity-80 lg:flex"
               >
                 <span className="flex items-center gap-2 text-[9px] font-semibold">
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-300 text-[8px] text-slate-900">
@@ -458,13 +478,19 @@ export const HistoriasCards = ({
                 </span>
               </button>
             )}
+            {historias.length <= 1 && nextCursor && (
+              <div
+                aria-hidden="true"
+                className="invisible relative hidden h-[min(520px,100%)] w-[min(195px,18vw)] shrink-0 lg:flex"
+              />
+            )}
 
             <button
               type="button"
               onClick={goPrevious}
               aria-label="Historia anterior"
               disabled={historias.length < 2}
-              className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-300 bg-slate-100 text-slate-600 hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-50 lg:flex"
+              className="absolute left-3 top-1/2 z-20 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/80 text-white ring-1 ring-white/20 transition hover:bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-30 sm:flex sm:left-8"
             >
               <svg
                 aria-hidden="true"
@@ -474,7 +500,7 @@ export const HistoriasCards = ({
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="h-4 w-4"
+                className="size-5"
               >
                 <path d="m15 18-6-6 6-6" />
               </svg>
@@ -482,9 +508,10 @@ export const HistoriasCards = ({
 
             <article
               aria-label={`Historia de ${current.author}: ${current.reference}`}
-              className="relative flex h-[min(590px,100%)] min-h-0 w-[min(390px,calc(100vw-28px))] shrink-0 flex-col overflow-hidden rounded-[22px] border border-purple-300/30 bg-linear-to-b from-[#310b48] via-[#4c0877] to-[#110c17] text-white shadow-[0_0_38px_rgba(98,24,145,0.24)]"
+              className="histories-grid-card relative flex h-[min(800px,100%)] max-h-[800px] min-h-0 w-[min(448px,calc(100vw-32px))] shrink-0 flex-col overflow-hidden rounded-[2rem] border border-primary/40 bg-slate-950 p-0 text-primary-foreground shadow-2xl"
             >
-              <div className="flex gap-1 px-3 pt-2.5" aria-hidden="true">
+              <span className="histories-grid-card-overlay pointer-events-none absolute inset-0 opacity-90" aria-hidden="true" />
+              <div className="absolute inset-x-5 top-5 z-10 flex gap-1.5" aria-label="Progreso de la historia">
                 {Array.from({ length: current.totalVerses }).map((_, index) => (
                   <span
                     key={`${current.id}-${index}`}
@@ -494,67 +521,66 @@ export const HistoriasCards = ({
                       <span className="block h-full w-full rounded-full bg-white" />
                     ) : index === current.position - 1 ? (
                       <span
-                        className={`block h-full rounded-full bg-white ${hasAutomaticNext ? "origin-left animate-[story-progress_10s_linear_forwards]" : "w-full"}`}
+                        className="block h-full origin-left rounded-full bg-white animate-[story-progress_10s_linear_forwards]"
                       />
                     ) : null}
                   </span>
                 ))}
               </div>
 
-              <header className="flex items-center justify-between gap-2 px-3 pt-2">
-                <div className="flex min-w-0 items-center gap-2">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-purple-300 bg-white/10 text-[10px] font-bold">
+              <header className="relative z-10 flex items-center justify-between gap-2 px-6 pt-12 sm:px-8 sm:pt-14">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/20 text-xs font-bold ring-1 ring-white/60 backdrop-blur-sm">
                     {current.initials}
                   </span>
                   <div className="min-w-0">
-                    <p className="truncate text-[11px] font-bold">
+                    <p className="truncate text-sm font-semibold">
                       {current.author}
                     </p>
-                    <p className="truncate text-[8px] text-white/60">
-                      {feed === "mine"
-                        ? `${current.visibility === "followers" ? "Seguidores" : "Pública"} · ${current.status === "active" ? "Activa" : (current.status ?? "Historia")} · ${current.remaining}`
-                        : `@${current.username} · ${current.remaining}`}
+                    <p className="flex min-w-0 items-center gap-1 truncate text-xs text-white/70">
+                      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-3.5 shrink-0">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 6v6l4 2" />
+                      </svg>
+                      <span className="truncate">@{current.username} · {current.elapsed}</span>
                     </p>
                   </div>
                 </div>
               </header>
 
-              <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto px-8 pb-2 text-center [scrollbar-color:rgba(255,255,255,0.3)_transparent] scrollbar-thin">
-                <span className="mb-4 inline-flex max-w-full items-center gap-1.5 truncate rounded-full border border-purple-200/20 bg-purple-200/10 px-3 py-1 text-[9px] font-semibold text-purple-100">
+              <div className="relative z-10 flex min-h-0 flex-1 flex-col justify-end overflow-y-auto px-6 pb-8 pt-6 text-left [scrollbar-color:rgba(255,255,255,0.3)_transparent] scrollbar-thin sm:px-8 sm:pb-12">
+                <span className="mb-5 inline-flex max-w-full items-center gap-2 self-start rounded-full bg-white/15 px-3 py-1.5 text-sm font-medium text-white backdrop-blur-sm">
                   <svg
                     aria-hidden="true"
                     viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="h-3 w-3 shrink-0 text-amber-300"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="size-4 shrink-0"
                   >
-                    <path d="M7.17 6A4.17 4.17 0 0 0 3 10.17V18h7v-7H6.2A1.2 1.2 0 0 1 7.4 9.8H9V6H7.17Zm10 0A4.17 4.17 0 0 0 13 10.17V18h7v-7h-3.8a1.2 1.2 0 0 1 1.2-1.2H19V6h-1.83Z" />
+                    <path d="M12 7v14" />
+                    <path d="M3 18V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v13" />
+                    <path d="M3 18a3 3 0 0 1 3-3h15" />
                   </svg>
                   {current.reference}
                 </span>
-                <div className="relative pr-5">
-                  <span
-                    aria-hidden="true"
-                    className="absolute -top-2 left-0 text-3xl font-black text-purple-200/40"
-                  >
-                    ”
-                  </span>
-                  <blockquote
-                    className="font-serif font-semibold italic leading-tight text-white transition-[font-size] duration-200"
-                    style={{ fontSize: `${getVerseFontSize(current.verse)}px` }}
-                  >
-                    “{current.verse}”
-                  </blockquote>
-                </div>
+                <blockquote
+                  className="font-semibold leading-tight tracking-tight text-white transition-[font-size] duration-200 sm:leading-[1.12]"
+                  style={{ fontSize: `${getVerseFontSize(current.verse)}px` }}
+                >
+                  {current.verse}
+                </blockquote>
                 {current.description && (
                   <>
-                    <div className="my-4 h-px w-10 bg-purple-200/30" />
-                    <p className="max-w-72.5 rounded-xl border border-white/10 bg-black/20 px-3 py-3 text-[12px] leading-[1.45] text-white/85">
+                    <p className="mt-5 rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm leading-relaxed text-white/85">
                       {current.description}
                     </p>
                   </>
                 )}
                 {feed === "mine" && (
-                  <div className="mt-4 flex flex-wrap justify-center gap-x-3 gap-y-1 text-[9px] text-white/70">
+                  <div className="mt-4 flex flex-wrap gap-x-3 gap-y-1 text-xs text-white/75">
                     <span>♡ {current.favorites} favoritos</span>
                     <span>♥ {current.reactions} reacciones</span>
                     <HistoriesViewsDialog
@@ -568,50 +594,59 @@ export const HistoriasCards = ({
               </div>
             </article>
 
-            <button
-              type="button"
-              onClick={goNext}
-              aria-label="Historia siguiente"
-              disabled={(historias.length < 2 && !nextCursor) || isLoadingMore}
-              className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-300 bg-slate-100 text-slate-600 hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-50 lg:flex"
-            >
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-4 w-4"
-              >
-                <path d="m9 18 6-6-6-6" />
-              </svg>
-            </button>
-
-            {historias.length > 1 && next && (
+            {hasAutomaticNext && (
               <button
                 type="button"
                 onClick={goNext}
-                aria-label={`Ver historia siguiente de ${next.author}`}
-                className="group relative hidden h-[min(420px,100%)] w-[min(165px,18vw)] shrink-0 flex-col overflow-hidden rounded-xl border border-white/10 bg-[#1a1022]/70 p-3 text-left text-white opacity-50 transition hover:opacity-80 lg:flex"
+                aria-label="Historia siguiente"
+                disabled={isLoadingMore}
+                className="absolute right-3 top-1/2 z-20 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/80 text-white ring-1 ring-white/20 transition hover:bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-30 sm:flex sm:right-8"
               >
-                <span className="flex items-center gap-2 text-[9px] font-semibold">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-300 text-[8px] text-slate-900">
-                    {next.initials}
-                  </span>
-                  <span className="truncate">{next.author}</span>
-                </span>
-                <span className="mt-1 text-[8px] text-white/50">
-                  {next.reference}
-                </span>
-                <span className="mt-auto line-clamp-3 text-center text-[10px] italic text-white/60">
-                  “{next.verse}”
-                </span>
-                <span className="mt-8 rounded-full bg-black/20 px-2 py-1 text-center text-[8px] text-white/60">
-                  Siguiente
-                </span>
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="size-5"
+                >
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
               </button>
+            )}
+
+            {(historias.length > 1 || nextCursor) && (
+              next ? (
+                <button
+                type="button"
+                onClick={goNext}
+                aria-label={`Ver historia siguiente de ${next.author}`}
+                className="histories-grid-card group relative hidden h-[min(520px,100%)] w-[min(195px,18vw)] shrink-0 flex-col overflow-hidden rounded-xl border border-primary-foreground/10 p-3 text-left text-primary-foreground opacity-50 transition hover:opacity-80 lg:flex"
+                >
+                  <span className="flex items-center gap-2 text-[9px] font-semibold">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-300 text-[8px] text-slate-900">
+                      {next.initials}
+                    </span>
+                    <span className="truncate">{next.author}</span>
+                  </span>
+                  <span className="mt-1 text-[8px] text-white/50">
+                    {next.reference}
+                  </span>
+                  <span className="mt-auto line-clamp-3 text-center text-[10px] italic text-white/60">
+                    “{next.verse}”
+                  </span>
+                  <span className="mt-8 rounded-full bg-black/20 px-2 py-1 text-center text-[8px] text-white/60">
+                    Siguiente
+                  </span>
+                </button>
+              ) : (
+                <div
+                  aria-hidden="true"
+                  className="invisible relative hidden h-[min(520px,100%)] w-[min(195px,18vw)] shrink-0 lg:flex"
+                />
+              )
             )}
           </div>
         </div>

@@ -15,6 +15,26 @@
   }
 }
 
+.histories-grid-card {
+  background: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    color-mix(in oklab, var(--primary) 70%, black) 58%,
+    color-mix(in oklab, var(--primary) 24%, black) 100%
+  );
+  box-shadow: 0 12px 30px color-mix(in oklab, var(--primary) 24%, transparent);
+}
+
+.histories-grid-card-overlay {
+  background:
+    radial-gradient(circle at 80% 20%, rgb(255 255 255 / 32%), transparent 32%),
+    linear-gradient(to top, rgb(24 4 36 / 55%), transparent 65%);
+}
+
+.histories-grid-card:hover:not([aria-disabled="true"]) {
+  box-shadow: 0 16px 36px color-mix(in oklab, var(--primary) 34%, transparent);
+}
+
 :root {
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);

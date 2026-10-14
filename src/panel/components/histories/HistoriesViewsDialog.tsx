@@ -151,7 +151,10 @@ export const HistoriesViewsDialog = ({
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-h-[min(80dvh,36rem)] max-w-[calc(100%-1.5rem)] overflow-hidden p-0 sm:max-w-md">
+        <DialogContent
+          overlayClassName="!z-[70] bg-black/55 backdrop-blur-sm supports-backdrop-filter:backdrop-blur-sm"
+          className="!z-[80] max-h-[min(80dvh,36rem)] max-w-[calc(100%-1.5rem)] overflow-hidden p-0 sm:max-w-md"
+        >
           <DialogHeader className="border-b border-slate-200 px-5 py-4 pr-12">
             <DialogTitle>Visualizaciones</DialogTitle>
             <DialogDescription>

@@ -23,21 +23,35 @@ interface StoriesPage {
 const getFeedLabel = (feed: HistoryFeed) =>
   feed === "mine" ? "tus historias" : feed === "following" ? "historias de las personas que sigues" : "historias públicas";
 
-const getInitials = (username: string) =>
-  username.slice(0, 2).toLocaleUpperCase("es");
+const getTimeAgo = (createdAt: string) => {
+  const createdAtMs = Date.parse(createdAt);
+  if (Number.isNaN(createdAtMs)) return "";
 
-const getTimeAgo = (date: string) => {
-  const timestamp = Date.parse(date);
-  if (Number.isNaN(timestamp)) return "";
+  const minutes = Math.max(0, Math.floor((Date.now() - createdAtMs) / 60_000));
+  if (minutes < 1) return "Ahora";
+  if (minutes < 60) return `Hace ${minutes} min`;
 
-  const days = Math.floor((Date.now() - timestamp) / 86_400_000);
-  if (days < 1) return "Hace menos de un día";
-  if (days === 1) return "Hace 1 día";
-  if (days < 7) return `Hace ${days} días`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return hours === 1 ? "Hace 1 h" : `Hace ${hours} h`;
+
+  const days = Math.floor(hours / 24);
+  if (days < 7) return days === 1 ? "Hace 1 día" : `Hace ${days} días`;
   const weeks = Math.floor(days / 7);
-  if (weeks < 5) return weeks === 1 ? "Hace 1 sem" : `Hace ${weeks} sem`;
-  const months = Math.floor(days / 30);
-  return months === 1 ? "Hace 1 mes" : `Hace ${months} meses`;
+  return weeks === 1 ? "Hace 1 sem" : `Hace ${weeks} sem`;
+};
+
+const getStoryReference = (verses: PublicStory["verses"]) => {
+  const first = verses[0]?.verse.reference;
+  const last = verses.at(-1)?.verse.reference;
+  if (!first || !last || verses.length < 2) return first ?? "Historia";
+
+  const firstMatch = first.match(/^(.+?\s+\d+):(\d+)$/);
+  const lastMatch = last.match(/^(.+?\s+\d+):(\d+)$/);
+  if (firstMatch && lastMatch && firstMatch[1] === lastMatch[1]) {
+    return `${firstMatch[1]}:${firstMatch[2]}-${lastMatch[2]}`;
+  }
+
+  return `${first}–${last}`;
 };
 
 const loadStoriesPage = (feed: HistoryFeed, cursor?: string): Promise<StoriesPage> =>
@@ -142,13 +156,13 @@ export const HistoriesGrid = ({ feed = "mine" }: HistoriesGridProps) => {
         <div className="flex flex-col items-center gap-3 py-12 text-center">
           <p className="text-sm text-slate-600" role="alert">{error}</p>
           {!localStorage.getItem("token-access") && feed !== "public" ? (
-            <Link className="rounded-md bg-purple-700 px-4 py-2 text-sm font-semibold text-white" to="/auth/login">
+            <Link className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground" to="/auth/login">
               Iniciar sesión
             </Link>
           ) : (
             <button
               type="button"
-              className="rounded-md bg-purple-700 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-800"
+              className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
               onClick={() => setReloadKey((key) => key + 1)}
             >
               Reintentar
@@ -161,69 +175,67 @@ export const HistoriesGrid = ({ feed = "mine" }: HistoriesGridProps) => {
         </p>
       ) : (
         <>
-          <div className="mx-auto grid w-full max-w-375 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          <div className="mx-auto grid w-full max-w-6xl grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
             {stories.map((story) => {
               const sortedVerses = [...story.verses].sort((a, b) => a.position - b.position);
-              const firstVerse = sortedVerses[0];
-              const username = story.user?.username?.replace(/^@/, "") || "Usuario";
-              const views = sortedVerses.reduce((total, verse) => total + (verse.views_count ?? 0), 0);
+              const reference = getStoryReference(sortedVerses);
+              const username = story.user?.username?.replace(/^@/, "").trim() || "Usuario";
+              const timeAgo = getTimeAgo(story.created_at);
+              const isExpired = story.status?.toLowerCase() === "expired";
 
               return (
                 <article
                   key={story.id}
-                  className="group flex min-h-65 flex-col rounded-[22px] border border-purple-300/15 bg-linear-to-br from-[#260b38] via-[#321044] to-[#100b16] p-5 text-purple-50 shadow-[0_12px_32px_rgba(30,10,45,0.14)] transition duration-200 hover:-translate-y-0.5 hover:border-purple-300/35 hover:shadow-[0_16px_38px_rgba(76,8,119,0.2)]"
+                  role={isExpired ? undefined : "button"}
+                  tabIndex={isExpired ? undefined : 0}
+                  aria-disabled={isExpired || undefined}
+                  aria-label={`${isExpired ? "Historia bloqueada" : "Abrir historia"}: ${reference}`}
+                  onClick={isExpired ? undefined : () => setSelectedStoryId(story.id)}
+                  onKeyDown={(event) => {
+                    if (isExpired) return;
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      setSelectedStoryId(story.id);
+                    }
+                  }}
+                  className={`histories-grid-card group relative aspect-[3/4] w-full overflow-hidden rounded-[1.35rem] border border-primary-foreground/15 p-4 text-left text-primary-foreground transition duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-50 ${isExpired ? "cursor-not-allowed opacity-55 grayscale" : "cursor-pointer hover:-translate-y-1 hover:border-primary-foreground/35"}`}
                 >
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-purple-200/20 bg-purple-200/15 px-3 py-1.5 text-xs font-bold tracking-wide text-purple-100">
-                      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
-                        <path d="M6 4h12v17l-6-4-6 4z" />
+                  <span className="histories-grid-card-overlay pointer-events-none absolute inset-0" aria-hidden="true" />
+                  {isExpired && (
+                    <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/35 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-white/80">
+                      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-3">
+                        <rect x="4" y="11" width="16" height="10" rx="2" />
+                        <path d="M8 11V7a4 4 0 0 1 8 0v4" />
                       </svg>
-                      <span className="truncate">{firstVerse?.verse.reference ?? "Historia"}</span>
+                      Bloqueada
                     </span>
-                    <span className="inline-flex shrink-0 items-center gap-1 text-sm text-purple-200/60" aria-label={`${views} visualizaciones`}>
-                      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-                        <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" />
-                        <circle cx="12" cy="12" r="3" />
-                      </svg>
-                      {Intl.NumberFormat("es", { notation: "compact", maximumFractionDigits: 1 }).format(views)}
-                    </span>
-                  </div>
-
-                  <div className="mt-5 flex min-w-0 items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-purple-100 text-sm font-bold text-purple-900">
-                      {getInitials(username)}
-                    </span>
-                    <div className="min-w-0">
-                      <h2 className="truncate text-base font-bold text-white">{username}</h2>
-                      <p className="truncate text-sm text-purple-100/50">
-                        @{username}{getTimeAgo(story.created_at) ? ` · ${getTimeAgo(story.created_at)}` : ""}
-                      </p>
-                    </div>
-                  </div>
-
-                  {firstVerse ? (
-                    <blockquote className="mt-5 line-clamp-2 font-serif text-lg font-semibold italic leading-snug text-purple-50/90">
-                      «{firstVerse.verse.text}»
-                    </blockquote>
-                  ) : (
-                    <p className="mt-5 text-sm text-purple-100/60">Esta historia no tiene versículos.</p>
                   )}
-
-                  <div className="mt-auto pt-5">
-                    <div className="mb-3 h-px bg-purple-100/10" />
-                    <button
-                      type="button"
-                      onClick={() => setSelectedStoryId(story.id)}
-                      className="flex w-full items-center justify-between gap-2 text-left text-sm font-semibold text-purple-100 transition hover:text-white"
-                    >
-                      <span>Ver historia</span>
-                      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 transition-transform group-hover:translate-x-0.5">
-                        <path d="M5 12h14m-7-7 7 7-7 7" />
+                  <div className="relative flex h-full flex-col justify-between">
+                    <div className={`flex min-w-0 items-center gap-2 ${isExpired ? "pr-20" : ""}`}>
+                      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white/20 text-xs font-bold ring-1 ring-white/50 backdrop-blur-sm">
+                        {username.slice(0, 2).toLocaleUpperCase("es")}
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm font-semibold">@{username}</span>
+                        {timeAgo && (
+                          <span className="flex items-center gap-1 text-xs text-white/75">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-3 shrink-0">
+                              <circle cx="12" cy="12" r="10" />
+                              <path d="M12 6v6l4 2" />
+                            </svg>
+                            {timeAgo}
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex min-w-0 items-center gap-1.5 text-base font-semibold text-white">
+                      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-4 shrink-0">
+                        <path d="M12 7v14" />
+                        <path d="M3 18V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v13" />
+                        <path d="M3 18a3 3 0 0 1 3-3h15" />
                       </svg>
-                    </button>
-                    {story.visibility && (
-                      <span className="sr-only">{story.visibility === "public" ? "Pública" : "Visible para seguidores"}</span>
-                    )}
+                      <span className="truncate">{reference}</span>
+                    </div>
                   </div>
                 </article>
               );
@@ -235,7 +247,7 @@ export const HistoriesGrid = ({ feed = "mine" }: HistoriesGridProps) => {
             {pageError && !isLoadingMore && (
               <div className="flex items-center gap-3" role="alert">
                 <span className="text-sm text-red-700">No se pudieron cargar más historias.</span>
-                <button type="button" onClick={() => void loadNextPage()} className="text-sm font-semibold text-purple-700 underline">Reintentar</button>
+                <button type="button" onClick={() => void loadNextPage()} className="text-sm font-semibold text-primary underline">Reintentar</button>
               </div>
             )}
             {!nextCursor && !isLoadingMore && <p className="text-xs text-slate-400">Has llegado al final de las historias.</p>}
@@ -250,7 +262,7 @@ export const HistoriesGrid = ({ feed = "mine" }: HistoriesGridProps) => {
       >
         <DialogContent
           showCloseButton={false}
-          overlayClassName="bg-black/65 backdrop-blur-md"
+          overlayClassName="bg-black/85 backdrop-blur-xl supports-backdrop-filter:backdrop-blur-xl"
           className="!fixed !inset-0 !left-0 !top-0 !z-[60] !grid !h-dvh !w-screen !max-w-none !translate-x-0 !translate-y-0 !gap-0 !rounded-none !border-0 !bg-transparent !p-0 !text-white !shadow-none !ring-0 sm:!max-w-none"
         >
           <DialogTitle className="sr-only">Historia</DialogTitle>
@@ -261,11 +273,11 @@ export const HistoriesGrid = ({ feed = "mine" }: HistoriesGridProps) => {
                 variant="ghost"
                 size="icon"
                 aria-label="Cerrar historia"
-                className="absolute right-4 top-4 z-[70] rounded-full bg-black/40 text-white hover:bg-black/60 hover:text-white"
+                className="absolute right-5 top-5 z-[70] size-11 rounded-full bg-black/70 text-white ring-1 ring-white/20 transition hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:right-8 sm:top-8"
               />
             }
           >
-            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-5">
               <path d="m18 6-12 12M6 6l12 12" />
             </svg>
           </DialogClose>
