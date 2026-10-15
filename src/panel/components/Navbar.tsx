@@ -50,7 +50,7 @@ export const Navbar = () => {
         </div>
 
         <div className="hidden items-stretch gap-1 sm:flex sm:gap-7 ">
-        <AvatarContent/>
+          <AvatarContent />
         </div>
 
         <button
@@ -59,7 +59,7 @@ export const Navbar = () => {
           className="flex items-center justify-center rounded-md p-2 text-[#241d2b] hover:bg-purple-50 hover:text-[#6800b8] sm:hidden"
           aria-label="Abrir menú"
         >
-          <Close/>
+          <Close />
         </button>
       </nav>
       <SidebarContent

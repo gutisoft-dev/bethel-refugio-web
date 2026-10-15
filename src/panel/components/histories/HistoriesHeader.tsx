@@ -1,4 +1,7 @@
 import { Button } from "@/components/ui/button";
+import { Market } from "@/icons/Market";
+import { Save } from "@/icons/Save";
+import { UserAdd } from "@/icons/UserAdd";
 
 export type HistoryFeed = "public" | "following" | "mine";
 
@@ -45,49 +48,13 @@ export const HistoriasHeader = ({
           }`}
         >
           {index === 0 && (
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="mr-1 h-3 w-3"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <path d="m16 8-2 6-6 2 2-6 6-2Z" />
-            </svg>
+            <Market/>
           )}
           {index === 1 && (
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="mr-1 h-3 w-3"
-            >
-              <path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="10" cy="7" r="4" />
-              <path d="M20 8v6M23 11h-6" />
-            </svg>
+            <UserAdd/>
           )}
           {index === 2 && (
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="mr-1 h-3 w-3"
-            >
-              <path d="M6 4h12v17l-6-4-6 4z" />
-            </svg>
+            <Save/>
           )}
           {/* {index === 3 && (
             <svg

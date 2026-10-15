@@ -42,20 +42,29 @@ export const useAuthStore = create<AuthStore>()((set) => ({
     }
   },
   logout: async () => {
-    const accessToken = localStorage.getItem("token-refresh");
-    if (!accessToken) {
-      return;
+    try {
+      const accessToken = localStorage.getItem("token-refresh");
+      if (!accessToken) {
+        return;
+      }
+      await logout(accessToken);
+      set({
+        authStatus: "not-authenticated",
+      });
+    } catch (error) {
+      console.log(error);
+      localStorage.removeItem("token-access");
+      localStorage.removeItem("token-refresh");
+      set({
+        authStatus: "not-authenticated",
+      });
     }
-    await logout(accessToken);
-    set({
-      authStatus: "not-authenticated",
-    });
   },
 
   checkAuthStatus: async () => {
     try {
       const accessToken = localStorage.getItem("token-refresh");
-       set({
+      set({
         authStatus: "not-authenticated",
       });
       if (!accessToken) {

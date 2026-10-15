@@ -11,6 +11,7 @@ export const CheckAuthProvider = ({ children }: PropsWithChildren) => {
     queryFn: checkAuthStatus,
     retry: false,
      refetchOnWindowFocus: false,
+    
   });
   if (isLoading) return <CustomFullScreenLoading />;
   

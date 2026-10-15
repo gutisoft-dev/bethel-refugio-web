@@ -6,6 +6,11 @@ import { Home } from "@/panel/pages/Home";
 import { Profile } from "@/panel/pages/Profile";
 import { createBrowserRouter } from "react-router-dom";
 import { AuthenticatedRoute, NotAuthenticatedRoute } from "./protected.router";
+import {
+  getMeLoader,
+  getUserByUsernameLoader,
+} from "@/panel/actions/social/social.action";
+import { ErrorProfile } from "@/panel/pages/ErrorProfile";
 
 export const appRouter = createBrowserRouter([
   {
@@ -16,20 +21,13 @@ export const appRouter = createBrowserRouter([
         index: true,
         element: <Biblie />,
       },
-    ],
-  },
-  {
-    path: "/history",
-    element: (
-      <PanelLayout />
-    ),
-    children: [
       {
-        index: true,
+        path: "history",
         element: <Home />,
       },
     ],
   },
+
   {
     path: "/profile",
     element: (
@@ -39,8 +37,16 @@ export const appRouter = createBrowserRouter([
     ),
     children: [
       {
-        index: true,
+        path: "me",
         element: <Profile />,
+        loader: getMeLoader,
+        errorElement: <ErrorProfile />,
+      },
+      {
+        path: ":username",
+        element: <Profile />,
+        loader: getUserByUsernameLoader,
+        errorElement: <ErrorProfile />,
       },
     ],
   },
