@@ -11,10 +11,11 @@ interface Props{
   stories: PublicStory[]
    nextCursor: string | null
   handleSelectedStoryId: (id: string | null) => void
+  handleStoryContentDeleted: (storyId: string, position?: number) => void
 }
 
 
-export const DetailsCard = ({ selectedStoryId,handleSelectedStoryId,feed,stories, nextCursor }: Props ) => {
+export const DetailsCard = ({ selectedStoryId,handleSelectedStoryId,handleStoryContentDeleted,feed,stories, nextCursor }: Props ) => {
   return (
     <Dialog
       open={selectedStoryId !== null}
@@ -48,6 +49,7 @@ export const DetailsCard = ({ selectedStoryId,handleSelectedStoryId,feed,stories
             initialStoryId={selectedStoryId}
             initialStories={stories}
             initialCursor={nextCursor}
+            onStoryContentDeleted={handleStoryContentDeleted}
           />
         )}
       </DialogContent>

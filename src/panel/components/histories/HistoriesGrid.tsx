@@ -25,6 +25,7 @@ export const HistoriesGrid = ({ feed = "mine" }: HistoriesGridProps) => {
     pageError,
     selectedStoryId,
     handleSelectedStoryId,
+    handleStoryContentDeleted,
     loadNextPage,
     setReloadKey,
     scrollContainerRef,
@@ -140,6 +141,7 @@ export const HistoriesGrid = ({ feed = "mine" }: HistoriesGridProps) => {
       <DetailsCard
         selectedStoryId={selectedStoryId}
         handleSelectedStoryId={handleSelectedStoryId}
+        handleStoryContentDeleted={handleStoryContentDeleted}
         feed={feed}
         stories={stories}
         nextCursor={nextCursor}

@@ -16,6 +16,7 @@ interface Props {
   initialStoryId?: string;
   initialStories?: PublicStory[];
   initialCursor?: string | null;
+  isPaused?: boolean;
 }
 
 interface StoriesApiError {
@@ -24,11 +25,26 @@ interface StoriesApiError {
   error?: { message?: string };
 }
 
+const getStoriesForModal = (
+  stories: PublicStory[],
+  feed: HistoryFeed,
+) =>
+  stories.filter((story) => {
+    const status = story.status?.trim().toLowerCase();
+
+    // The public and following endpoints already return eligible stories, and
+    // may omit status. The personal endpoint includes expired stories, so it
+    // must be filtered explicitly before showing them in the viewer.
+    if (feed === "mine") return status === "active";
+    return status === undefined || status === "active";
+  });
+
 export const useDetailsHistory = ({
   feed = "public",
   initialStoryId,
   initialStories,
   initialCursor,
+  isPaused = false,
 }: Props) => {
   const [historias, setHistorias] = useState<Historia[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -67,7 +83,10 @@ export const useDetailsHistory = ({
         }
 
         if (initialStories) {
-          const slides = toSlides(initialStories, feed === "mine");
+          const slides = toSlides(
+            getStoriesForModal(initialStories, feed),
+            feed === "mine",
+          );
           if (!isCurrent) return;
           setHistorias(slides);
           setNextCursor(initialCursor ?? null);
@@ -91,7 +110,10 @@ export const useDetailsHistory = ({
           throw new Error("El servicio devolvió una respuesta inesperada.");
         }
 
-        const slides = toSlides(response.results, feed === "mine");
+        const slides = toSlides(
+          getStoriesForModal(response.results, feed),
+          feed === "mine",
+        );
         setHistorias(slides);
         setNextCursor(response.next);
         const initialIndex = initialStoryId
@@ -165,7 +187,10 @@ export const useDetailsHistory = ({
           : feed === "following"
             ? await getFollowingStories(nextCursor)
             : await getStoriesPublic(nextCursor);
-      const nextSlides = toSlides(response.results, feed === "mine");
+      const nextSlides = toSlides(
+        getStoriesForModal(response.results, feed),
+        feed === "mine",
+      );
       setHistorias((currentStories) => [...currentStories, ...nextSlides]);
       setNextCursor(response.next);
       if (nextSlides.length > 0) {
@@ -177,6 +202,36 @@ export const useDetailsHistory = ({
       setIsLoadingMore(false);
     }
   }, [feed, nextCursor, isLoadingMore]);
+
+  const removeStoryContent = useCallback(
+    (storyId: string, position?: number) => {
+      const currentId = historias[activeIndex]?.id;
+      const filteredStories = historias.filter(
+        (story) =>
+          story.storyId !== storyId ||
+          (position !== undefined && story.position !== position),
+      );
+      const remainingVerseCount = filteredStories.filter(
+        (story) => story.storyId === storyId,
+      ).length;
+      const remainingStories = filteredStories.map((story) =>
+        story.storyId === storyId
+          ? { ...story, totalVerses: remainingVerseCount }
+          : story,
+      );
+      const currentIndex = currentId
+        ? remainingStories.findIndex((story) => story.id === currentId)
+        : -1;
+
+      setHistorias(remainingStories);
+      setActiveIndex(
+        currentIndex >= 0
+          ? currentIndex
+          : Math.min(activeIndex, Math.max(remainingStories.length - 1, 0)),
+      );
+    },
+    [activeIndex, historias],
+  );
 
   const totalSlides = historias.length;
 
@@ -250,7 +305,15 @@ export const useDetailsHistory = ({
     activeIndex < historias.length - 1 ? historias[activeIndex + 1] : undefined;
 
   useEffect(() => {
-    if (!current || isLoading || isLoadingMore || !hasAutomaticNext) return;
+    if (
+      isPaused ||
+      !current ||
+      isLoading ||
+      isLoadingMore ||
+      !hasAutomaticNext
+    ) {
+      return;
+    }
 
     const timeoutId = window.setTimeout(() => {
       if (activeIndex < totalSlides - 1) {
@@ -265,6 +328,7 @@ export const useDetailsHistory = ({
     activeIndex,
     current,
     hasAutomaticNext,
+    isPaused,
     isLoading,
     isLoadingMore,
     loadNextPage,
@@ -309,6 +373,7 @@ export const useDetailsHistory = ({
     touchStart,
     historias,
     nextCursor,
-    loadNextPage
+    loadNextPage,
+    removeStoryContent,
   };
 };

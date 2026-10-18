@@ -28,8 +28,6 @@ const loadStoriesPage = (
       ? getFollowingStories(cursor)
       : getStoriesPublic(cursor);
 
-
-
 export const useHIstoriesGrid = ({ feed = "mine" }: Props) => {
   const { authStatus } = useAuthStore();
 
@@ -117,6 +115,27 @@ export const useHIstoriesGrid = ({ feed = "mine" }: Props) => {
     setSelectedStoryId(id);
   };
 
+  const handleStoryContentDeleted = useCallback(
+    (storyId: string, position?: number) => {
+      const story = stories.find((item) => item.id === storyId);
+      const remainingVerses =
+        position === undefined
+          ? []
+          : story?.verses.filter((verse) => verse.position !== position) ?? [];
+
+      setStories((currentStories) =>
+        currentStories.flatMap((item) => {
+          if (item.id !== storyId) return [item];
+          if (remainingVerses.length === 0) return [];
+          return [{ ...item, verses: remainingVerses }];
+        }),
+      );
+
+      if (remainingVerses.length === 0) setSelectedStoryId(null);
+    },
+    [stories],
+  );
+
   return {
     stories,
     nextCursor,
@@ -126,6 +145,7 @@ export const useHIstoriesGrid = ({ feed = "mine" }: Props) => {
     pageError,
     selectedStoryId,
     handleSelectedStoryId,
+    handleStoryContentDeleted,
     reloadKey,
     setReloadKey,
     scrollContainerRef,

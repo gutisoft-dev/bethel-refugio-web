@@ -115,6 +115,19 @@ export const registerStoryVerseView = async (
   );
 };
 
+export const deleteStory = async (storyId: string | number): Promise<void> => {
+  await BethelApi.delete(`/stories/${encodeURIComponent(storyId)}/`);
+};
+
+export const deleteStoryVerse = async (
+  storyId: string | number,
+  position: number,
+): Promise<void> => {
+  await BethelApi.delete(
+    `/stories/${encodeURIComponent(storyId)}/verses/${position}/`,
+  );
+};
+
 export interface StoryVerseView {
   id?: string | number;
   user?: {
