@@ -128,6 +128,66 @@ export const deleteStoryVerse = async (
   );
 };
 
+export type StoryVerseImageResult =
+  | { type: "blob"; blob: Blob }
+  | { type: "url"; url: string };
+
+interface StoryVerseImageUrlPayload {
+  url?: string;
+  image_url?: string;
+  image?: string;
+  detail?: string;
+  message?: string;
+  error?: { message?: string };
+}
+
+export const getStoryVerseImage = async (
+  storyId: string | number,
+  position: number,
+): Promise<StoryVerseImageResult> => {
+  const response = await BethelApi.get<Blob>(
+    `/stories/${encodeURIComponent(storyId)}/verses/${position}/image/`,
+    { responseType: "blob" },
+  );
+
+  const blob = response.data;
+  const contentType = String(response.headers["content-type"] ?? blob.type)
+    .toLowerCase()
+    .split(";")[0]
+    .trim();
+
+  if (contentType.startsWith("image/") || !contentType.includes("json")) {
+    return { type: "blob", blob };
+  }
+
+  const raw = await blob.text();
+  let payload: StoryVerseImageUrlPayload | string;
+  try {
+    payload = JSON.parse(raw) as StoryVerseImageUrlPayload | string;
+  } catch {
+    throw new Error("El servicio no devolvió una imagen válida.");
+  }
+
+  if (typeof payload === "string") {
+    if (/^(https?:|blob:|data:image\/)/i.test(payload)) {
+      return { type: "url", url: payload };
+    }
+    throw new Error("El servicio no devolvió una URL de imagen válida.");
+  }
+
+  const imageUrl = payload.url ?? payload.image_url ?? payload.image;
+  if (imageUrl && /^(https?:|blob:|data:image\/)/i.test(imageUrl)) {
+    return { type: "url", url: imageUrl };
+  }
+
+  throw new Error(
+    payload.error?.message ??
+      payload.detail ??
+      payload.message ??
+      "El servicio no devolvió una URL de imagen válida.",
+  );
+};
+
 export interface StoryVerseView {
   id?: string | number;
   user?: {

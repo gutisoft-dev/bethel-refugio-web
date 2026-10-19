@@ -18,6 +18,8 @@ import { Book } from "@/icons/Book";
 import { RightSmaill } from "@/icons/RightSmaill";
 import { useDetailsHistory } from "@/panel/hooks/useDetailsHistory";
 import { useDeleteStory } from "@/panel/hooks/useDeleteStory";
+import { useDownloadStoryVerseImage } from "@/panel/hooks/useDownloadStoryVerseImage";
+import { useAuthStore } from "@/auth/store/auth.store";
 import { getVerseFontSize } from "@/panel/helpers/getAll";
 
 interface HistoriasCardsProps {
@@ -35,8 +37,10 @@ export const HistoriasCards = ({
   initialCursor,
   onStoryContentDeleted,
 }: HistoriasCardsProps) => {
+  const { authStatus } = useAuthStore();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { isDeleting, error: deleteError, clearError, removeStory, removeVerse } = useDeleteStory();
+  const { isDownloading, downloadImage } = useDownloadStoryVerseImage();
   const {
     current,
     previous,
@@ -321,8 +325,9 @@ export const HistoriasCards = ({
                     </p>
                   </>
                 )}
-                {feed === "mine" && (
-                  <div className="mt-4 flex flex-wrap gap-x-3 gap-y-1 text-xs text-white/75">
+                <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-white/75">
+                  {feed === "mine" && (
+                    <>
                     <span>♡ {current.favorites} favoritos</span>
                     <span>♥ {current.reactions} reacciones</span>
                     <HistoriesViewsDialog
@@ -331,8 +336,67 @@ export const HistoriasCards = ({
                       reference={current.reference}
                       count={current.views}
                     />
-                  </div>
-                )}
+                    </>
+                  )}
+                  {authStatus === "authenticated" && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label={`Descargar imagen de ${current.reference}`}
+                      title="Descargar imagen para compartir"
+                      disabled={isDownloading}
+                      aria-busy={isDownloading}
+                      onClick={() =>
+                        void downloadImage(
+                          current.storyId,
+                          current.position,
+                          current.reference,
+                        )
+                      }
+                      className="ml-auto rounded-full text-white/70 hover:bg-white/10 hover:text-white focus-visible:ring-white"
+                    >
+                      {isDownloading ? (
+                      <svg
+                        aria-hidden="true"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        className="size-4 animate-spin"
+                      >
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="9"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          className="opacity-25"
+                        />
+                        <path
+                          d="M21 12a9 9 0 0 0-9-9"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                      ) : (
+                      <svg
+                        aria-hidden="true"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="size-4"
+                      >
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <path d="m7 10 5 5 5-5" />
+                        <path d="M12 15V3" />
+                      </svg>
+                      )}
+                    </Button>
+                  )}
+                </div>
               </div>
             </article>
 
