@@ -90,6 +90,7 @@ export const toSlides = (stories: PublicStory[], isMine = false): Historia[] =>
       author,
       username,
       reference: item.verse.reference || item.verse.normalized_reference,
+      normalized_reference: item.verse.normalized_reference,
       verse: item.verse.text,
       description: item.caption,
       position: item.position || index + 1,

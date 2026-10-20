@@ -1,7 +1,7 @@
 import { AvatarContent } from "@/auth/components/Avatar";
 import { SidebarContent } from "@/auth/components/Sidebar";
 import { links } from "@/auth/helpers/ItemNavbar";
-import { Close } from "@/icons/Close";
+import { Menu } from "@/icons/Menu";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -59,7 +59,7 @@ export const Navbar = () => {
           className="flex items-center justify-center rounded-md p-2 text-[#241d2b] hover:bg-purple-50 hover:text-[#6800b8] sm:hidden"
           aria-label="Abrir menú"
         >
-          <Close />
+          <Menu />
         </button>
       </nav>
       <SidebarContent

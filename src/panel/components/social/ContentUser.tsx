@@ -15,10 +15,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "@/components/ui/toast";
 import { Check } from "@/icons/Check";
+import { Delete } from "@/icons/Delete";
 import { MoreHorizontal } from "@/icons/MoreHorizontal";
 import { Profile } from "@/icons/Profile";
 import { UserPlus } from "@/icons/UserPlus";
-import { createFollow } from "@/panel/actions/social/Follower";
+import { createFollow, deleteFollow } from "@/panel/actions/social/Follower";
 import type { Follower } from "@/panel/interfaces/Follower.interface";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
@@ -30,7 +31,7 @@ interface Props {
   title: string;
   subtitle: string;
 }
-export const ContentUser = ({ follower,title,subtitle }: Props) => {
+export const ContentUser = ({ follower, title, subtitle }: Props) => {
   const queryClient = useQueryClient();
 
   const [isFollowing, setIsFollowing] = useState(follower.is_following);
@@ -63,15 +64,46 @@ export const ContentUser = ({ follower,title,subtitle }: Props) => {
     },
   });
 
+  const deleteFollowMutation = useMutation({
+    mutationFn: deleteFollow,
+
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["follower"],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["following"],
+      });
+      toast.add({
+        type: "success",
+        description: `Usuario eliminado con exito`,
+        priority: "high",
+      });
+    },
+
+    onError: (error) => {
+      if (axios.isAxiosError(error)) {
+        toast.add({
+          type: "error",
+          description: `Ha ocurrido un error `,
+          priority: "high",
+        });
+        return;
+      }
+    },
+  });
+
+  const handleFollow = () => {
+    deleteFollowMutation.mutate(follower.id);
+  };
+
   return (
     <Card className="w-full max-w-md overflow-hidden shadow-sm">
       <CardHeader className="border-b bg-card pb-5">
         <div className="flex items-start justify-between gap-4">
           <div>
             <CardTitle className="text-xl">{title}</CardTitle>
-            <CardDescription className="mt-1">
-             {subtitle}
-            </CardDescription>
+            <CardDescription className="mt-1">{subtitle}</CardDescription>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger
@@ -87,6 +119,12 @@ export const ContentUser = ({ follower,title,subtitle }: Props) => {
                 <Profile />
                 Ver Perfil
               </DropdownMenuItem>
+             {
+              isFollowing && <DropdownMenuItem variant="destructive" onClick={handleFollow}>
+                <Delete />
+                Eliminar
+              </DropdownMenuItem>
+             }
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

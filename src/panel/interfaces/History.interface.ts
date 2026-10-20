@@ -16,4 +16,5 @@ export interface Historia {
   views: number;
   visibility?: "public" | "followers";
   status?: string;
+  normalized_reference: string;
 }

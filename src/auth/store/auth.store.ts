@@ -1,5 +1,11 @@
 import { create } from "zustand";
-import { checkAuth, login, loginOTP, logout } from "../action/auth.action";
+import {
+  checkAuth,
+  DeleteAccountMe,
+  login,
+  loginOTP,
+  logout,
+} from "../action/auth.action";
 
 type AuthStatus = "authenticated" | "not-authenticated" | "checking";
 
@@ -9,6 +15,7 @@ type AuthStore = {
   logout: () => void;
   checkAuthStatus: () => Promise<boolean>;
   loginOtp: (email: string, otp: string) => Promise<boolean>;
+  deleteAccount: () => Promise<boolean>;
 };
 
 export const useAuthStore = create<AuthStore>()((set) => ({
@@ -75,6 +82,26 @@ export const useAuthStore = create<AuthStore>()((set) => ({
       localStorage.setItem("token-refresh", data.refresh);
       set({
         authStatus: "authenticated",
+      });
+      return true;
+    } catch (error) {
+      console.log(error);
+      localStorage.removeItem("token-access");
+      localStorage.removeItem("token-refresh");
+      set({
+        authStatus: "not-authenticated",
+      });
+      return false;
+    }
+  },
+
+  deleteAccount: async () => {
+    try {
+      await DeleteAccountMe();
+      localStorage.removeItem("token-access");
+      localStorage.removeItem("token-refresh");
+      set({
+        authStatus: "not-authenticated",
       });
       return true;
     } catch (error) {

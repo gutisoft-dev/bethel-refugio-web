@@ -1,12 +1,45 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { toast } from "@/components/ui/toast";
+import { deleteFavoriteVerse } from "@/panel/actions/social/FavoriteVerses";
 import type { Verses } from "@/panel/interfaces/FavoriteVeses.inferface";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 
 interface Props {
   result: Verses;
 }
 
 export const ContentVerses = ({ result }: Props) => {
+  const queryClient = useQueryClient();
+
+  const deleteFavoriteVerseMutation = useMutation({
+    mutationFn: deleteFavoriteVerse,
+
+    onSuccess: async () => {
+       await queryClient.invalidateQueries({
+        queryKey: ["favorite-verses"],
+      });
+      toast.add({
+        type: "success",
+        description: `Verso eliminado con exito`,
+        priority: "high",
+      });
+    },
+
+    onError: (error) => {
+      if (axios.isAxiosError(error)) {
+        toast.add({
+          type: "error",
+          description: `Ha ocurrido un error `,
+          priority: "high",
+        });
+        return;
+      }
+    },
+  });
+
   return (
     <Card
       className="
@@ -40,7 +73,16 @@ export const ContentVerses = ({ result }: Props) => {
             className="flex flex-wrap items-center gap-2"
             role="group"
             aria-label={`Acciones para ${result.reference}`}
-          ></div>
+          >
+            <Button
+              variant={"destructive"}
+              onClick={() =>
+                deleteFavoriteVerseMutation.mutate(result.normalized_reference)
+              }
+            >
+              Eliminar
+            </Button>
+          </div>
         </div>
 
         <div className="mt-4 border-l border-purple-300 pl-3">

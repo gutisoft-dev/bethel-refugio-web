@@ -7,3 +7,7 @@ export const getFavoriteVersesByID = async (userId: string) => {
   );
   return data;
 };
+
+export const deleteFavoriteVerse = async (verse: string) => {
+  await BethelApi.delete(`/social/favorite-verses/${verse}/`);
+};

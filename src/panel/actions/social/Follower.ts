@@ -8,7 +8,6 @@ export const getFollowersByID = async (userId: string) => {
   return data;
 };
 
-
 export const getFollowingByID = async (userId: string) => {
   const { data } = await BethelApi.get<FollowerResponse>(
     `/social/users/${userId}/following/`,
@@ -16,10 +15,12 @@ export const getFollowingByID = async (userId: string) => {
   return data;
 };
 
-
 export const createFollow = async (userId: string) => {
-  const { data } = await BethelApi.post(
-    `/social/users/${userId}/follow/`,
-  );
+  const { data } = await BethelApi.post(`/social/users/${userId}/follow/`);
   return data;
-}
+};
+
+export const deleteFollow = async (userId: string) => {
+  const { data } = await BethelApi.delete(`/social/users/${userId}/follow/`);
+  return data;
+};

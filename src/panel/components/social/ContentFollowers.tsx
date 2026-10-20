@@ -20,9 +20,11 @@ export const ContentFollowers = ({ id }: Props) => {
         </div>
       </div>
       <div className="grid gap-5">
-        {data?.results.map((result) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {data?.results.map((result) => (
           <ContentUser key={result.id} follower={result} title={'Seguidor'} subtitle={' Persona que siguen tu perfil'} />
         ))}
+        </div>
         {data?.results.length === 0 && (
           <ContentEmpty text="No hay seguidores" />
         )}

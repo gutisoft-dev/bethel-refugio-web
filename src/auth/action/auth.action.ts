@@ -28,3 +28,12 @@ export const checkAuth = async (refresh: string): Promise<UserResponse> => {
   });
   return data;
 };
+
+
+
+
+
+export const DeleteAccountMe = async () => {
+    const { data } = await BethelApi.delete("/me/");
+    return data;
+}

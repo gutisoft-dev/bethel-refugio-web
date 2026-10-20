@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -21,6 +21,7 @@ import { useDeleteStory } from "@/panel/hooks/useDeleteStory";
 import { useDownloadStoryVerseImage } from "@/panel/hooks/useDownloadStoryVerseImage";
 import { useAuthStore } from "@/auth/store/auth.store";
 import { getVerseFontSize } from "@/panel/helpers/getAll";
+import { SaveVerse } from "./SaveVerse";
 
 interface HistoriasCardsProps {
   feed?: HistoryFeed;
@@ -37,9 +38,16 @@ export const HistoriasCards = ({
   initialCursor,
   onStoryContentDeleted,
 }: HistoriasCardsProps) => {
+  const navigate = useNavigate();
   const { authStatus } = useAuthStore();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const { isDeleting, error: deleteError, clearError, removeStory, removeVerse } = useDeleteStory();
+  const {
+    isDeleting,
+    error: deleteError,
+    clearError,
+    removeStory,
+    removeVerse,
+  } = useDeleteStory();
   const { isDownloading, downloadImage } = useDownloadStoryVerseImage();
   const {
     current,
@@ -112,6 +120,11 @@ export const HistoriasCards = ({
     }
 
     setIsDeleteDialogOpen(false);
+  };
+
+  const handleredirect = (username: string) => {
+    if (username === "Mi historia") return;
+    navigate("/profile/" + username);
   };
 
   return (
@@ -247,11 +260,17 @@ export const HistoriasCards = ({
 
               <header className="relative z-10 flex items-center justify-between gap-2 px-6 pt-12 sm:px-8 sm:pt-14">
                 <div className="flex min-w-0 items-center gap-3">
-                  <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/20 text-xs font-bold ring-1 ring-white/60 backdrop-blur-sm">
+                  <span
+                    className=" cursor-pointer flex size-11 shrink-0 items-center justify-center rounded-full bg-white/20 text-xs font-bold ring-1 ring-white/60 backdrop-blur-sm"
+                    onClick={() => handleredirect(current.author)}
+                  >
                     {current.initials}
                   </span>
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold">
+                    <p
+                      className={`truncate text-sm font-semibold hover:underline cursor-pointer`}
+                      onClick={() => handleredirect(current.author)}
+                    >
                       {current.author}
                     </p>
                     <p className="flex min-w-0 items-center gap-1 truncate text-xs text-white/70">
@@ -281,7 +300,9 @@ export const HistoriasCards = ({
                     size="icon"
                     aria-label={`Eliminar la historia de ${current.reference}`}
                     title="Eliminar historia o versículo"
-                    disabled={isDeleting || current.status?.toLowerCase() === "expired"}
+                    disabled={
+                      isDeleting || current.status?.toLowerCase() === "expired"
+                    }
                     onClick={() => {
                       clearError();
                       setIsDeleteDialogOpen(true);
@@ -311,6 +332,7 @@ export const HistoriasCards = ({
                 <span className="mb-5 inline-flex max-w-full items-center gap-2 self-start rounded-full bg-white/15 px-3 py-1.5 text-sm font-medium text-white backdrop-blur-sm">
                   <Book />
                   {current.reference}
+                  <SaveVerse normalized_reference={current.normalized_reference  } />
                 </span>
                 <blockquote
                   className="font-semibold leading-tight tracking-tight text-white transition-[font-size] duration-200 sm:leading-[1.12]"
@@ -328,14 +350,14 @@ export const HistoriasCards = ({
                 <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-white/75">
                   {feed === "mine" && (
                     <>
-                    <span>♡ {current.favorites} favoritos</span>
-                    <span>♥ {current.reactions} reacciones</span>
-                    <HistoriesViewsDialog
-                      storyId={current.storyId}
-                      position={current.position}
-                      reference={current.reference}
-                      count={current.views}
-                    />
+                      <span>♡ {current.favorites} favoritos</span>
+                      <span>♥ {current.reactions} reacciones</span>
+                      <HistoriesViewsDialog
+                        storyId={current.storyId}
+                        position={current.position}
+                        reference={current.reference}
+                        count={current.views}
+                      />
                     </>
                   )}
                   {authStatus === "authenticated" && (
@@ -357,42 +379,42 @@ export const HistoriasCards = ({
                       className="ml-auto rounded-full text-white/70 hover:bg-white/10 hover:text-white focus-visible:ring-white"
                     >
                       {isDownloading ? (
-                      <svg
-                        aria-hidden="true"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        className="size-4 animate-spin"
-                      >
-                        <circle
-                          cx="12"
-                          cy="12"
-                          r="9"
-                          stroke="currentColor"
-                          strokeWidth="3"
-                          className="opacity-25"
-                        />
-                        <path
-                          d="M21 12a9 9 0 0 0-9-9"
-                          stroke="currentColor"
-                          strokeWidth="3"
-                          strokeLinecap="round"
-                        />
-                      </svg>
+                        <svg
+                          aria-hidden="true"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          className="size-4 animate-spin"
+                        >
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="9"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                            className="opacity-25"
+                          />
+                          <path
+                            d="M21 12a9 9 0 0 0-9-9"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                          />
+                        </svg>
                       ) : (
-                      <svg
-                        aria-hidden="true"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="size-4"
-                      >
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                        <path d="m7 10 5 5 5-5" />
-                        <path d="M12 15V3" />
-                      </svg>
+                        <svg
+                          aria-hidden="true"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="size-4"
+                        >
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                          <path d="m7 10 5 5 5-5" />
+                          <path d="M12 15V3" />
+                        </svg>
                       )}
                     </Button>
                   )}
@@ -516,7 +538,15 @@ export const HistoriasCards = ({
                 }}
                 className="size-8 rounded-full bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
               >
-                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="size-4">
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  className="size-4"
+                >
                   <path d="m18 6-12 12M6 6l12 12" />
                 </svg>
               </Button>
@@ -527,13 +557,14 @@ export const HistoriasCards = ({
               </p>
             )}
             {deleteError && (
-              <p className="rounded-xl border border-red-500/25 bg-red-500/10 px-4 py-3 text-sm text-red-200" role="alert">
+              <p
+                className="rounded-xl border border-red-500/25 bg-red-500/10 px-4 py-3 text-sm text-red-200"
+                role="alert"
+              >
                 {deleteError}
               </p>
             )}
-            <div
-              className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3"
-            >
+            <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
               <AlertDialogCancel
                 disabled={isDeleting}
                 onClick={clearError}
@@ -547,7 +578,11 @@ export const HistoriasCards = ({
                   variant="outline"
                   disabled={isDeleting || !canDeleteCurrentVerse}
                   onClick={() => void handleDelete("verse")}
-                  title={canDeleteCurrentVerse ? undefined : "Elimina primero los versículos posteriores."}
+                  title={
+                    canDeleteCurrentVerse
+                      ? undefined
+                      : "Elimina primero los versículos posteriores."
+                  }
                   className="h-auto min-h-10 w-full min-w-0 rounded-lg border-red-500/35 bg-red-500/5 px-2 text-xs font-semibold leading-tight whitespace-normal hover:bg-red-500/15 hover:text-white disabled:opacity-45"
                 >
                   {isDeleting ? "Eliminando…" : "Eliminar versículo"}
@@ -560,7 +595,16 @@ export const HistoriasCards = ({
                 onClick={() => void handleDelete("story")}
                 className={`h-10 w-full min-w-0 gap-2 rounded-lg bg-[#c7191c] px-2 text-xs font-semibold leading-tight whitespace-normal text-white hover:bg-[#a90f12] sm:text-sm ${hasMultipleVerses ? "sm:col-span-2" : ""}`}
               >
-                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-4 shrink-0 sm:size-5">
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="size-4 shrink-0 sm:size-5"
+                >
                   <path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m5 5v5m4-5v5" />
                 </svg>
                 <span className="min-w-0 break-words text-center">

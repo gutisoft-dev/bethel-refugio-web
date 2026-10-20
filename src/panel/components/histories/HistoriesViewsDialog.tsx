@@ -13,6 +13,7 @@ import {
   getStoryVerseViews,
   type StoryVerseView,
 } from "@/panel/actions/history/story.action";
+import { useNavigate } from "react-router-dom";
 
 interface HistoriesViewsDialogProps {
   storyId: string;
@@ -62,6 +63,8 @@ export const HistoriesViewsDialog = ({
   reference,
   count,
 }: HistoriesViewsDialogProps) => {
+  const navigate = useNavigate();
+
   const [open, setOpen] = useState(false);
   const [views, setViews] = useState<StoryVerseView[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -123,6 +126,11 @@ export const HistoriesViewsDialog = ({
       setIsLoadingMore(false);
     }
   };
+
+  const handleredirect = (username: string) => {
+    navigate("/profile/" + username);
+  };
+
 
   return (
     <>
@@ -188,7 +196,8 @@ export const HistoriesViewsDialog = ({
                   return (
                     <li
                       key={view.id ?? `${name}-${view.viewed_at ?? view.created_at ?? index}`}
-                      className="flex items-center gap-3 py-3"
+                      className="flex items-center gap-3 py-3 hover:underline cursor-pointer"
+                      onClick={() => handleredirect(view.username ?? "")}
                     >
                       {avatar ? (
                         <img src={avatar} alt="" className="size-9 rounded-full object-cover" />
