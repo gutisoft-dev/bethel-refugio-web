@@ -11,6 +11,7 @@ import {
   getUserByUsernameLoader,
 } from "@/panel/actions/social/social.action";
 import { ErrorProfile } from "@/panel/pages/ErrorProfile";
+import { Users } from "@/panel/pages/Users";
 
 export const appRouter = createBrowserRouter([
   {
@@ -27,7 +28,6 @@ export const appRouter = createBrowserRouter([
       },
     ],
   },
-
   {
     path: "/profile",
     element: (
@@ -50,7 +50,22 @@ export const appRouter = createBrowserRouter([
       },
     ],
   },
-
+  {
+    path: "/users",
+    element: (
+      <AuthenticatedRoute>
+        <PanelLayout />
+      </AuthenticatedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <Users />,
+       
+      },
+     
+    ],
+  },
   {
     path: "/auth",
     element: (

@@ -10,7 +10,7 @@ export const Close = () => {
       stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"
-      className="lucide lucide-x preview-icon"
+      className="lucide lucide-x preview-icon size-4"
     >
       <path d="M18 6 6 18" />
       <path d="m6 6 12 12" />

@@ -6,15 +6,21 @@ import {
   loginOTP,
   logout,
 } from "../action/auth.action";
+import axios from "axios";
 
 type AuthStatus = "authenticated" | "not-authenticated" | "checking";
+
+interface LoginResponse {
+  message: string;
+  status: boolean;
+}
 
 type AuthStore = {
   authStatus: AuthStatus;
   login: (email: string) => Promise<boolean>;
   logout: () => void;
   checkAuthStatus: () => Promise<boolean>;
-  loginOtp: (email: string, otp: string) => Promise<boolean>;
+  loginOtp: (email: string, otp: string) => Promise<LoginResponse>;
   deleteAccount: () => Promise<boolean>;
 };
 
@@ -37,15 +43,26 @@ export const useAuthStore = create<AuthStore>()((set) => ({
       set({
         authStatus: "authenticated",
       });
-      return true;
+      return {
+        message: "Inicio de sesion exitoso",
+        status: true,
+      };
     } catch (error) {
-      console.log(error);
-      localStorage.removeItem("token-access");
-      localStorage.removeItem("token-refresh");
-      set({
-        authStatus: "not-authenticated",
-      });
-      return false;
+      if (axios.isAxiosError(error)) {
+        set({
+          authStatus: "not-authenticated",
+        });
+        localStorage.removeItem("token-access");
+        localStorage.removeItem("token-refresh");
+        return {
+          message: error.response?.data.error?.message,
+          status: false,
+        };
+      }
+      return {
+        message: "Error desconocido",
+        status: false,
+      };
     }
   },
   logout: async () => {

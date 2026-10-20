@@ -8,6 +8,7 @@ import { Left } from "@/icons/Left";
 import { Controller, useForm } from "react-hook-form";
 import { useAuthStore } from "../store/auth.store";
 import { ButtonSubmit } from "./ButtonSubmit";
+import { toast } from "@/components/ui/toast";
 
 interface FormData {
   otp: string;
@@ -25,10 +26,19 @@ export const ContentOtp = ({ handleresetFlow, email }: Props) => {
     formState: { errors },
   } = useForm<FormData>();
   const { loginOtp } = useAuthStore();
- const [isPosting, setIsPosting] = useState(false);
+  const [isPosting, setIsPosting] = useState(false);
   const onSubmit = async (data: FormData) => {
     setIsPosting(true);
-   await  loginOtp(email, data.otp);
+    const resp = await loginOtp(email, data.otp);
+    if (!resp.status) {
+      setIsPosting(false);
+      toast.add({
+        type: "error",
+        description: resp.message,
+        priority: "high",
+      });
+      return;
+    }
     setIsPosting(false);
   };
 
@@ -51,7 +61,7 @@ export const ContentOtp = ({ handleresetFlow, email }: Props) => {
         </h2>
         <p className="mt-3 text-sm leading-6 text-[#75657d]">
           Enviamos un código de 6 dígitos a
-          <span className="font-semibold text-[#7209b7]">{email}</span>.
+          <span className="font-semibold text-[#7209b7]"> {email}</span>
         </p>
       </div>
       <div
