@@ -2,82 +2,66 @@ import { Button } from "@/components/ui/button";
 import { Market } from "@/icons/Market";
 import { Save } from "@/icons/Save";
 import { UserAdd } from "@/icons/UserAdd";
+import { useAuthStore } from "@/auth/store/auth.store";
 
-export type HistoryFeed = "public" | "following" | "mine";
+export type HistoryFeed = "public" | "following" | "saved" | "mine";
 
 interface HistoriasHeaderProps {
   activeFeed: HistoryFeed;
   onFeedChange: (feed: HistoryFeed) => void;
 }
 
-const tabs = ["Público", "Seguidos", "Guardados", "Mis Historias"];
+const tabs = [
+  { label: "Público", feed: "public", icon: <Market /> },
+  { label: "Seguidos", feed: "following", icon: <UserAdd /> },
+  { label: "Guardados", feed: "saved", icon: <Save /> },
+  { label: "Mis Historias", feed: "mine", icon: null },
+] as const;
 
 export const HistoriasHeader = ({
   activeFeed,
   onFeedChange,
 }: HistoriasHeaderProps) => (
-  <header className="relative z-10 flex w-full items-center justify-center bg-slate-50 px-3 py-3 text-slate-900">
+  <HistoryHeaderContent activeFeed={activeFeed} onFeedChange={onFeedChange} />
+);
+
+const HistoryHeaderContent = ({ activeFeed, onFeedChange }: HistoriasHeaderProps) => {
+  const { authStatus } = useAuthStore();
+
+  return (
+  <header className="relative z-10 flex w-full min-w-0 items-center justify-center bg-slate-50 px-3 py-3 text-slate-900">
     <nav
       aria-label="Secciones de historias"
-      className="pointer-events-auto flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-slate-200 bg-slate-50 p-1 shadow-sm"
+      className="pointer-events-auto flex w-full max-w-md min-w-0 items-center gap-0 overflow-hidden rounded-full border border-slate-200 bg-slate-50 p-1 shadow-sm sm:w-auto sm:gap-1"
     >
-      {tabs.map((tab, index) => {
-        const feed =
-          index === 0
-            ? "public"
-            : index === 1
-              ? "following"
-              : index === 3
-                ? "mine"
-                : null;
-        const isActive = feed === activeFeed;
+      {tabs.map((tab) => {
+        const isActive = tab.feed === activeFeed;
+        const isSavedDisabled = tab.feed === "saved" && authStatus !== "authenticated";
 
         return (
         <Button
-          key={tab}
+          key={tab.feed}
           type="button"
           variant="ghost"
           size="sm"
-          disabled={!feed}
-          onClick={() => feed && onFeedChange(feed)}
+          disabled={isSavedDisabled}
+          onClick={() => onFeedChange(tab.feed)}
           aria-current={isActive ? "page" : undefined}
-          className={`h-7 shrink-0 rounded-full px-3 text-[10px] ${
+          className={`h-7 min-w-0 flex-1 gap-1 whitespace-nowrap rounded-full px-1 text-[9px] sm:flex-none sm:gap-2 sm:px-3 sm:text-[10px] [&_svg]:hidden sm:[&_svg]:inline-flex ${
             isActive
               ? "bg-purple-700 text-white hover:bg-purple-600"
               : "text-slate-600 hover:bg-slate-100 hover:text-slate-950 disabled:opacity-50"
           }`}
+          aria-label={isSavedDisabled ? "Inicia sesión para ver tus versículos guardados" : tab.label}
         >
-          {index === 0 && (
-            <Market/>
-          )}
-          {index === 1 && (
-            <UserAdd/>
-          )}
-          {index === 2 && (
-            <Save/>
-          )}
-          {/* {index === 3 && (
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="mr-1 h-3 w-3"
-            >
-              <path d="M3 11v3a2 2 0 0 0 2 2h1l4 4V5l-4 4H5a2 2 0 0 0-2 2Z" />
-              <path d="M16 9a5 5 0 0 1 0 7" />
-              <path d="M19 5a10 10 0 0 1 0 15" />
-            </svg>
-          )} */}
-          {tab}
+          {tab.icon}
+          {tab.label}
         </Button>
         );
       })}
     </nav>
   </header>
-);
+  );
+};
 
 export { HistoriasHeader as HistoriesHeader };

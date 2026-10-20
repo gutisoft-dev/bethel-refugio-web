@@ -1,15 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import { getFavoriteVersesByID } from "../actions/social/FavoriteVerses";
+import {
+  CURRENT_USER_FAVORITES_ID,
+  getFavoriteVersesByID,
+  getMyFavoriteVerses,
+} from "../actions/social/FavoriteVerses";
 
-export const useFavoriteVerses = (id: string) => {
+export const useFavoriteVerses = (id: string, enabled = true) => {
   return useQuery({
     queryKey: ["favorite-verses", id],
-    queryFn: async () => {
-      const response = await getFavoriteVersesByID(id);
-
-      return {
-        ...response,
-      };
-    },
+    queryFn: () =>
+      id === CURRENT_USER_FAVORITES_ID
+        ? getMyFavoriteVerses()
+        : getFavoriteVersesByID(id),
+    enabled: enabled && Boolean(id),
   });
 };

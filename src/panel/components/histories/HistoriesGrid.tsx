@@ -35,7 +35,7 @@ export const HistoriesGrid = ({ feed = "mine" }: HistoriesGridProps) => {
   return (
     <section
       ref={scrollContainerRef}
-      className="min-h-0 w-full flex-1 overflow-y-auto overscroll-contain bg-slate-50 px-4 py-5 text-slate-900 sm:px-6 lg:px-8"
+      className="min-h-0 w-full min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain bg-slate-50 px-2 py-3 text-slate-900 sm:px-6 sm:py-5 lg:px-8"
       aria-label={
         feed === "mine"
           ? "Mis historias"
@@ -81,7 +81,7 @@ export const HistoriesGrid = ({ feed = "mine" }: HistoriesGridProps) => {
         </p>
       ) : (
         <>
-          <div className="mx-auto grid w-full max-w-6xl grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="mx-auto grid w-[calc(100vw-1rem)] min-w-0 max-w-[calc(100vw-1rem)] grid-cols-2 gap-2 sm:w-full sm:max-w-6xl sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
             {stories.map((story) => {
               const sortedVerses = [...story.verses].sort(
                 (a, b) => a.position - b.position,

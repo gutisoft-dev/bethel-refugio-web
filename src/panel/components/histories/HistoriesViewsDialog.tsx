@@ -20,6 +20,7 @@ interface HistoriesViewsDialogProps {
   position: number;
   reference: string;
   count: number;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const getViewerName = (view: StoryVerseView) => {
@@ -62,6 +63,7 @@ export const HistoriesViewsDialog = ({
   position,
   reference,
   count,
+  onOpenChange,
 }: HistoriesViewsDialogProps) => {
   const navigate = useNavigate();
 
@@ -71,6 +73,11 @@ export const HistoriesViewsDialog = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen);
+    onOpenChange?.(nextOpen);
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -138,7 +145,7 @@ export const HistoriesViewsDialog = ({
         type="button"
         variant="ghost"
         size="xs"
-        onClick={() => setOpen(true)}
+        onClick={() => handleOpenChange(true)}
         className="h-auto gap-1 p-0 text-white/70 hover:bg-transparent hover:text-white"
         aria-label={`Ver ${count} visualizaciones de ${reference}`}
       >
@@ -158,7 +165,7 @@ export const HistoriesViewsDialog = ({
         {count} vistas
       </Button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent
           overlayClassName="!z-[70] bg-black/55 backdrop-blur-sm supports-backdrop-filter:backdrop-blur-sm"
           className="!z-[80] max-h-[min(80dvh,36rem)] max-w-[calc(100%-1.5rem)] overflow-hidden p-0 sm:max-w-md"
@@ -178,7 +185,7 @@ export const HistoriesViewsDialog = ({
             ) : error && views.length === 0 ? (
               <div className="space-y-3 py-6 text-center">
                 <p className="text-sm text-destructive" role="alert">{error}</p>
-                <Button type="button" variant="outline" size="sm" onClick={() => setOpen(false)}>
+                <Button type="button" variant="outline" size="sm" onClick={() => handleOpenChange(false)}>
                   Cerrar
                 </Button>
               </div>

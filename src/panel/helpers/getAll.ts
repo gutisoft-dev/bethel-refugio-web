@@ -7,6 +7,8 @@ export const getFeedLabel = (feed: HistoryFeed) =>
     ? "tus historias"
     : feed === "following"
       ? "historias de las personas que sigues"
+      : feed === "saved"
+        ? "tus versículos guardados"
       : "historias públicas";
 
 export const getStoryReference = (verses: PublicStory["verses"]) => {

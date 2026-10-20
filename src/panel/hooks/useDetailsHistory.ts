@@ -11,6 +11,8 @@ import {
 } from "../actions/history/story.action";
 import axios from "axios";
 
+const STORY_SLIDE_DURATION_MS = 10_000;
+
 interface Props {
   feed?: HistoryFeed;
   initialStoryId?: string;
@@ -58,6 +60,9 @@ export const useDetailsHistory = ({
   const [loadedFeed, setLoadedFeed] = useState<HistoryFeed | null>(null);
   const recordedViews = useRef(new Set<string>());
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const timerSlideId = useRef<string | null>(null);
+  const timerRemainingMs = useRef(STORY_SLIDE_DURATION_MS);
+  const timerStartedAt = useRef<number | null>(null);
 
   useEffect(() => {
     let isCurrent = true;
@@ -305,25 +310,37 @@ export const useDetailsHistory = ({
     activeIndex < historias.length - 1 ? historias[activeIndex + 1] : undefined;
 
   useEffect(() => {
-    if (
-      isPaused ||
-      !current ||
-      isLoading ||
-      isLoadingMore ||
-      !hasAutomaticNext
-    ) {
-      return;
+    if (!current) return;
+
+    if (timerSlideId.current !== current.id) {
+      timerSlideId.current = current.id;
+      timerRemainingMs.current = STORY_SLIDE_DURATION_MS;
     }
 
+    if (isPaused || isLoading || isLoadingMore || !hasAutomaticNext) return;
+
+    timerStartedAt.current = Date.now();
     const timeoutId = window.setTimeout(() => {
+      timerStartedAt.current = null;
+      timerRemainingMs.current = STORY_SLIDE_DURATION_MS;
       if (activeIndex < totalSlides - 1) {
         setActiveIndex((index) => index + 1);
       } else if (nextCursor) {
         void loadNextPage();
       }
-    }, 10000);
+    }, timerRemainingMs.current);
 
-    return () => window.clearTimeout(timeoutId);
+    return () => {
+      window.clearTimeout(timeoutId);
+      if (timerStartedAt.current !== null) {
+        const elapsed = Date.now() - timerStartedAt.current;
+        timerRemainingMs.current = Math.max(
+          0,
+          timerRemainingMs.current - elapsed,
+        );
+        timerStartedAt.current = null;
+      }
+    };
   }, [
     activeIndex,
     current,
