@@ -6,6 +6,10 @@ import type { HistoryFeed } from "./HistoriesHeader";
 import { getVerseFontSize } from "@/panel/helpers/getAll";
 import { HistoriesViewsDialog } from "./HistoriesViewsDialog";
 import { SaveVerse } from "./SaveVerse";
+import { Clock } from "@/icons/Clock";
+import { Delete } from "@/icons/Delete";
+import { Download } from "@/icons/Download";
+import { LoaderCircle } from "@/icons/LoaderCircle";
 
 interface HistoryViewerCardProps {
   story: Historia;
@@ -133,19 +137,7 @@ export const HistoryViewerCard = ({
             {story.author}
           </button>
           <p className="flex min-w-0 items-center gap-1 truncate text-xs text-white/70">
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="size-3.5 shrink-0"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <path d="M12 6v6l4 2" />
-            </svg>
+            <Clock className="size-3.5 shrink-0" />
             <span className="truncate">
               @{story.username} · {story.elapsed}
             </span>
@@ -163,21 +155,7 @@ export const HistoryViewerCard = ({
           onClick={onDeleteClick}
           className="size-9 shrink-0 rounded-full text-white/80 hover:bg-red-500/20 hover:text-red-200 focus-visible:ring-white"
         >
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="size-5"
-          >
-            <path d="M3 6h18" />
-            <path d="M8 6V4h8v2" />
-            <path d="m19 6-1 14H6L5 6" />
-            <path d="M10 11v5M14 11v5" />
-          </svg>
+          <Delete className="size-5" />
         </Button>
       )}
     </header>
@@ -228,42 +206,9 @@ export const HistoryViewerCard = ({
             className="ml-auto rounded-full text-white/70 hover:bg-white/10 hover:text-white focus-visible:ring-white"
           >
             {isDownloading ? (
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 24 24"
-                fill="none"
-                className="size-4 animate-spin"
-              >
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="9"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  className="opacity-25"
-                />
-                <path
-                  d="M21 12a9 9 0 0 0-9-9"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                />
-              </svg>
+              <LoaderCircle className="size-4 animate-spin" />
             ) : (
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="size-4"
-              >
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <path d="m7 10 5 5 5-5" />
-                <path d="M12 15V3" />
-              </svg>
+              <Download className="size-4" />
             )}
           </Button>
         )}

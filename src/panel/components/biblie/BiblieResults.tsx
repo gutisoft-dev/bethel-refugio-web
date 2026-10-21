@@ -13,6 +13,8 @@ import {
 import type { BibleVerse } from "@/panel/actions/biblie/search.action";
 import { favoriteBibleVerse } from "@/panel/actions/biblie/favorite.action";
 import { toast } from "@/components/ui/toast";
+import { LoaderCircle } from "@/icons/LoaderCircle";
+import { Projector } from "@/icons/Projector";
 import {
   AddBibleVerseToStoryDialog,
   type StoryVisibilityOption,
@@ -89,21 +91,7 @@ const SaveFavoriteButton = ({ verse }: SaveFavoriteButtonProps) => {
     >
       {isSaving ? (
         <>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            className="mr-1.5 animate-spin"
-            aria-hidden="true"
-          >
-            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-          </svg>
+          <LoaderCircle className="mr-1.5 size-4 animate-spin" />
           Guardando...
         </>
       ) : isSaved ? (
@@ -249,23 +237,7 @@ export const BibleResults = ({
                             hover:bg-purple-50
                           "
                           >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="13"
-                              height="13"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              aria-hidden="true"
-                              className="mr-1.5"
-                            >
-                              <rect x="3" y="4" width="18" height="14" rx="2" />
-                              <path d="M8 20h8" />
-                              <path d="M12 18v2" />
-                            </svg>
+                            <Projector className="mr-1.5 size-[13px]" />
                             Proyectar
                           </Button>
                         }

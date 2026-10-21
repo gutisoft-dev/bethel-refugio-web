@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
+import { Sparkles } from "@/icons/Sparkles";
+import { Send } from "@/icons/Send";
 
 import type { BibleVerse } from "@/panel/actions/biblie/search.action";
 import type { BibleVersePileItem } from "@/panel/components/biblie/bibleVersePile";
@@ -184,24 +186,7 @@ export const AddBibleVerseToStoryDialog = ({
                   text-purple-700
                 "
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-4 w-4"
-                >
-                  <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063L2 12l6.5-2.063A2 2 0 0 0 9.937 8.5L12 2l2.063 6.5A2 2 0 0 0 15.5 9.937L22 12l-6.5 2.063a2 2 0 0 0-1.437 1.437L12 22Z" />
-                  <path d="M20 3v4" />
-                  <path d="M22 5h-4" />
-                  <path d="M4 17v2" />
-                  <path d="M5 18H3" />
-                </svg>
+                <Sparkles className="size-4" />
               </div>
 
               <div className="min-w-0 pt-0.5">
@@ -400,21 +385,7 @@ export const AddBibleVerseToStoryDialog = ({
                 hover:bg-purple-800
               "
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="mr-2 h-4 w-4"
-              >
-                <path d="m22 2-7 20-4-9-9-4Z" />
-                <path d="M22 2 11 13" />
-              </svg>
+              <Send className="mr-2 size-4" />
 
               {mode === "pile"
                 ? "Agregar a pila"

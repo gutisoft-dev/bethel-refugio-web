@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useEffect } from "react";
+import { ChevronLeft } from "@/icons/ChevronLeft";
 
 interface BibleProjectionModalProps {
   verse: BibleVerse | null;
@@ -105,20 +106,7 @@ export const BibleProjectionModal = ({
                 cursor-pointer
               "
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="13"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="mr-1.5"
-              >
-                <path d="M9 18l6-6-6-6" />
-              </svg>
+              <ChevronLeft className="mr-1.5 size-[13px]" />
               Salir de Proyección
             </Button>
           </div>

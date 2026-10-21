@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/toast";
+import { ArrowDownToLine } from "@/icons/ArrowDownToLine";
 
 import type { BibleVersePileItem } from "@/panel/components/biblie/bibleVersePile";
 import {
@@ -96,23 +97,7 @@ export const PublishBibleStoryPileDialog = ({
         onClick={() => setOpen(true)}
         className="fixed bottom-5 right-5 z-40 h-11 rounded-full bg-purple-700 px-5 text-sm font-semibold text-white shadow-lg hover:bg-purple-800"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-          className="mr-2"
-        >
-          <path d="M12 3v12" />
-          <path d="m7 10 5 5 5-5" />
-          <path d="M5 21h14" />
-        </svg>
+        <ArrowDownToLine className="mr-2 size-4" />
         Publicar pila de historias ({items.length})
       </Button>
 

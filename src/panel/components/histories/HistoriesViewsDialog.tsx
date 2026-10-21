@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 import { Button } from "@/components/ui/button";
+import { Eye } from "@/icons/Eye";
 import {
   Dialog,
   DialogContent,
@@ -149,19 +150,7 @@ export const HistoriesViewsDialog = ({
         className="h-auto gap-1 p-0 text-white/70 hover:bg-transparent hover:text-white"
         aria-label={`Ver ${count} visualizaciones de ${reference}`}
       >
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="size-3"
-        >
-          <path d="M2.06 12.35a1 1 0 0 1 0-.7 10 10 0 0 1 19.88 0 1 1 0 0 1 0 .7 10 10 0 0 1-19.88 0" />
-          <circle cx="12" cy="12" r="3" />
-        </svg>
+        <Eye className="size-3" />
         {count} vistas
       </Button>
 

@@ -3,6 +3,8 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Search } from "@/icons/Search";
+import { Close } from "@/icons/Close";
 
 interface BibleExplorerProps {
   onSearch: (query: string) => void;
@@ -91,46 +93,6 @@ export const BibleExplorer = ({
           }
           aria-busy={isSearching}
         >
-          {/* 
-      <div className="mb-8">
-        <Badge
-          variant="secondary"
-          className="
-            mb-2
-            gap-2
-            rounded-full
-            bg-purple-100
-            px-3
-            py-1
-            text-xs
-            font-semibold
-            uppercase
-            tracking-wide
-            text-purple-700
-            hover:bg-purple-100
-          "
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M12 7v14" />
-            <path d="M3 18a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4v13a4 4 0 0 0-4-4Z" />
-            <path d="M21 18a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-5a4 4 0 0 0-4 4v13a4 4 0 0 1 4-4Z" />
-          </svg>
-          Biblia
-        </Badge>
-
-      </div> */}
-
           <Card className="mx-auto w-full max-w-7xl border-0 bg-white py-0 shadow-none ring-0">
             <CardContent className={isPinned ? "p-2" : "p-2 md:p-4"}>
               <form className="flex flex-col gap-4" onSubmit={handleSearch}>
@@ -142,18 +104,8 @@ export const BibleExplorer = ({
                   }
                 >
                   <div className="relative min-w-0 flex-1">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                      className="
+                    <Search
+                      className="size-5
                     pointer-events-none
                     absolute
                     left-4
@@ -161,10 +113,7 @@ export const BibleExplorer = ({
                     -translate-y-1/2
                     text-slate-400
                   "
-                    >
-                      <circle cx="11" cy="11" r="8" />
-                      <path d="m21 21-4.3-4.3" />
-                    </svg>
+                    />
 
                     <Input
                       id="bible-search"
@@ -191,18 +140,7 @@ export const BibleExplorer = ({
                         aria-label="Limpiar búsqueda"
                         className="absolute right-3 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded-full text-slate-500 hover:bg-slate-200 hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
                       >
-                        <svg
-                          aria-hidden="true"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="size-4"
-                        >
-                          <path d="m18 6-12 12M6 6l12 12" />
-                        </svg>
+                        <Close className="size-4" />
                       </button>
                     )}
                   </div>
@@ -218,22 +156,7 @@ export const BibleExplorer = ({
                   hover:bg-purple-800
                 `}
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                      className="mr-2"
-                    >
-                      <circle cx="11" cy="11" r="8" />
-                      <path d="m21 21-4.3-4.3" />
-                    </svg>
+                    <Search className="mr-2 size-4" />
 
                     {isSearching ? "Buscando..." : "Buscar"}
                   </Button>

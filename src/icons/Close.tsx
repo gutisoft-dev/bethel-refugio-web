@@ -1,19 +1,9 @@
-export const Close = () => {
+import { IconBase, type IconProps } from "./IconBase";
+
+export const Close = (props: IconProps) => {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      className="lucide lucide-x preview-icon size-4"
-    >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
+    <IconBase className="size-4" {...props}>
+      <path d="m18 6-12 12M6 6l12 12" />
+    </IconBase>
   );
 };

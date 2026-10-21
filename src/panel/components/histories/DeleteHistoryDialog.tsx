@@ -1,4 +1,6 @@
 import { Button } from "@/components/ui/button";
+import { Delete } from "@/icons/Delete";
+import { Close } from "@/icons/Close";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -45,21 +47,7 @@ export const DeleteHistoryDialog = ({
     >
       <AlertDialogHeader className="grid grid-cols-[auto_minmax(0,1fr)_auto] grid-rows-1 items-start gap-3 text-left">
         <span className="grid size-10 place-items-center rounded-xl border border-red-500/35 bg-red-500/10 text-red-500">
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="size-5"
-          >
-            <path d="M3 6h18" />
-            <path d="M8 6V4h8v2" />
-            <path d="m19 6-1 14H6L5 6" />
-            <path d="M10 11v5M14 11v5" />
-          </svg>
+          <Delete className="size-5" />
         </span>
         <div className="grid min-w-0 gap-1 pt-0.5">
           <AlertDialogTitle className="text-base font-semibold tracking-tight text-white sm:text-lg">
@@ -81,17 +69,7 @@ export const DeleteHistoryDialog = ({
           }}
           className="size-8 rounded-full bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
         >
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            className="size-4"
-          >
-            <path d="m18 6-12 12M6 6l12 12" />
-          </svg>
+          <Close className="size-4" />
         </Button>
       </AlertDialogHeader>
 
@@ -140,18 +118,7 @@ export const DeleteHistoryDialog = ({
           onClick={onDeleteStory}
           className={`h-10 w-full min-w-0 gap-2 rounded-lg bg-[#c7191c] px-2 text-xs font-semibold leading-tight whitespace-normal text-white hover:bg-[#a90f12] sm:text-sm ${hasMultipleVerses ? "sm:col-span-2" : ""}`}
         >
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="size-4 shrink-0 sm:size-5"
-          >
-            <path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m5 5v5m4-5v5" />
-          </svg>
+          <Delete className="size-4 shrink-0 sm:size-5" />
           <span className="min-w-0 wrap-break-word text-center">
             {isDeleting ? "Eliminando…" : "Eliminar historia"}
           </span>
