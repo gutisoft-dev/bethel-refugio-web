@@ -11,6 +11,7 @@ import axios from "axios";
 import { toast } from "@/components/ui/toast";
 import { EditableUsername } from "./EditableUsername";
 import { DeleteAccount } from "./DeleteAccount";
+import { useLocation } from "react-router-dom";
 interface Props {
   user: UserResponse;
   handleTapsChange: (value: taps) => void;
@@ -19,8 +20,10 @@ interface Props {
 
 export const ContentMain = ({ user, taps, handleTapsChange }: Props) => {
   const queryClient = useQueryClient();
-
+  const location = useLocation();
   const [following, setFollowing] = useState(user.is_following);
+
+  const isEdit = location.pathname === "/profile/me";
 
   useEffect(() => {
     setFollowing(user.is_following);
@@ -73,13 +76,15 @@ export const ContentMain = ({ user, taps, handleTapsChange }: Props) => {
             <div className="flex shrink-0 sm:pb-1">
               <Button
                 size="sm"
+                disabled={following}
                 variant={following ? "secondary" : "default"}
                 onClick={() => createFollowMutation.mutate(user.id)}
                 aria-pressed={following}
               >
                 {following ? (
                   <>
-                    <Check data-icon="inline-start" /> Siguiendo
+                    <Check data-icon="inline-start" />{" "}
+                    {user.is_friend && user.is_friend ? "Amigos" : "Siguiendo"}
                   </>
                 ) : (
                   <>
@@ -90,7 +95,7 @@ export const ContentMain = ({ user, taps, handleTapsChange }: Props) => {
             </div>
           )}
         </div>
-        <DeleteAccount/>
+        {isEdit && <DeleteAccount />}
         <div className="mt-6 min-w-0 border-t border-[#7209b7]/10 pt-4">
           <div className="-mx-3 overflow-x-auto overflow-y-hidden px-3 sm:mx-0 sm:px-0">
             <Tabs
@@ -102,19 +107,23 @@ export const ContentMain = ({ user, taps, handleTapsChange }: Props) => {
                 variant="line"
                 className="flex h-auto w-max min-w-full justify-start gap-1"
               >
-                <TabsTrigger
-                  value="followers"
-                  className="shrink-0 whitespace-nowrap"
-                >
-                  Seguidores
-                </TabsTrigger>
+                {isEdit && (
+                  <>
+                    <TabsTrigger
+                      value="followers"
+                      className="shrink-0 whitespace-nowrap"
+                    >
+                      Seguidores
+                    </TabsTrigger>
 
-                <TabsTrigger
-                  value="following"
-                  className="shrink-0 whitespace-nowrap"
-                >
-                  Siguiendo
-                </TabsTrigger>
+                    <TabsTrigger
+                      value="following"
+                      className="shrink-0 whitespace-nowrap"
+                    >
+                      Siguiendo
+                    </TabsTrigger>
+                  </>
+                )}
                 <TabsTrigger
                   value="verses"
                   className="shrink-0 whitespace-nowrap"

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,13 @@ export const EditableUsername = ({ username }: Props) => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedUsername, setEditedUsername] = useState(username);
+
+
+useEffect(() => {
+  setEditedUsername(username);
+}, [username])
+
+
 
   const createFollowMutation = useMutation({
     mutationFn: UpdateUsername,
