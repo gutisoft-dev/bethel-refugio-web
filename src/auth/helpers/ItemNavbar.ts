@@ -1,5 +1,5 @@
 export const links = [
-  { href: "/", label: "Buscar" },
-  { href: "/history", label: "Historias y feed" },
+  { href: "/", label: "Historias y feed" },
+  { href: "/biblie", label: "Biblia" },
   { href: "/users", label: "Usuarios" },
 ];

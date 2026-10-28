@@ -2,20 +2,29 @@ import { useState } from "react";
 import { ContentUser } from "../components/social/ContentUser";
 import { SearchUser } from "../components/Users/SearchUser";
 import { useSearchUser } from "../hooks/useSearchUser";
+import { ModaleDelete } from "../components/social/ModaleDelete";
+import { useDeleteFollow } from "../hooks/useDeleteFollow";
 
 export const Users = () => {
   const [username, setUsername] = useState("");
   const { data, isFetching } = useSearchUser(username);
+  const {
+    onOpenDeleted,
+    onCloseDeleted,
+    deleteFollowMutation,
+    openDelete,
+    Selectedfollow,
+  } = useDeleteFollow();
   return (
     <div className="mx-auto w-full  max-w-7xl mt-4">
-      <div className="sticky top-0 z-20 bg-white">
+      <div className="sticky top-0 z-20 ">
         <SearchUser onSearch={setUsername} />
       </div>
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h2 className="text-sm font-semibold text-slate-900">
+          {/* <h2 className="text-sm font-semibold text-slate-900">
             Resultados de búsqueda
-          </h2>
+          </h2> */}
         </div>
       </div>
       <div>
@@ -47,11 +56,20 @@ export const Users = () => {
           <ContentUser
             key={result.id}
             follower={result}
-            title={"Usuario"}
-            subtitle={" Persona que quizas conozcas"}
+            onOpenDeleted={onOpenDeleted}
           />
         ))}
       </div>
+      <ModaleDelete
+        handleDelete={() => {
+          if (Selectedfollow) {
+            deleteFollowMutation.mutate(Selectedfollow);
+          }
+        }}
+        open={openDelete}
+        onCloseDeleted={onCloseDeleted}
+        text="¿Deseas eliminar a este seguidor?"
+      />
     </div>
   );
 };

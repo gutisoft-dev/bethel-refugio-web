@@ -1,45 +1,27 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { toast } from "@/components/ui/toast";
-import { deleteFavoriteVerse } from "@/panel/actions/social/FavoriteVerses";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Projector } from "@/icons/Projector";
 import type { Verses } from "@/panel/interfaces/FavoriteVeses.inferface";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 
 interface Props {
+  index: number;
   result: Verses;
+  onOpen: (index: number) => void;
+  onOpenDeleted: (references: string) => void;
 }
 
-export const ContentVerses = ({ result }: Props) => {
-  const queryClient = useQueryClient();
-
-  const deleteFavoriteVerseMutation = useMutation({
-    mutationFn: deleteFavoriteVerse,
-
-    onSuccess: async () => {
-       await queryClient.invalidateQueries({
-        queryKey: ["favorite-verses"],
-      });
-      toast.add({
-        type: "success",
-        description: `Verso eliminado con exito`,
-        priority: "high",
-      });
-    },
-
-    onError: (error) => {
-      if (axios.isAxiosError(error)) {
-        toast.add({
-          type: "error",
-          description: `Ha ocurrido un error `,
-          priority: "high",
-        });
-        return;
-      }
-    },
-  });
-
+export const ContentVerses = ({
+  index,
+  result,
+  onOpen,
+  onOpenDeleted,
+}: Props) => {
   return (
     <Card
       className="
@@ -74,11 +56,35 @@ export const ContentVerses = ({ result }: Props) => {
             role="group"
             aria-label={`Acciones para ${result.reference}`}
           >
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onOpen(index)}
+                    className="
+                            h-7
+                            rounded-md
+                            border-purple-300
+                            px-3
+                            text-[10px]
+                            text-purple-700
+                            hover:bg-purple-50
+                          "
+                  >
+                    <Projector className="mr-1.5 size-[13px]" />
+                    Proyectar
+                  </Button>
+                }
+              />
+
+              <TooltipContent>Proyectar versículo</TooltipContent>
+            </Tooltip>
             <Button
               variant={"destructive"}
-              onClick={() =>
-                deleteFavoriteVerseMutation.mutate(result.normalized_reference)
-              }
+              onClick={() => onOpenDeleted(result.normalized_reference)}
             >
               Eliminar
             </Button>

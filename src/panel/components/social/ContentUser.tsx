@@ -28,10 +28,9 @@ import { useNavigate } from "react-router-dom";
 
 interface Props {
   follower: Follower;
-  title: string;
-  subtitle: string;
+   onOpenDeleted: (follow: string) => void
 }
-export const ContentUser = ({ follower, title, subtitle }: Props) => {
+export const ContentUser = ({ follower,onOpenDeleted }: Props) => {
   const queryClient = useQueryClient();
 
   const [isFollowing, setIsFollowing] = useState(follower.is_following);
@@ -64,72 +63,10 @@ export const ContentUser = ({ follower, title, subtitle }: Props) => {
     },
   });
 
-  const deleteFollowMutation = useMutation({
-    mutationFn: deleteFollow,
-
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ["follower"],
-      });
-      await queryClient.invalidateQueries({
-        queryKey: ["following"],
-      });
-      toast.add({
-        type: "success",
-        description: `Usuario eliminado con exito`,
-        priority: "high",
-      });
-    },
-
-    onError: (error) => {
-      if (axios.isAxiosError(error)) {
-        toast.add({
-          type: "error",
-          description: `Ha ocurrido un error `,
-          priority: "high",
-        });
-        return;
-      }
-    },
-  });
-
-  const handleFollow = () => {
-    deleteFollowMutation.mutate(follower.id);
-  };
+  
 
   return (
     <Card className="w-full max-w-md overflow-hidden shadow-sm">
-      <CardHeader className="border-b bg-card pb-5">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <CardTitle className="text-xl">{title}</CardTitle>
-            <CardDescription className="mt-1">{subtitle}</CardDescription>
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <Button variant="ghost" size="icon" aria-label="Más opciones">
-                  <MoreHorizontal data-icon="inline-start" />
-                </Button>
-              }
-            ></DropdownMenuTrigger>
-
-            <DropdownMenuContent align="end" className="w-52">
-              <DropdownMenuItem onClick={handleRedirect}>
-                <Profile />
-                Ver Perfil
-              </DropdownMenuItem>
-             {
-              isFollowing && <DropdownMenuItem variant="destructive" onClick={handleFollow}>
-                <Delete />
-                Eliminar
-              </DropdownMenuItem>
-             }
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </CardHeader>
-
       <CardContent className="p-5">
         <div className="flex items-center gap-4">
           <Avatar className="size-14 border-2 border-background shadow-sm">
@@ -147,6 +84,7 @@ export const ContentUser = ({ follower, title, subtitle }: Props) => {
 
           <Button
             size="sm"
+            disabled={isFollowing}
             variant={isFollowing ? "secondary" : "default"}
             onClick={() => createFollowMutation.mutate(follower.id)}
             aria-pressed={isFollowing}
@@ -161,6 +99,28 @@ export const ContentUser = ({ follower, title, subtitle }: Props) => {
               </>
             )}
           </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button variant="ghost" size="icon" aria-label="Más opciones">
+                  <MoreHorizontal data-icon="inline-start" />
+                </Button>
+              }
+            ></DropdownMenuTrigger>
+
+            <DropdownMenuContent align="end" className="w-52">
+              <DropdownMenuItem onClick={handleRedirect}>
+                <Profile />
+                Ver Perfil
+              </DropdownMenuItem>
+              {isFollowing && (
+                <DropdownMenuItem variant="destructive" onClick={() => onOpenDeleted(follower.id)}>
+                  <Delete />
+                  Eliminar
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </CardContent>
     </Card>

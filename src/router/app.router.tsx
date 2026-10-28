@@ -19,11 +19,11 @@ export const appRouter = createBrowserRouter([
     element: <PanelLayout />,
     children: [
       {
-        index: true,
+        path: "biblie",
         element: <Biblie />,
       },
       {
-        path: "history",
+        index: true,
         element: <Home />,
       },
     ],
@@ -61,9 +61,7 @@ export const appRouter = createBrowserRouter([
       {
         index: true,
         element: <Users />,
-       
       },
-     
     ],
   },
   {

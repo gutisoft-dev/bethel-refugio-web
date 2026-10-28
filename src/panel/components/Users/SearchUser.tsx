@@ -50,72 +50,82 @@ export const SearchUser = ({ onSearch }: Props) => {
 
   return (
     <div className="w-full">
-      <section className="">
-        <Card className="mx-auto w-full max-w-7xl border-0 bg-white py-0 shadow-none ring-0">
-          <CardContent className={"p-2 md:p-4"}>
+      <section
+        className={
+          isScrolled
+            ? "fixed inset-x-0 top-0 z-40 w-full bg-white px-5 md:px-8"
+            : "w-full py-3"
+        }
+      >
+        <div className="mx-auto w-full max-w-7xl border-0  py-0 shadow-none ring-0">
+          <div className={isScrolled ? "p-2" : "p-2 md:p-4"}>
             <form
-              className="flex flex-col gap-4"
-              onSubmit={(e) => e.preventDefault()}
+              onSubmit={(e) => {
+                e.preventDefault();
+                // Conserva aquí tu lógica de búsqueda.
+              }}
+              className="w-full"
             >
               <div
-                className={`${isScrolled ? "flex min-w-0 flex-row items-center gap-2" : " flex flex-col gap-3 sm:flex-row"}`}
+                className={`
+            flex w-full min-w-0 items-center overflow-hidden
+            rounded-2xl border border-slate-200 bg-white
+            shadow-sm transition-shadow
+            focus-within:ring-2 focus-within:ring-purple-500/30
+            ${isScrolled ? "h-11" : "h-14"}
+          `}
               >
-                <div className="relative min-w-0 flex-1">
-                  <Search
-                    className="size-5 pointer-events-none
-                    absolute
-                    left-4
-                    top-1/2
-                    -translate-y-1/2
-                    text-slate-400"
-                  />
+                <Search className="ml-5 size-5 shrink-0 text-slate-400" />
 
-                  <Input
-                    id="bible-search"
-                    aria-label="Buscar en la Biblia"
-                    placeholder="Buscar el nombre de un usuario..."
-                    {...register("search", {
-                      required: true,
-                    })}
-                    className={`h-12
-                    rounded-xl
-                    pl-12
-                    pr-10
-                    text-sm
-                    placeholder:text-slate-400
-                    focus-visible:ring-2
-                    focus-visible:ring-purple-500
-                  `}
-                  />
-                  {search.length > 0 && (
-                    <button
-                      type="button"
-                      aria-label="Limpiar búsqueda"
-                      className="absolute right-3 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded-full text-slate-500 hover:bg-slate-200 hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
-                      onClick={clearSearch}
-                    >
-                      <Close />
-                    </button>
-                  )}
-                </div>
+                <Input
+                  id="bible-search"
+                  aria-label="Buscar en la Biblia"
+                  placeholder="Buscar el nombre de un usuario..."
+                  {...register("search", {
+                    required: true,
+                  })}
+                  className="
+              h-full min-w-0 flex-1 rounded-none border-0
+              bg-transparent px-4 text-base shadow-none
+              placeholder:text-slate-400
+              focus-visible:border-0 focus-visible:ring-0
+              md:text-base
+            "
+                />
+
+                {search.length > 0 && (
+                  <button
+                    type="button"
+                    aria-label="Limpiar búsqueda"
+                    onClick={clearSearch}
+                    className="
+                mr-2 flex size-8 shrink-0 items-center
+                justify-center rounded-full text-slate-500
+                hover:bg-slate-100 hover:text-slate-800
+                focus-visible:outline-none
+                focus-visible:ring-2 focus-visible:ring-purple-500
+              "
+                  >
+                    <Close className="size-4" />
+                  </button>
+                )}
 
                 <Button
                   type="submit"
-                  className={`h-12 px-7 sm:min-w-34.5
-                  rounded-xl
-                  bg-purple-700
-                  font-semibold
-                  text-white
-                  hover:bg-purple-800
-                `}
+                  className={`
+              h-full shrink-0 rounded-none
+              rounded-r-[0.9rem] bg-purple-700
+              px-5 font-semibold text-white
+              hover:bg-purple-800 sm:px-7
+              ${isScrolled ? "text-sm" : "text-base"}
+            `}
                 >
-                  <Search />
-                  Buscar
+                  <Search className="mr-2 size-4" />
                 </Button>
               </div>
             </form>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </section>
     </div>
   );
