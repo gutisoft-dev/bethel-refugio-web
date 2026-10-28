@@ -37,6 +37,6 @@ export const searchBibleVerses = async (
     `/bible/verses/search/?q=${encodeURIComponent(query)}&page=${page}`,
     { signal },
   );
-
+  console.log(result.data);
   return result.data;
 };

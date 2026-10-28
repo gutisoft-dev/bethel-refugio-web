@@ -3,20 +3,21 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
 import { Save } from "@/icons/Save";
 import { favoriteBibleVerse } from "@/panel/actions/biblie/favorite.action";
+import type { Historia } from "@/panel/interfaces/History.interface";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 interface Props {
-  normalized_reference: string;
+  story: Historia;
 }
 
-export const SaveVerse = ({ normalized_reference }: Props) => {
+export const SaveVerse = ({ story }: Props) => {
   const queryClient = useQueryClient();
   const { authStatus } = useAuthStore();
   const navigate = useNavigate();
 
-  const seaveVerse = useMutation({
+  const saveVerseMutation = useMutation({
     mutationFn: favoriteBibleVerse,
 
     onSuccess: async () => {
@@ -24,10 +25,10 @@ export const SaveVerse = ({ normalized_reference }: Props) => {
         queryKey: ["favorite-verses"],
       });
       toast.add({
-          type: "success",
-          description:'El versiculo se guardo con exito',
-          priority: "high",
-        });
+        type: "success",
+        description: `${story.reference} se guardó en tus favoritos.`,
+        priority: "high",
+      });
     },
 
     onError: (error) => {
@@ -47,19 +48,20 @@ export const SaveVerse = ({ normalized_reference }: Props) => {
       navigate("/auth/login");
       return;
     }
-    seaveVerse.mutate(normalized_reference);
+    saveVerseMutation.mutate(story.normalized_reference);
   };
 
   return (
     <Button
       type="button"
       variant="ghost"
-      size="xs"
-      onClick={() => handleSave()}
-      className="h-auto gap-1 p-0 text-white/70 hover:bg-transparent hover:text-white cursor-pointer"
+      onClick={handleSave}
+      disabled={saveVerseMutation.isPending}
+      aria-busy={saveVerseMutation.isPending}
+      className="h-10 min-w-0 flex-1 justify-center gap-2 rounded-lg px-2 text-sm text-white/80 hover:bg-white/10 hover:text-white sm:text-base"
     >
-      <Save />
-      Guardar versiculo
+      <Save className="size-6" />
+      {/* {saveVerseMutation.isPending ? "Guardando…" : "Guardar versículo"} */}
     </Button>
   );
 };

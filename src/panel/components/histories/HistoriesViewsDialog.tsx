@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 
 import { Button } from "@/components/ui/button";
@@ -74,6 +74,9 @@ export const HistoriesViewsDialog = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const loadMoreSentinelRef = useRef<HTMLDivElement>(null);
+  const isLoadingMoreRef = useRef(false);
 
   const handleOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen);
@@ -100,8 +103,12 @@ export const HistoriesViewsDialog = ({
       })
       .catch((requestError: unknown) => {
         if (!isCurrent) return;
-        const apiMessage = axios.isAxiosError<{ detail?: string; message?: string }>(requestError)
-          ? requestError.response?.data?.detail ?? requestError.response?.data?.message
+        const apiMessage = axios.isAxiosError<{
+          detail?: string;
+          message?: string;
+        }>(requestError)
+          ? (requestError.response?.data?.detail ??
+            requestError.response?.data?.message)
           : undefined;
         setError(
           apiMessage ??
@@ -119,9 +126,10 @@ export const HistoriesViewsDialog = ({
     };
   }, [open, storyId, position]);
 
-  const loadMore = async () => {
-    if (!nextCursor || isLoadingMore) return;
+  const loadMore = useCallback(async () => {
+    if (!nextCursor || isLoadingMoreRef.current) return;
 
+    isLoadingMoreRef.current = true;
     setIsLoadingMore(true);
     setError(null);
     try {
@@ -131,33 +139,50 @@ export const HistoriesViewsDialog = ({
     } catch {
       setError("No se pudieron cargar más visualizaciones.");
     } finally {
+      isLoadingMoreRef.current = false;
       setIsLoadingMore(false);
     }
-  };
+  }, [nextCursor, position, storyId]);
+
+  useEffect(() => {
+    const root = scrollContainerRef.current;
+    const sentinel = loadMoreSentinelRef.current;
+    if (!open || !nextCursor || isLoading || isLoadingMore || error || !root || !sentinel) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) void loadMore();
+      },
+      { root, rootMargin: "120px 0px", threshold: 0 },
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [error, isLoading, isLoadingMore, loadMore, nextCursor, open]);
 
   const handleredirect = (username: string) => {
     navigate("/profile/" + username);
   };
-
 
   return (
     <>
       <Button
         type="button"
         variant="ghost"
-        size="xs"
         onClick={() => handleOpenChange(true)}
-        className="h-auto gap-1 p-0 text-white/70 hover:bg-transparent hover:text-white"
+        className="h-10 min-w-0 flex-1 justify-center gap-2 rounded-lg px-2 text-sm text-white/80 hover:bg-white/10 hover:text-white sm:text-base"
         aria-label={`Ver ${count} visualizaciones de ${reference}`}
       >
-        <Eye className="size-3" />
-        {count} vistas
+        <Eye className="size-6" />
+        {count}
       </Button>
 
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent
           overlayClassName="!z-[70] bg-black/55 backdrop-blur-sm supports-backdrop-filter:backdrop-blur-sm"
-          className="!z-[80] max-h-[min(80dvh,36rem)] max-w-[calc(100%-1.5rem)] overflow-hidden p-0 sm:max-w-md"
+          className="fixed! bottom-0! left-1/2! top-auto! z-80! h-auto! max-h-[min(80dvh,36rem)]! w-full! max-w-none! -translate-x-1/2! translate-y-0! overflow-hidden rounded-t-2xl rounded-b-none p-0 duration-300 data-open:slide-in-from-bottom-full data-closed:slide-out-to-bottom-full sm:max-w-md!"
         >
           <DialogHeader className="border-b border-slate-200 px-5 py-4 pr-12">
             <DialogTitle>Visualizaciones</DialogTitle>
@@ -166,15 +191,28 @@ export const HistoriesViewsDialog = ({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="max-h-[55dvh] overflow-y-auto px-5 py-3">
+          <div
+            ref={scrollContainerRef}
+            className="max-h-[55dvh] overflow-y-auto px-5 py-3"
+          >
             {isLoading ? (
-              <p className="py-8 text-center text-sm text-muted-foreground" role="status">
+              <p
+                className="py-8 text-center text-sm text-muted-foreground"
+                role="status"
+              >
                 Cargando visualizaciones…
               </p>
             ) : error && views.length === 0 ? (
               <div className="space-y-3 py-6 text-center">
-                <p className="text-sm text-destructive" role="alert">{error}</p>
-                <Button type="button" variant="outline" size="sm" onClick={() => handleOpenChange(false)}>
+                <p className="text-sm text-destructive" role="alert">
+                  {error}
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleOpenChange(false)}
+                >
                   Cerrar
                 </Button>
               </div>
@@ -187,25 +225,38 @@ export const HistoriesViewsDialog = ({
                 {views.map((view, index) => {
                   const name = getViewerName(view);
                   const avatar = getViewerAvatar(view);
-                  const viewedAt = formatViewedAt(view.viewed_at ?? view.created_at);
+                  const viewedAt = formatViewedAt(
+                    view.viewed_at ?? view.created_at,
+                  );
 
                   return (
                     <li
-                      key={view.id ?? `${name}-${view.viewed_at ?? view.created_at ?? index}`}
+                      key={
+                        view.id ??
+                        `${name}-${view.viewed_at ?? view.created_at ?? index}`
+                      }
                       className="flex items-center gap-3 py-3 hover:underline cursor-pointer"
                       onClick={() => handleredirect(view.username ?? "")}
                     >
                       {avatar ? (
-                        <img src={avatar} alt="" className="size-9 rounded-full object-cover" />
+                        <img
+                          src={avatar}
+                          alt=""
+                          className="size-9 rounded-full object-cover"
+                        />
                       ) : (
                         <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-purple-100 text-xs font-semibold text-purple-800">
                           {getViewerInitials(name)}
                         </span>
                       )}
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-slate-900">{name}</p>
+                        <p className="truncate text-sm font-medium text-slate-900">
+                          {name}
+                        </p>
                         {viewedAt && (
-                          <p className="text-xs text-muted-foreground">{viewedAt}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {viewedAt}
+                          </p>
                         )}
                       </div>
                     </li>
@@ -215,11 +266,29 @@ export const HistoriesViewsDialog = ({
             )}
 
             {error && views.length > 0 && (
-              <p className="py-2 text-center text-xs text-destructive" role="alert">{error}</p>
+              <p
+                className="py-2 text-center text-xs text-destructive"
+                role="alert"
+              >
+                {error}
+              </p>
+            )}
+            {nextCursor && !isLoading && !error && (
+              <div
+                ref={loadMoreSentinelRef}
+                className="h-2"
+                aria-hidden="true"
+              />
             )}
             {nextCursor && !isLoading && (
               <div className="flex justify-center py-3">
-                <Button type="button" variant="outline" size="sm" onClick={() => void loadMore()} disabled={isLoadingMore}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => void loadMore()}
+                  disabled={isLoadingMore}
+                >
                   {isLoadingMore ? "Cargando…" : "Cargar más"}
                 </Button>
               </div>

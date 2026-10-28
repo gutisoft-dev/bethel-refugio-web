@@ -111,7 +111,9 @@ export const HistoryViewerCard = ({
           ) : index === story.position - 1 ? (
             <span
               className="block h-full origin-left rounded-full bg-white animate-[story-progress_10s_linear_forwards]"
-              style={{ animationPlayState: isTimerPaused ? "paused" : "running" }}
+              style={{
+                animationPlayState: isTimerPaused ? "paused" : "running",
+              }}
             />
           ) : null}
         </span>
@@ -153,9 +155,9 @@ export const HistoryViewerCard = ({
           title="Eliminar historia o versículo"
           disabled={isDeleting || story.status?.toLowerCase() === "expired"}
           onClick={onDeleteClick}
-          className="size-9 shrink-0 rounded-full text-white/80 hover:bg-red-500/20 hover:text-red-200 focus-visible:ring-white"
+          className="size-9 shrink-0 rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white/30 hover:text-white active:scale-90 focus-visible:ring-white"
         >
-          <Delete className="size-5" />
+          <Delete className="size-5 " />
         </Button>
       )}
     </header>
@@ -164,7 +166,7 @@ export const HistoryViewerCard = ({
       <span className="mb-4 inline-flex max-w-full items-center gap-2 self-start rounded-full bg-white/15 px-3 py-1.5 text-sm font-medium text-white backdrop-blur-sm sm:mb-5">
         <Book />
         {story.reference}
-        <SaveVerse normalized_reference={story.normalized_reference} />
+        <span>♡ {story.favorites} favoritos</span>
       </span>
       <blockquote
         className="history-verse-text my-auto text-center font-semibold leading-tight tracking-tight text-white transition-[font-size] duration-200 sm:leading-[1.12]"
@@ -179,37 +181,34 @@ export const HistoryViewerCard = ({
       {story.description && (
         <HistoryCaption id={story.id} text={story.description} />
       )}
-      <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-white/75">
+      <div className="mt-5 flex w-full items-center justify-between gap-2 border-t border-white/20 pt-4 text-sm text-white/80 sm:gap-4">
+        <SaveVerse story={story} />
         {feed === "mine" && (
-          <>
-            <span>♡ {story.favorites} favoritos</span>
-            <span>♥ {story.reactions} reacciones</span>
-            <HistoriesViewsDialog
-              storyId={story.storyId}
-              position={story.position}
-              reference={story.reference}
-              count={story.views}
-              onOpenChange={onViewsDialogOpenChange}
-            />
-          </>
+          <HistoriesViewsDialog
+            storyId={story.storyId}
+            position={story.position}
+            reference={story.reference}
+            count={story.views}
+            onOpenChange={onViewsDialogOpenChange}
+          />
         )}
         {isAuthenticated && (
           <Button
             type="button"
             variant="ghost"
-            size="icon-sm"
             aria-label={`Descargar imagen de ${story.reference}`}
             title="Descargar imagen para compartir"
             disabled={isDownloading}
             aria-busy={isDownloading}
             onClick={onDownload}
-            className="ml-auto rounded-full text-white/70 hover:bg-white/10 hover:text-white focus-visible:ring-white"
+            className="h-10 flex-1 justify-center gap-2 rounded-lg px-2 text-sm text-white/80 hover:bg-white/10 hover:text-white focus-visible:ring-white sm:text-base"
           >
             {isDownloading ? (
-              <LoaderCircle className="size-4 animate-spin" />
+              <LoaderCircle className="size-6 animate-spin" />
             ) : (
-              <Download className="size-4" />
+              <Download className="size-6" />
             )}
+            {/* <span>Descargar</span> */}
           </Button>
         )}
       </div>
