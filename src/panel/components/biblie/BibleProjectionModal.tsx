@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ChevronLeft } from "@/icons/ChevronLeft";
 
 interface BibleProjectionModalProps {
@@ -30,8 +30,14 @@ export const BibleProjectionModal = ({
   onPrevious,
   onNext,
 }: BibleProjectionModalProps) => {
+  const projectionRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!open || !isSequence) return;
+
+    const focusFrame = window.requestAnimationFrame(() => {
+      projectionRef.current?.focus({ preventScroll: true });
+    });
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "ArrowLeft") {
@@ -45,10 +51,11 @@ export const BibleProjectionModal = ({
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown, true);
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
+      window.cancelAnimationFrame(focusFrame);
+      window.removeEventListener("keydown", handleKeyDown, true);
     };
   }, [open, isSequence, onPrevious, onNext]);
 
@@ -66,6 +73,8 @@ export const BibleProjectionModal = ({
       }}
     >
       <DialogContent
+        ref={projectionRef}
+        tabIndex={-1}
         className="
           !fixed
           !inset-0

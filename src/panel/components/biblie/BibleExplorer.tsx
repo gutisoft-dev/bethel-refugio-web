@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Search } from "@/icons/Search";
 import { Close } from "@/icons/Close";
 import { Suggestions } from "./Suggestions";
+import { bibleSuggestions } from "@/panel/helpers/suggestions";
 
 const BIBLE_SEARCH_STORAGE_KEY = "bible-search-query";
 
@@ -15,6 +16,10 @@ const getStoredSearchQuery = () => {
     return "";
   }
 };
+
+const getMatchingSuggestionSlug = (value: string) =>
+  bibleSuggestions.find((suggestion) => suggestion.slug === value.trim())
+    ?.slug ?? "";
 
 interface BibleExplorerProps {
   onSearch: (query: string) => void;
@@ -28,6 +33,9 @@ export const BibleExplorer = ({
   hasResults = false,
 }: BibleExplorerProps) => {
   const [query, setQuery] = useState(getStoredSearchQuery);
+  const [selectedSuggestionSlug, setSelectedSuggestionSlug] = useState(() =>
+    getMatchingSuggestionSlug(getStoredSearchQuery()),
+  );
   const [isPinned, setIsPinned] = useState(false);
   const [stickyHeight, setStickyHeight] = useState(0);
   const stickySentinelRef = useRef<HTMLDivElement | null>(null);
@@ -89,6 +97,7 @@ export const BibleExplorer = ({
     skipNextEmptySearchRef.current = true;
     setIsPinned(false);
     setQuery("");
+    setSelectedSuggestionSlug("");
     onSearch("");
     searchInputRef.current?.focus();
   };
@@ -124,7 +133,11 @@ export const BibleExplorer = ({
                 ref={searchInputRef}
                 aria-label="Buscar en la Biblia"
                 value={query}
-                onChange={(event) => setQuery(event.target.value)}
+                onChange={(event) => {
+                  const nextQuery = event.target.value;
+                  setQuery(nextQuery);
+                  setSelectedSuggestionSlug(getMatchingSuggestionSlug(nextQuery));
+                }}
                 placeholder="Buscar versículo o referencia bíblica..."
                 className="h-full min-w-0 flex-1 rounded-none border-0 bg-transparent px-4 text-base shadow-none placeholder:text-slate-400 focus-visible:border-0 focus-visible:ring-0 md:text-base"
               />
@@ -148,7 +161,13 @@ export const BibleExplorer = ({
               </Button>
             </div>
           </form>
-          <Suggestions onSelect={(suggestion) => setQuery(suggestion.slug)} />
+          <Suggestions
+            selectedSlug={selectedSuggestionSlug}
+            onSelect={(suggestion) => {
+              setQuery(suggestion.slug);
+              setSelectedSuggestionSlug(suggestion.slug);
+            }}
+          />
         </section>
       </div>
     </>

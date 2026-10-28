@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "@/icons/ChevronLeft";
 import { ChevronRight } from "@/icons/ChevronRight";
@@ -8,15 +8,14 @@ import {
 } from "@/panel/helpers/suggestions";
 
 interface SuggestionsProps {
+  selectedSlug: string;
   onSelect?: (suggestion: BibleSuggestion) => void;
 }
 
-export const Suggestions = ({ onSelect }: SuggestionsProps) => {
+export const Suggestions = ({ selectedSlug, onSelect }: SuggestionsProps) => {
   const listRef = useRef<HTMLDivElement>(null);
-  const [selectedSlug, setSelectedSlug] = useState("all");
 
   const selectSuggestion = (suggestion: BibleSuggestion) => {
-    setSelectedSlug(suggestion.slug);
     onSelect?.(suggestion);
   };
 
