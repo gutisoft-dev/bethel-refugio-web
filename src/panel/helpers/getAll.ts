@@ -100,6 +100,7 @@ export const toSlides = (stories: PublicStory[], isMine = false): Historia[] =>
       remaining: getRemainingTime(story.expires_at),
       elapsed: getElapsedTime(story.created_at),
       favorites: item.count_favorite,
+      isFavorite: item.is_favorite,
       reactions: item.count_reaction,
       views: item.views_count,
       visibility: story.visibility,

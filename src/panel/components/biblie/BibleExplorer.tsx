@@ -17,9 +17,23 @@ const getStoredSearchQuery = () => {
   }
 };
 
-const getMatchingSuggestionSlug = (value: string) =>
-  bibleSuggestions.find((suggestion) => suggestion.slug === value.trim())
-    ?.slug ?? "";
+const normalizeSuggestionValue = (value: string) =>
+  value
+    .trim()
+    .toLocaleLowerCase("es")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+const getMatchingSuggestionSlug = (value: string) => {
+  const normalizedValue = normalizeSuggestionValue(value);
+  return (
+    bibleSuggestions.find(
+      (suggestion) =>
+        normalizeSuggestionValue(suggestion.slug) === normalizedValue ||
+        normalizeSuggestionValue(suggestion.name) === normalizedValue,
+    )?.slug ?? ""
+  );
+};
 
 interface BibleExplorerProps {
   onSearch: (query: string) => void;
@@ -136,7 +150,9 @@ export const BibleExplorer = ({
                 onChange={(event) => {
                   const nextQuery = event.target.value;
                   setQuery(nextQuery);
-                  setSelectedSuggestionSlug(getMatchingSuggestionSlug(nextQuery));
+                  setSelectedSuggestionSlug(
+                    getMatchingSuggestionSlug(nextQuery),
+                  );
                 }}
                 placeholder="Buscar versículo o referencia bíblica..."
                 className="h-full min-w-0 flex-1 rounded-none border-0 bg-transparent px-4 text-base shadow-none placeholder:text-slate-400 focus-visible:border-0 focus-visible:ring-0 md:text-base"
@@ -164,7 +180,7 @@ export const BibleExplorer = ({
           <Suggestions
             selectedSlug={selectedSuggestionSlug}
             onSelect={(suggestion) => {
-              setQuery(suggestion.slug);
+              setQuery(suggestion.name);
               setSelectedSuggestionSlug(suggestion.slug);
             }}
           />

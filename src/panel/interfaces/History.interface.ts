@@ -12,6 +12,7 @@ export interface Historia {
   remaining: string;
   elapsed: string;
   favorites: number;
+  isFavorite?: boolean;
   reactions: number;
   views: number;
   visibility?: "public" | "followers";
