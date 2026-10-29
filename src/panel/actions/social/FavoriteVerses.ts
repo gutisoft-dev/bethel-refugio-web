@@ -3,28 +3,35 @@ import type { FavoriteVersesInterfacesTs } from "@/panel/interfaces/FavoriteVese
 
 export const CURRENT_USER_FAVORITES_ID = "__current_user_favorites__";
 
-const getCursorToken = (cursor: string) => {
-  try {
-    return new URL(cursor, "https://cursor.local").searchParams.get("cursor") ?? cursor;
-  } catch {
-    return cursor;
-  }
-};
-
 export const getMyFavoriteVerses = async (
-  cursor?: string,
+  cursor?: string | null,
 ): Promise<FavoriteVersesInterfacesTs> => {
+  const params = cursor
+    ? Object.fromEntries(new URL(cursor, "http://localhost").searchParams)
+    : undefined;
+  console.log(params);
+
   const { data } = await BethelApi.get<FavoriteVersesInterfacesTs>(
     "/social/favorite-verses/",
-    { params: cursor ? { cursor: getCursorToken(cursor) } : undefined },
+    { params },
   );
   return data;
 };
 
-export const getFavoriteVersesByID = async (userId: string) => {
-  const { data } = await BethelApi.get<FavoriteVersesInterfacesTs>(
-    `/social/users/${userId}/favorite-verses/`,
-  );
+export const getFavoriteVersesByID = async (
+  userId: string,
+  next?: string | null,
+) => {
+  const endpoint = `/social/users/${userId}/favorite-verses/`;
+
+  const params = next
+    ? Object.fromEntries(new URL(next, "http://localhost").searchParams)
+    : undefined;
+  console.log(params);
+  const { data } = await BethelApi.get<FavoriteVersesInterfacesTs>(endpoint, {
+    params,
+  });
+
   return data;
 };
 

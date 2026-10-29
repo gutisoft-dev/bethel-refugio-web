@@ -3,9 +3,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   DropdownMenu,
@@ -19,7 +16,7 @@ import { Delete } from "@/icons/Delete";
 import { MoreHorizontal } from "@/icons/MoreHorizontal";
 import { Profile } from "@/icons/Profile";
 import { UserPlus } from "@/icons/UserPlus";
-import { createFollow, deleteFollow } from "@/panel/actions/social/Follower";
+import { createFollow,  } from "@/panel/actions/social/Follower";
 import type { Follower } from "@/panel/interfaces/Follower.interface";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";

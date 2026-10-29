@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import {
   CURRENT_USER_FAVORITES_ID,
   getFavoriteVersesByID,
@@ -6,12 +6,16 @@ import {
 } from "../actions/social/FavoriteVerses";
 
 export const useFavoriteVerses = (id: string, enabled = true) => {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ["favorite-verses", id],
-    queryFn: () =>
+    initialPageParam: null as string | null,
+
+    queryFn: ({ pageParam }) =>
       id === CURRENT_USER_FAVORITES_ID
-        ? getMyFavoriteVerses()
-        : getFavoriteVersesByID(id),
+        ? getMyFavoriteVerses(pageParam)
+        : getFavoriteVersesByID(id, pageParam),
+    getNextPageParam: (lastPage) => lastPage.next ?? undefined,
+
     enabled: enabled && Boolean(id),
   });
 };

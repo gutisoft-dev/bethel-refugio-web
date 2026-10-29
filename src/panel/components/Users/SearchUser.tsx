@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Close } from "@/icons/Close";
 import { Search } from "@/icons/Search";
@@ -62,7 +61,6 @@ export const SearchUser = ({ onSearch }: Props) => {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                // Conserva aquí tu lógica de búsqueda.
               }}
               className="w-full"
             >

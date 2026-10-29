@@ -35,7 +35,7 @@ export const HistoriesGrid = ({ feed = "mine" }: HistoriesGridProps) => {
   return (
     <section
       ref={scrollContainerRef}
-      className="min-h-0 w-full min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain bg-slate-50 px-2 py-3 text-slate-900 sm:px-6 sm:py-5 lg:px-8"
+      className="min-h-0 w-full min-w-0 flex-1 overflow-x-hidden overflow-y-auto  bg-slate-50 px-2 py-3 text-slate-900 sm:px-6 sm:py-5 lg:px-8"
       aria-label={
         feed === "mine"
           ? "Mis historias"

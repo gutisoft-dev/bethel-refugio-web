@@ -20,7 +20,12 @@ export const Navbar = () => {
           to="/"
           className="flex shrink-0 items-center font-semibold tracking-[-0.04em] text-[#6800b8]"
         >
-          Biblia Social
+          <img
+           src="/favicon-light.ico"
+            alt="Bethel Refugio"
+            className="h-6 w-6"
+          />
+          Bethel Refugio
         </Link>
         <div className="hidden items-stretch gap-1 sm:flex sm:gap-7">
           {links.map((link) => {

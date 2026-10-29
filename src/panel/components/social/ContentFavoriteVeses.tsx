@@ -3,7 +3,7 @@ import { useFavoriteVerses } from "@/panel/hooks/useFavoriteVerses";
 import { ContentVerses } from "./ContentVerses";
 import { ContentEmpty } from "./ContentEmpty";
 import { VerseProjection } from "./VerseProjection";
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ModaleDelete } from "./ModaleDelete";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteFavoriteVerse } from "@/panel/actions/social/FavoriteVerses";
@@ -15,8 +15,40 @@ interface Props {
 }
 
 export const ContentFavoriteVeses = ({ id }: Props) => {
-  const { data } = useFavoriteVerses(id);
+  const observerRef = useRef<HTMLDivElement | null>(null);
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useFavoriteVerses(id);
   const queryClient = useQueryClient();
+
+  const verses = useMemo(
+    () => data?.pages.flatMap((page) => page.results) ?? [],
+    [data],
+  );
+
+  useEffect(() => {
+    const element = observerRef.current;
+
+    if (!element || !hasNextPage || isFetchingNextPage) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          void fetchNextPage();
+        }
+      },
+      {
+        rootMargin: "200px",
+      },
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
@@ -71,7 +103,7 @@ export const ContentFavoriteVeses = ({ id }: Props) => {
     },
   });
 
-  const selectedVerseView = data?.results[selectedVerse];
+  const selectedVerseView = verses[selectedVerse];
 
   return (
     <div>
@@ -80,12 +112,12 @@ export const ContentFavoriteVeses = ({ id }: Props) => {
           <h2 className="text-sm font-semibold text-slate-900">Resultados</h2>
 
           <Badge variant="secondary" className="rounded-full text-[10px]">
-            {data?.results.length} versículos
+            {verses.length} versículos
           </Badge>
         </div>
       </div>
       <div className="grid gap-5">
-        {data?.results.map((result, index) => (
+        {verses.map((result, index) => (
           <ContentVerses
             key={result.normalized_reference}
             result={result}
@@ -94,16 +126,32 @@ export const ContentFavoriteVeses = ({ id }: Props) => {
             onOpenDeleted={onOpenDeleted}
           />
         ))}
-        {data?.results.length === 0 && (
-          <ContentEmpty text="No tienes versiculos favoritos" />
+        {verses.length === 0 && (
+          <ContentEmpty text="No tienes versículos favoritos" />
         )}
       </div>
+
+      {hasNextPage && (
+        <div
+          ref={observerRef}
+          className="py-6 text-center text-sm text-slate-500"
+        >
+          {isFetchingNextPage && "Cargando más versículos..."}
+        </div>
+      )}
+
+      {!hasNextPage && verses.length > 0 && (
+        <p className="py-6 text-center text-sm text-slate-500">
+          No hay más versículos.
+        </p>
+      )}
+
       {selectedVerseView && (
         <VerseProjection
           open={open}
           onClose={onClose}
           verse={selectedVerseView}
-          verses={data?.results || []}
+          verses={verses || []}
         />
       )}
 
@@ -111,7 +159,6 @@ export const ContentFavoriteVeses = ({ id }: Props) => {
         handleDelete={() => {
           if (SelectedReferences) {
             deleteFavoriteVerseMutation.mutate(SelectedReferences);
-            
           }
         }}
         open={openDelete}
