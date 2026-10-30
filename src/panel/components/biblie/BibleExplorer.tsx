@@ -129,8 +129,8 @@ export const BibleExplorer = ({
           ref={explorerRef}
           className={
             isPinned
-              ? "fixed inset-x-0 top-0 z-40 w-full bg-white px-5 md:px-8"
-              : "w-full py-3"
+              ? "fixed inset-x-0 top-0 z-40 w-full px-5 md:px-8"
+              : "w-full"
           }
           aria-busy={isSearching}
         >

@@ -98,20 +98,37 @@ export const useHIstoriesGrid = ({ feed = "mine" }: Props) => {
   useEffect(() => {
     const sentinel = sentinelRef.current;
     const root = scrollContainerRef.current;
-    if (!sentinel || !root || !nextCursor || isLoading || pageError) return;
+
+    if (
+      !sentinel ||
+      !root ||
+      !nextCursor ||
+      isLoading ||
+      isLoadingMore ||
+      pageError
+    ) {
+      return;
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry?.isIntersecting) void loadNextPage();
+        if (entry?.isIntersecting) {
+          void loadNextPage();
+        }
       },
-      { root, rootMargin: "360px 0px", threshold: 0 },
+      {
+        root:null,
+        rootMargin: "100px 0px",
+        threshold: 0,
+      },
     );
+
     observer.observe(sentinel);
+
     return () => observer.disconnect();
   }, [isLoading, isLoadingMore, loadNextPage, nextCursor, pageError]);
 
-
-   const handleSelectedStoryId = (id: string | null) => {
+  const handleSelectedStoryId = (id: string | null) => {
     setSelectedStoryId(id);
   };
 
@@ -121,7 +138,8 @@ export const useHIstoriesGrid = ({ feed = "mine" }: Props) => {
       const remainingVerses =
         position === undefined
           ? []
-          : story?.verses.filter((verse) => verse.position !== position) ?? [];
+          : (story?.verses.filter((verse) => verse.position !== position) ??
+            []);
 
       setStories((currentStories) =>
         currentStories.flatMap((item) => {
@@ -150,6 +168,6 @@ export const useHIstoriesGrid = ({ feed = "mine" }: Props) => {
     setReloadKey,
     scrollContainerRef,
     sentinelRef,
-    loadNextPage
+    loadNextPage,
   };
 };

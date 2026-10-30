@@ -10,7 +10,7 @@ export const Home = () => {
   const [activeFeed, setActiveFeed] = useState<HistoryFeed>("public")
 
   return (
-    <div className="grid h-full min-h-0 w-full min-w-0 grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden text-slate-900">
+    <div className="grid min-h-0 w-full min-w-0 text-slate-900">
       <HistoriesHeader activeFeed={activeFeed} onFeedChange={setActiveFeed} />
       {activeFeed === "saved" ? (
         <SavedFavoriteVersesFeed />

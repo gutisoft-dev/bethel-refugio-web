@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/auth/store/auth.store";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -56,6 +57,7 @@ export const AddBibleVerseToStoryDialog = ({
   onAddToPile,
 }: AddBibleVerseToStoryDialogProps) => {
   const navigate = useNavigate();
+  const { authStatus, checkAuthStatus } = useAuthStore();
   const [open, setOpen] = useState(false);
 
   const [visibility, setVisibility] = useState(
@@ -133,8 +135,12 @@ export const AddBibleVerseToStoryDialog = ({
     }
   };
 
-  const handleOpen = () => {
-    if (!localStorage.getItem("token-access")) {
+  const handleOpen = async () => {
+    const isAuthenticated =
+      authStatus === "authenticated" ||
+      (authStatus === "checking" && (await checkAuthStatus()));
+
+    if (!isAuthenticated) {
       navigate("/auth/login");
       return;
     }

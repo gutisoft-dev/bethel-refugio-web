@@ -3,15 +3,15 @@ import { Navbar } from "../components/Navbar";
 
 export const PanelLayout = () => {
   const { pathname } = useLocation();
-  const isHistoryPage = pathname === "/history";
-  const isBiblePage = pathname === "/";
+  const isHistoryPage = pathname === "/";
+  const isBiblePage = pathname === "/biblie";
 
   return (
     <div
       className={
         
         isHistoryPage
-          ? "flex h-dvh min-h-0 flex-col overflow-hidden bg-slate-50"
+          ? "flex min-h-dvh flex-col bg-slate-50"
           : "min-h-screen bg-slate-50"
       }
     >
@@ -21,7 +21,7 @@ export const PanelLayout = () => {
       <main
         className={
           isHistoryPage
-            ? "flex min-h-0 flex-1 flex-col overflow-hidden bg-slate-50"
+            ? "flex min-h-0 flex-1 flex-col bg-slate-50"
             : isBiblePage
               ? "bg-slate-50"
               : undefined
@@ -30,7 +30,7 @@ export const PanelLayout = () => {
         <div
           className={
             isHistoryPage
-              ? "h-full min-h-0 w-full overflow-hidden"
+              ? "h-full min-h-0 w-full"
               : isBiblePage
                 ? "w-full"
                 : "container mx-auto"

@@ -70,7 +70,7 @@ export const Biblie = () => {
   }, [hasNext, loadNextPage]);
 
   return (
-    <div className="min-h-[calc(100dvh-3.5rem)] bg-slate-50 p-5 md:p-8">
+    <div className="min-h-[calc(100dvh-3.5rem)] bg-slate-50 p-5 md:p-8 pt-1">
       <div className="mx-auto max-w-7xl">
         <BibleExplorer
           onSearch={search}
