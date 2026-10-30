@@ -1,9 +1,6 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +13,7 @@ import { Delete } from "@/icons/Delete";
 import { MoreHorizontal } from "@/icons/MoreHorizontal";
 import { Profile } from "@/icons/Profile";
 import { UserPlus } from "@/icons/UserPlus";
-import { createFollow,  } from "@/panel/actions/social/Follower";
+import { createFollow } from "@/panel/actions/social/Follower";
 import type { Follower } from "@/panel/interfaces/Follower.interface";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
@@ -25,9 +22,14 @@ import { useNavigate } from "react-router-dom";
 
 interface Props {
   follower: Follower;
-   onOpenDeleted: (follow: string) => void
+  onOpenDeleted: (follow: string) => void;
+  isvisible?: boolean;
 }
-export const ContentUser = ({ follower,onOpenDeleted }: Props) => {
+export const ContentUser = ({
+  follower,
+  onOpenDeleted,
+  isvisible = false,
+}: Props) => {
   const queryClient = useQueryClient();
 
   const [isFollowing, setIsFollowing] = useState(follower.is_following);
@@ -59,8 +61,6 @@ export const ContentUser = ({ follower,onOpenDeleted }: Props) => {
       }
     },
   });
-
-  
 
   return (
     <Card className="w-full max-w-md overflow-hidden shadow-sm">
@@ -110,8 +110,11 @@ export const ContentUser = ({ follower,onOpenDeleted }: Props) => {
                 <Profile />
                 Ver Perfil
               </DropdownMenuItem>
-              {isFollowing && (
-                <DropdownMenuItem variant="destructive" onClick={() => onOpenDeleted(follower.id)}>
+              {isFollowing && isvisible && (
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={() => onOpenDeleted(follower.id)}
+                >
                   <Delete />
                   Eliminar
                 </DropdownMenuItem>

@@ -20,7 +20,7 @@ export const Login = () => {
       <div className="flex flex-col px-6 py-9 sm:px-12 sm:py-12">
         <button
           type="button"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/")}
           className="flex items-center w-30 mb-5 gap-2 rounded-lg cursor-pointer text-sm font-medium text-gray-700 transition hover:bg-gray-100"
         >
           <span><Left/> </span>

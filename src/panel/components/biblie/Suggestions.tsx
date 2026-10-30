@@ -60,7 +60,7 @@ export const Suggestions = ({ selectedSlug, onSelect }: SuggestionsProps) => {
               className={`shrink-0 cursor-pointer rounded-xl px-2 py-1 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 sm:px-2.5 sm:py-1.5 sm:text-lg ${
                 isSelected
                   ? "bg-purple-700 text-white shadow-sm hover:bg-purple-800"
-                  : "bg-slate-200/80 text-slate-700 hover:bg-slate-300"
+                  : "bg-slate-200 text-slate-700 hover:bg-slate-300"
               }`}
             >
               {suggestion.name}
