@@ -185,7 +185,7 @@ export const Credits = () => {
             </ul>
           </InfoCard>
           <InfoCard>
-            <div className=" flex items-center gap-[14px]">
+            <div className="mb-[17px] flex items-center gap-[14px]">
               <SectionIcon tone="red">
                 <XCircle />
               </SectionIcon>
