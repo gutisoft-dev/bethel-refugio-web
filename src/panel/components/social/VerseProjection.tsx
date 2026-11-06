@@ -1,4 +1,3 @@
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -7,7 +6,6 @@ import { Left } from "@/icons/Left";
 import { Up } from "@/icons/Up";
 import type { Verses } from "@/panel/interfaces/FavoriteVeses.inferface";
 import { useEffect, useState } from "react";
-
 
 interface ProjectionProps {
   open: boolean;
@@ -28,7 +26,7 @@ export function VerseProjection({
     if (!open || verses.length === 0) return;
 
     const index = verses.findIndex(
-      (item) => item.reference === verse.reference
+      (item) => item.reference === verse.reference,
     );
 
     setCurrentIndex(index >= 0 ? index : 0);
@@ -43,9 +41,7 @@ export function VerseProjection({
   const handlePrevious = () => {
     if (verses.length === 0) return;
 
-    setCurrentIndex(
-      (prev) => (prev - 1 + verses.length) % verses.length
-    );
+    setCurrentIndex((prev) => (prev - 1 + verses.length) % verses.length);
   };
 
   const currentVerse = verses[currentIndex];
@@ -84,7 +80,7 @@ export function VerseProjection({
                 text-[11px] text-black
               "
             >
-              <Left  />
+              <Left />
               Salir de Proyección
             </Button>
           </div>
@@ -125,13 +121,22 @@ export function VerseProjection({
                     </p>
                   </div>
                 </div>
+                <div>
+                  <p className="mt-8 text-sm text-center">
+                    Texto bíblico Reina-Valera 1960© © Sociedades Bíblicas en
+                    América Latina, 1960. Derechos renovados 1988, Sociedades
+                    Bíblicas Unidas.
+                  </p>
+                </div>
               </div>
 
               {/* Controles flotantes */}
-              <div className="
+              <div
+                className="
                 absolute bottom-6 right-5 z-30
                 flex flex-col items-center gap-3
-              ">
+              "
+              >
                 <Button
                   type="button"
                   onClick={handlePrevious}
@@ -141,15 +146,18 @@ export function VerseProjection({
                     size-12 rounded-full border border-white/20
                     bg-white/10 p-0 text-white shadow-lg
                     backdrop-blur-md hover:bg-white/20
+                    
                   "
                 >
-                  <Up  />
+                  <Up />
                 </Button>
 
-                <span className="
+                <span
+                  className="
                   rounded-full bg-black/40 px-3 py-1
                   text-xs font-medium text-white
-                ">
+                "
+                >
                   {currentIndex + 1} / {verses.length}
                 </span>
 
@@ -164,15 +172,17 @@ export function VerseProjection({
                     backdrop-blur-md hover:bg-white/20
                   "
                 >
-                  <Down  />
+                  <Down />
                 </Button>
               </div>
             </>
           ) : (
-            <div className="
+            <div
+              className="
               flex flex-1 items-center justify-center px-6
               text-center text-white/70
-            ">
+            "
+            >
               No tienes versículos favoritos para proyectar.
             </div>
           )}

@@ -54,7 +54,7 @@ export const ContentVerses = ({
                         hover:bg-purple-100
                       "
             >
-              {result.normalized_reference}
+              {result.reference}
             </Badge>
           </div>
 

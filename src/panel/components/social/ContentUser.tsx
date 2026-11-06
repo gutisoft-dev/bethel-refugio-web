@@ -30,6 +30,7 @@ export const ContentUser = ({
   onOpenDeleted,
   isvisible = false,
 }: Props) => {
+  console.log(follower)
   const queryClient = useQueryClient();
 
   const [isFollowing, setIsFollowing] = useState(follower.is_following);
@@ -47,6 +48,9 @@ export const ContentUser = ({
       setIsFollowing((current) => !current);
       await queryClient.invalidateQueries({
         queryKey: ["specfollowingialties"],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["userByUsername"],
       });
     },
 
@@ -76,7 +80,6 @@ export const ContentUser = ({
             <p className="truncate font-semibold text-foreground">
               {follower.username}
             </p>
-            <p className="mt-1 text-sm text-muted-foreground">Te sigue</p>
           </div>
 
           <Button
@@ -88,11 +91,11 @@ export const ContentUser = ({
           >
             {isFollowing ? (
               <>
-                <Check data-icon="inline-start" /> Siguiendo
+                <Check data-icon="inline-start" /> {follower.is_friend ? "Amigos" : "Siguiendo"} 
               </>
             ) : (
               <>
-                <UserPlus data-icon="inline-start" /> Seguir
+                <UserPlus data-icon="inline-start" /> {follower.follows_me ? "Seguir tambien" : "Seguir"}  
               </>
             )}
           </Button>
