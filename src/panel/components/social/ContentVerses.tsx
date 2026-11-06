@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Projector } from "@/icons/Projector";
 import type { Verses } from "@/panel/interfaces/FavoriteVeses.inferface";
+import { useLocation } from "react-router-dom";
 
 interface Props {
   index: number;
@@ -22,6 +23,12 @@ export const ContentVerses = ({
   onOpen,
   onOpenDeleted,
 }: Props) => {
+
+  const location = useLocation();
+  const isDelete = location.pathname === "/profile/me" || location.pathname === "/";
+
+
+
   return (
     <Card
       className="
@@ -47,7 +54,7 @@ export const ContentVerses = ({
                         hover:bg-purple-100
                       "
             >
-              {result.normalized_reference}
+              {result.reference}
             </Badge>
           </div>
 
@@ -74,7 +81,7 @@ export const ContentVerses = ({
                             hover:bg-purple-50
                           "
                   >
-                    <Projector className="mr-1.5 size-[13px]" />
+                    <Projector className="mr-1.5 size-3.25" />
                     Proyectar
                   </Button>
                 }
@@ -82,12 +89,14 @@ export const ContentVerses = ({
 
               <TooltipContent>Proyectar versículo</TooltipContent>
             </Tooltip>
-            <Button
+           {
+            isDelete &&  <Button
               variant={"destructive"}
               onClick={() => onOpenDeleted(result.normalized_reference)}
             >
               Eliminar
             </Button>
+           }
           </div>
         </div>
 

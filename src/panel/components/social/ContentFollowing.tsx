@@ -35,6 +35,7 @@ export const ContentFollowing = ({ id }: Props) => {
               key={result.id}
               follower={result}
               onOpenDeleted={onOpenDeleted}
+              isvisible
             />
           ))}
         </div>

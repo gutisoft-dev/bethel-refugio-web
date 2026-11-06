@@ -12,6 +12,7 @@ import {
 } from "@/panel/actions/social/social.action";
 import { ErrorProfile } from "@/panel/pages/ErrorProfile";
 import { Users } from "@/panel/pages/Users";
+import { Credits } from "@/panel/pages/Credits";
 
 export const appRouter = createBrowserRouter([
   {
@@ -61,6 +62,16 @@ export const appRouter = createBrowserRouter([
       {
         index: true,
         element: <Users />,
+      },
+    ],
+  },
+  {
+    path: "/credits",
+    element: <PanelLayout />,
+    children: [
+      {
+        index: true,
+        element: <Credits />,
       },
     ],
   },

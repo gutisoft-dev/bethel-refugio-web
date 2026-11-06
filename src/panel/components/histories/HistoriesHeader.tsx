@@ -29,7 +29,7 @@ const HistoryHeaderContent = ({ activeFeed, onFeedChange }: HistoriasHeaderProps
   const { authStatus } = useAuthStore();
 
   return (
-  <header className="z-50 flex w-full min-w-0 items-center justify-center px-3 py-3 text-slate-900 sticky top-0">
+  <header className="z-40 flex w-full min-w-0 items-center justify-center px-3 py-3 text-slate-900 sticky top-0">
     <nav
       aria-label="Secciones de historias"
       className="pointer-events-auto flex w-full max-w-md min-w-0 items-center gap-0 overflow-hidden rounded-full border border-slate-200 bg-slate-50 p-1 shadow-sm sm:w-auto sm:gap-1"

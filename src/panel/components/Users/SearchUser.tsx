@@ -14,6 +14,7 @@ interface Props {
   onSearch: (username: string) => void;
 }
 export const SearchUser = ({ onSearch }: Props) => {
+    const [isScrolled, setIsScrolled] = useState(false);
   const { register, watch, reset } = useForm<FormData>({
     defaultValues: {
       search: "",
@@ -26,12 +27,13 @@ export const SearchUser = ({ onSearch }: Props) => {
     onSearch(debouncedSearch.trim());
   }, [debouncedSearch, onSearch]);
 
+
   const clearSearch = () => {
     reset({
       search: "",
     });
   };
-  const [isScrolled, setIsScrolled] = useState(false);
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -52,7 +54,7 @@ export const SearchUser = ({ onSearch }: Props) => {
       <section
         className={
           isScrolled
-            ? "fixed inset-x-0 top-0 z-40 w-full bg-white px-5 md:px-8"
+            ? "fixed inset-x-0 top-0 z-40 w-full  px-5 md:px-8"
             : "w-full py-3"
         }
       >
