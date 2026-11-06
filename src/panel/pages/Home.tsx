@@ -7,7 +7,7 @@ import { SavedFavoriteVersesFeed } from "../components/histories/SavedFavoriteVe
 // import { HistoriesCommunity } from "../components/histories/HistoriesCommunity"
 
 export const Home = () => {
-  const [activeFeed, setActiveFeed] = useState<HistoryFeed>("public")
+  const [activeFeed, setActiveFeed] = useState<HistoryFeed>("following")
 
   return (
     <div className="grid min-h-0 w-full min-w-0 text-slate-900">

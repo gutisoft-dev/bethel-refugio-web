@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import type { HistoryFeed } from "./HistoriesHeader";
 import { CardComponent } from "../CardComponent";
 import { DetailsCard } from "../DetailsCard";
 import { useAuthStore } from "@/auth/store/auth.store";
+import { getMe } from "@/panel/actions/social/social.action";
 import { useHIstoriesGrid } from "@/panel/hooks/useHIstoriesGrid";
 import {
   getFeedLabel,
@@ -16,6 +18,11 @@ interface HistoriesGridProps {
 
 export const HistoriesGrid = ({ feed = "mine" }: HistoriesGridProps) => {
   const { authStatus } = useAuthStore();
+  const { data: currentUser } = useQuery({
+    queryKey: ["current-user"],
+    queryFn: getMe,
+    enabled: feed === "mine" && authStatus === "authenticated",
+  });
   const {
     stories,
     nextCursor,
@@ -88,7 +95,11 @@ export const HistoriesGrid = ({ feed = "mine" }: HistoriesGridProps) => {
               );
               const reference = getStoryReference(sortedVerses);
               const username =
-                story.user?.username?.replace(/^@/, "").trim() || "Usuario";
+                (feed === "mine" ? currentUser?.username : undefined)
+                  ?.replace(/^@/, "")
+                  .trim() ||
+                story.user?.username?.replace(/^@/, "").trim() ||
+                "Usuario";
               const timeAgo = getTimeAgo(story.created_at);
               const isExpired = story.status?.toLowerCase() === "expired";
 
@@ -97,6 +108,7 @@ export const HistoriesGrid = ({ feed = "mine" }: HistoriesGridProps) => {
                   key={story.id}
                   story={story}
                   isExpired={isExpired}
+                  expiredLabel={feed === "mine" ? "Expirado" : "Bloqueada"}
                   reference={reference}
                   username={username}
                   timeAgo={timeAgo}

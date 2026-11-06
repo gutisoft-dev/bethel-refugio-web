@@ -1,9 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { BibleVerse } from "../actions/biblie/search.action";
 
-const isVerseRangeQuery = (value: string) =>
-  /\b\d+\s*:\s*\d+\s*-\s*\d+\b/.test(value);
-
 interface ProjectionSelection {
   verse: BibleVerse;
   index: number;
@@ -11,8 +8,7 @@ interface ProjectionSelection {
 
 export const useBibleProjection = (query: string, results: BibleVerse[]) => {
   const [selection, setSelection] = useState<ProjectionSelection | null>(null);
-  const isSequence =
-    selection !== null && isVerseRangeQuery(query) && results.length > 1;
+  const isSequence = selection !== null && results.length > 1;
 
   const project = useCallback(
     (verse: BibleVerse) => {
@@ -28,17 +24,16 @@ export const useBibleProjection = (query: string, results: BibleVerse[]) => {
 
   const previous = useCallback(() => {
     setSelection((current) => {
-      if (!current || !isVerseRangeQuery(query) || current.index <= 0) return current;
+      if (!current || current.index <= 0) return current;
       const index = current.index - 1;
       return { index, verse: results[index] };
     });
-  }, [query, results]);
+  }, [results]);
 
   const next = useCallback(() => {
     setSelection((current) => {
       if (
         !current ||
-        !isVerseRangeQuery(query) ||
         current.index >= results.length - 1
       ) {
         return current;
@@ -46,7 +41,7 @@ export const useBibleProjection = (query: string, results: BibleVerse[]) => {
       const index = current.index + 1;
       return { index, verse: results[index] };
     });
-  }, [query, results]);
+  }, [results]);
 
   useEffect(() => {
     close();

@@ -195,7 +195,7 @@ export const BibleResults = ({
                         hover:bg-purple-100
                       "
                     >
-                      {result.normalized_reference}
+                      {result.reference}
                     </Badge>
                   </div>
 
@@ -237,7 +237,7 @@ export const BibleResults = ({
                             hover:bg-purple-50
                           "
                           >
-                            <Projector className="mr-1.5 size-[13px]" />
+                            <Projector className="mr-1.5 size-3.25" />
                             Proyectar
                           </Button>
                         }

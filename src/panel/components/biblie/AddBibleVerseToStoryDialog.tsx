@@ -28,7 +28,10 @@ import { Send } from "@/icons/Send";
 
 import type { BibleVerse } from "@/panel/actions/biblie/search.action";
 import type { BibleVersePileItem } from "@/panel/components/biblie/bibleVersePile";
-import { createBibleStory, type StoryVisibility } from "@/panel/actions/history/story.action";
+import {
+  createBibleStory,
+  type StoryVisibility,
+} from "@/panel/actions/history/story.action";
 
 export interface StoryVisibilityOption {
   value: StoryVisibility;
@@ -40,7 +43,7 @@ interface AddBibleVerseToStoryDialogProps {
   visibilityOptions: StoryVisibilityOption[];
   mode?: "story" | "pile";
   isVerseInPile?: boolean;
-  onAddToPile?: (item: BibleVersePileItem) => void;
+  onAddToPile?: (item: BibleVersePileItem) => void | boolean;
 }
 
 interface CreateStoryErrorResponse {
@@ -69,7 +72,9 @@ export const AddBibleVerseToStoryDialog = ({
 
   const handleCreateStory = async () => {
     if (mode === "pile") {
-      onAddToPile?.({ verse, caption: caption.trim() });
+      const wasAdded = onAddToPile?.({ verse, caption: caption.trim() });
+      if (!wasAdded) return;
+
       toast.add({
         type: "success",
         description: `${verse.reference} se agregó a la pila.`,
@@ -175,7 +180,6 @@ export const AddBibleVerseToStoryDialog = ({
             shadow-2xl
           "
         >
-
           <DialogHeader className="px-5 pb-4 pt-5">
             <div className="flex items-center gap-2.5">
               {/* Icono */}
@@ -214,7 +218,6 @@ export const AddBibleVerseToStoryDialog = ({
           </DialogHeader>
 
           <Separator />
-
 
           <div className="space-y-4 px-5 py-4">
             <div

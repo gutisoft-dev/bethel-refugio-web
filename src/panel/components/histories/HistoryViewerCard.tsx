@@ -178,9 +178,14 @@ export const HistoryViewerCard = ({
       >
         {story.verse}
       </blockquote>
+      <span className="block w-full min-w-0 max-w-md px-2 text-center text-[10px] leading-relaxed text-white/60 sm:text-xs">
+        Texto bíblico Reina-Valera 1960© © Sociedades Bíblicas en América
+        Latina, 1960. Derechos renovados 1988, Sociedades Bíblicas Unidas.
+      </span>
       {story.description && (
         <HistoryCaption id={story.id} text={story.description} />
       )}
+
       <div className="mt-5 flex w-full items-center justify-between gap-2 border-t border-white/20 pt-4 text-sm text-white/80 sm:gap-4">
         <SaveVerse story={story} />
         {feed === "mine" && (
@@ -208,7 +213,6 @@ export const HistoryViewerCard = ({
             ) : (
               <Download className="size-6" />
             )}
-            {/* <span>Descargar</span> */}
           </Button>
         )}
       </div>

@@ -76,22 +76,22 @@ export const BibleProjectionModal = ({
         ref={projectionRef}
         tabIndex={-1}
         className="
-          !fixed
-          !inset-0
-          !left-0
-          !top-0
-          !z-[9999]
-          !h-screen
-          !w-screen
-          !max-w-none
-          !translate-x-0
-          !translate-y-0
-          !rounded-none
-          !border-0
-          !bg-[#29292f]
-          !p-0
-          !text-white
-          !shadow-none
+          fixed!
+          inset-0!
+          left-0!
+          top-0!
+          z-9999!
+          h-screen!
+          w-screen!
+          max-w-none!
+          translate-x-0!
+          translate-y-0!
+          rounded-none!
+          border-0!
+          bg-[#29292f]!
+          p-0!
+          text-white!
+          shadow-none!
           [&>button]:hidden
         "
       >
@@ -115,7 +115,7 @@ export const BibleProjectionModal = ({
                 cursor-pointer
               "
             >
-              <ChevronLeft className="mr-1.5 size-[13px]" />
+              <ChevronLeft className="mr-1.5 size-3.25" />
               Salir de Proyección
             </Button>
           </div>
@@ -139,6 +139,25 @@ export const BibleProjectionModal = ({
             >
               ● {verse.reference}
             </Badge>
+
+            {/* <Badge
+              className="
+                shrink-0
+                mb-5
+                rounded-full
+                border-0
+                bg-purple-700/80
+                px-4
+                py-1.5
+                text-[11px]
+                uppercase
+                tracking-wide
+                text-white
+                hover:bg-purple-700/80
+              "
+            >
+              ● Texto bíblico Reina-Valera 1960© © Sociedades Bíblicas en América Latina, 1960. Derechos renovados 1988, Sociedades Bíblicas Unidas.
+            </Badge> */}
 
             <div className="min-h-0 w-full max-w-5xl flex-1 overflow-y-auto overscroll-contain text-center [scrollbar-color:rgba(255,255,255,0.35)_transparent] scrollbar-thin">
               <div className="flex min-h-full items-center justify-center py-3">
@@ -164,7 +183,7 @@ export const BibleProjectionModal = ({
               aria-live="polite"
               aria-atomic="true"
             >
-              <Badge
+              {/* <Badge
                 variant="outline"
                 className="
                   border-0
@@ -176,7 +195,12 @@ export const BibleProjectionModal = ({
                 {isSequence
                   ? `Versículo ${currentIndex + 1} de ${totalSequence}`
                   : "Versículo"}
-              </Badge>
+              </Badge> */}
+              <span className="block w-full min-w-0 max-w-md px-2 text-center text-[10px] leading-relaxed text-white/60 sm:text-xs">
+                Texto bíblico Reina-Valera 1960© © Sociedades Bíblicas en
+                América Latina, 1960. Derechos renovados 1988, Sociedades
+                Bíblicas Unidas.
+              </span>
             </div>
           </div>
 

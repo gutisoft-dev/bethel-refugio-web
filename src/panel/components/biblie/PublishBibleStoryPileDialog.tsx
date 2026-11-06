@@ -107,15 +107,15 @@ export const PublishBibleStoryPileDialog = ({
           if (!isPublishing) setOpen(nextOpen);
         }}
       >
-        <DialogContent className="max-h-[90dvh] max-w-[calc(100%-1rem)] overflow-hidden rounded-xl p-0 sm:max-w-lg">
-          <DialogHeader className="px-5 pb-4 pt-5">
+        <DialogContent className="flex max-h-[90dvh] max-w-[calc(100%-1rem)] flex-col overflow-hidden rounded-xl p-0 sm:max-w-lg">
+          <DialogHeader className="shrink-0 px-5 pb-4 pt-5">
             <DialogTitle>Publicar pila de historias</DialogTitle>
             <DialogDescription>
               Elige quién podrá ver estos versículos.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 overflow-y-auto px-5 pb-4">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-5 pb-4">
             <div className="space-y-1.5">
               <Label htmlFor="story-pile-visibility">Visibilidad</Label>
               <Select
@@ -182,7 +182,7 @@ export const PublishBibleStoryPileDialog = ({
             </ol>
           </div>
 
-          <DialogFooter className="border-t bg-slate-100 px-5 py-4">
+          <DialogFooter className="shrink-0 border-t bg-slate-100 px-5 py-4">
             <Button
               type="button"
               variant="outline"

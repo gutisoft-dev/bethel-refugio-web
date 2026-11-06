@@ -36,7 +36,12 @@ const HistoryHeaderContent = ({ activeFeed, onFeedChange }: HistoriasHeaderProps
     >
       {tabs.map((tab) => {
         const isActive = tab.feed === activeFeed;
-        const isSavedDisabled = tab.feed === "saved" && authStatus !== "authenticated";
+        const isPublicDisabled = tab.feed === "public";
+        const requiresAuthentication =
+          tab.feed === "saved" || tab.feed === "mine";
+        const isTabDisabled =
+          isPublicDisabled ||
+          (requiresAuthentication && authStatus !== "authenticated");
 
         return (
         <Button
@@ -44,7 +49,7 @@ const HistoryHeaderContent = ({ activeFeed, onFeedChange }: HistoriasHeaderProps
           type="button"
           variant="ghost"
           size="sm"
-          disabled={isSavedDisabled}
+          disabled={isTabDisabled}
           onClick={() => onFeedChange(tab.feed)}
           aria-current={isActive ? "page" : undefined}
           className={`h-7 min-w-0 flex-1 gap-1 whitespace-nowrap rounded-full px-1 text-[9px] sm:flex-none sm:gap-2 sm:px-3 sm:text-[10px] [&_svg]:hidden sm:[&_svg]:inline-flex ${
@@ -52,7 +57,13 @@ const HistoryHeaderContent = ({ activeFeed, onFeedChange }: HistoriasHeaderProps
               ? "bg-purple-700 text-white hover:bg-purple-600"
               : "text-slate-600 hover:bg-slate-100 hover:text-slate-950 disabled:opacity-50"
           }`}
-          aria-label={isSavedDisabled ? "Inicia sesión para ver tus versículos guardados" : tab.label}
+          aria-label={
+            isPublicDisabled
+              ? "Público no disponible"
+              : requiresAuthentication && authStatus !== "authenticated"
+                ? `Inicia sesión para ver ${tab.label.toLowerCase()}`
+                : tab.label
+          }
         >
           {tab.icon}
           {tab.label}

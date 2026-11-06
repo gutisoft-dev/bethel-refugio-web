@@ -88,9 +88,9 @@ export const SaveVerse = ({ story }: Props) => {
       aria-busy={saveVerseMutation.isPending}
       aria-label={isSaved ? "Versículo guardado" : "Guardar versículo"}
       title={isSaved ? "Versículo guardado" : "Guardar versículo"}
-      className="h-10 min-w-0 flex-1 justify-center gap-2 rounded-lg px-2 text-sm text-white/80 hover:bg-white/10 hover:text-white sm:text-base"
+      className={`h-10 min-w-0 flex-1 justify-center gap-2 rounded-lg px-2 text-sm hover:bg-white/10 hover:text-white disabled:opacity-100 sm:text-base ${isSaved ? "text-white" : "text-white/80"}`}
     >
-      <Save className="size-6" />
+      <Save className="size-6" fill={isSaved ? "currentColor" : "none"} />
       {/* {saveVerseMutation.isPending ? "Guardando…" : "Guardar versículo"} */}
     </Button>
   );

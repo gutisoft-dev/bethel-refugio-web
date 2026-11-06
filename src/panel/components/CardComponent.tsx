@@ -6,6 +6,7 @@ import { Book } from "@/icons/Book";
 interface Props {
   story: PublicStory;
   isExpired: boolean;
+  expiredLabel?: string;
   reference: string;
   username: string;
   timeAgo: string
@@ -15,6 +16,7 @@ interface Props {
 export const CardComponent = ({
   story,
   isExpired,
+  expiredLabel = "Bloqueada",
   reference,
   handleSelectedStoryId,
   username,
@@ -26,7 +28,7 @@ export const CardComponent = ({
       role={isExpired ? undefined : "button"}
       tabIndex={isExpired ? undefined : 0}
       aria-disabled={isExpired || undefined}
-      aria-label={`${isExpired ? "Historia bloqueada" : "Abrir historia"}: ${reference}`}
+      aria-label={`${isExpired ? `Historia ${expiredLabel.toLowerCase()}` : "Abrir historia"}: ${reference}`}
       onClick={isExpired ? undefined : () => handleSelectedStoryId(story.id)}
       onKeyDown={(event) => {
         if (isExpired) return;
@@ -42,9 +44,9 @@ export const CardComponent = ({
         aria-hidden="true"
       />
       {isExpired && (
-        <span className="absolute right-2 top-10 inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/35 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide text-white/80 sm:right-3 sm:top-3 sm:px-2.5 sm:py-1 sm:text-[10px]">
+        <span className="absolute left-1/2 top-1/2 inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 rounded-full border border-white/20 bg-black/45 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-white shadow-md backdrop-blur-sm sm:px-3.5 sm:py-2 sm:text-xs">
          <Block />
-          Bloqueada
+          {expiredLabel}
         </span>
       )}
       <div className="relative flex h-full flex-col justify-between">
