@@ -122,7 +122,7 @@ export function VerseProjection({
                   </div>
                 </div>
                 <div>
-                  <p className="mt-8 text-sm text-center">
+                  <p className="mt-4  block w-full min-w-0 max-w-md px-2 text-center text-[10px] leading-relaxed text-white/60 sm:text-xs">
                     Texto bíblico Reina-Valera 1960© © Sociedades Bíblicas en
                     América Latina, 1960. Derechos renovados 1988, Sociedades
                     Bíblicas Unidas.
