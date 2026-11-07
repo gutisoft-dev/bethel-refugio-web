@@ -7,7 +7,6 @@ import { FileCheck2 } from "@/icons/FileCheck2";
 import { LockKeyhole } from "@/icons/LockKeyhole";
 import { Mail } from "@/icons/Mail";
 import { XCircle } from "@/icons/XCircle";
-import { useState } from "react";
 
 const allowed = [
   "Buscar y leer versículos.",
@@ -23,19 +22,7 @@ const restricted = [
   "Compartir tu acceso con personas no autorizadas.",
 ];
 
-function BrandMark() {
-  return (
-    <svg aria-hidden="true" className="h-6 w-7" viewBox="0 0 32 24" fill="none">
-      <path
-        d="M4 4.5C8.8 4.5 12.1 7.1 16 14c3.9-6.9 7.2-9.5 12-9.5-1.4 6.7-5.8 12-12 15C9.8 16.5 5.4 11.2 4 4.5Z"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+
 
 function SectionIcon({
   children,
@@ -73,7 +60,6 @@ function InfoCard({
 }
 
 export const Credits = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen  text-[#171326]">
