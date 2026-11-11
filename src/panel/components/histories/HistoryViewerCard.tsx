@@ -179,7 +179,7 @@ export const HistoryViewerCard = ({
         {story.verse}
       </blockquote>
       <span className="block w-full min-w-0 max-w-md px-2 text-center text-[10px] leading-relaxed text-white/60 sm:text-xs">
-        Texto bíblico Reina-Valera 1960© © Sociedades Bíblicas en América
+        Texto bíblico Reina-Valera 1960® © Sociedades Bíblicas en América
         Latina, 1960. Derechos renovados 1988, Sociedades Bíblicas Unidas.
       </span>
       {story.description && (

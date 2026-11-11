@@ -87,14 +87,14 @@ export const useAuthStore = create<AuthStore>()((set) => ({
 
   checkAuthStatus: async () => {
     try {
-      const accessToken = localStorage.getItem("token-refresh");
+      const refreshToken = localStorage.getItem("token-refresh");
       set({
         authStatus: "not-authenticated",
       });
-      if (!accessToken) {
+      if (!refreshToken) {
         return false;
       }
-      const data = await checkAuth(accessToken);
+      const data = await checkAuth(refreshToken);
       localStorage.setItem("token-access", data.access);
       localStorage.setItem("token-refresh", data.refresh);
       set({

@@ -1,11 +1,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Down } from "@/icons/Down";
 import { Left } from "@/icons/Left";
-import { Up } from "@/icons/Up";
 import type { Verses } from "@/panel/interfaces/FavoriteVeses.inferface";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface ProjectionProps {
   open: boolean;
@@ -21,7 +19,7 @@ export function VerseProjection({
   verses,
 }: ProjectionProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  const projectionRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!open || verses.length === 0) return;
 
@@ -31,6 +29,16 @@ export function VerseProjection({
 
     setCurrentIndex(index >= 0 ? index : 0);
   }, [open, verse.reference, verses]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const timer = setTimeout(() => {
+      projectionRef.current?.focus();
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [open]);
 
   const handleNext = () => {
     if (verses.length === 0) return;
@@ -45,6 +53,39 @@ export function VerseProjection({
   };
 
   const currentVerse = verses[currentIndex];
+
+  const touchStart = useRef({ x: 0, y: 0 });
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    const touch = e.touches[0];
+
+    touchStart.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+    };
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    const touch = e.changedTouches[0];
+
+    const deltaX = touch.clientX - touchStart.current.x;
+    const deltaY = touch.clientY - touchStart.current.y;
+
+    const minSwipeDistance = 50;
+
+    if (
+      Math.abs(deltaX) < minSwipeDistance ||
+      Math.abs(deltaX) < Math.abs(deltaY)
+    ) {
+      return;
+    }
+
+    if (deltaX < 0) {
+      handleNext();
+    } else {
+      handlePrevious();
+    }
+  };
 
   return (
     <Dialog
@@ -67,7 +108,22 @@ export function VerseProjection({
           Proyección de versículos favoritos
         </DialogTitle>
 
-        <div className="relative flex h-dvh w-screen flex-col overflow-hidden">
+        <div
+          ref={projectionRef}
+          tabIndex={-1}
+          onKeyDown={(event) => {
+            if (event.key === "ArrowRight") {
+              event.preventDefault();
+              handleNext();
+            }
+
+            if (event.key === "ArrowLeft") {
+              event.preventDefault();
+              handlePrevious();
+            }
+          }}
+          className="relative flex h-dvh w-screen flex-col overflow-hidden"
+        >
           {/* Botón para salir */}
           <div className="absolute left-5 top-4 z-30">
             <Button
@@ -92,15 +148,17 @@ export function VerseProjection({
                   className="
                     mb-5 shrink-0 rounded-full border-0
                     bg-purple-700/80 px-4 py-1.5
-                    text-[11px] uppercase tracking-wide
+                    text-[11px]  tracking-wide
                     text-white hover:bg-purple-700/80
                   "
                 >
-                  ● {currentVerse.reference}
+                  ● {currentVerse.reference} - (RVR1960)
                 </Badge>
 
                 <div
                   key={currentVerse.reference}
+                  onTouchStart={handleTouchStart}
+                  onTouchEnd={handleTouchEnd}
                   className="
                     min-h-0 w-full max-w-5xl flex-1
                     overflow-y-auto overscroll-contain
@@ -123,7 +181,7 @@ export function VerseProjection({
                 </div>
                 <div>
                   <p className="mt-4  block w-full min-w-0 max-w-md px-2 text-center text-[10px] leading-relaxed text-white/60 sm:text-xs">
-                    Texto bíblico Reina-Valera 1960© © Sociedades Bíblicas en
+                    Texto bíblico Reina-Valera 1960® © Sociedades Bíblicas en
                     América Latina, 1960. Derechos renovados 1988, Sociedades
                     Bíblicas Unidas.
                   </p>
@@ -131,7 +189,7 @@ export function VerseProjection({
               </div>
 
               {/* Controles flotantes */}
-              <div
+              {/* <div
                 className="
                 absolute bottom-6 right-5 z-30
                 flex flex-col items-center gap-3
@@ -174,6 +232,77 @@ export function VerseProjection({
                 >
                   <Down />
                 </Button>
+              </div> */}
+
+              <div className="absolute bottom-5 left-1/2 z-20 w-[calc(100%-2rem)] max-w-md -translate-x-1/2">
+                <div
+                  className="
+                  flex
+                  h-9
+                  items-center
+                  justify-between
+                  rounded-full
+                  border
+                  border-white/10
+                  bg-[#29292f]
+                  px-2
+                  shadow-lg
+                "
+                >
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    disabled={currentIndex === 0}
+                    onClick={handlePrevious}
+                    className="
+                    h-7
+                    text-[10px]
+                    text-black
+                    bg-white
+                    cursor-pointer
+                  "
+                  >
+                    ← Anterior
+                  </Button>
+
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant="secondary"
+                      className="bg-slate-700 text-[8px] text-slate-300"
+                    >
+                      ←
+                    </Badge>
+
+                    <Badge
+                      variant="secondary"
+                      className="bg-slate-700 text-[8px] text-slate-300"
+                    >
+                      →
+                    </Badge>
+
+                    <span className="text-[9px] text-slate-400">
+                      Usa las flechas
+                    </span>
+                  </div>
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    disabled={currentIndex === verses.length - 1}
+                    onClick={handleNext}
+                    className="
+                    h-7
+                    text-[10px]
+                   text-black
+                    bg-white
+                    cursor-pointer
+                  "
+                  >
+                    Siguiente →
+                  </Button>
+                </div>
               </div>
             </>
           ) : (

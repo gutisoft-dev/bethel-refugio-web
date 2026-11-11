@@ -67,7 +67,7 @@ export const SidebarContent = ({ isSidebarOpen, handelCloseSidebar }: Props) => 
 
           {/* Logout */}
           <div className="mt-auto border-t p-4">
-             <AvatarContent/>
+             <AvatarContent  handelCloseSidebar={handelCloseSidebar}/>
           </div>
         </div>
       </aside>

@@ -23,9 +23,17 @@ export const logout = async (refresh: string) => {
 };
 
 export const checkAuth = async (refresh: string): Promise<UserResponse> => {
-  const { data } = await BethelApi.post("/auth/token/refresh/", {
-    refresh,
-  });
+  const { data } = await BethelApi.post(
+    "/auth/token/refresh/",
+    {
+      refresh,
+    },
+    {
+      headers: {
+        Authorization: "",
+      },
+    },
+  );
   return data;
 };
 

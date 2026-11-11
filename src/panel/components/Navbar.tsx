@@ -55,7 +55,7 @@ export const Navbar = () => {
         </div>
 
         <div className="hidden items-stretch gap-1 sm:flex sm:gap-7 ">
-          <AvatarContent />
+          <AvatarContent handelCloseSidebar={handelCloseSidebar} />
         </div>
 
         <button

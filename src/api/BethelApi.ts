@@ -36,7 +36,7 @@ const AUTH_SKIP_URLS = ["/auth/token/refresh/", "/auth/logout/"];
 BethelApi.interceptors.request.use((config) => {
   const accessToken = localStorage.getItem("token-access");
 
-  if (accessToken) {
+  if (config.url !== "/auth/token/refresh/" &&  accessToken) {
     config.headers.set("Authorization", `Bearer ${accessToken}`);
   }
 
@@ -80,9 +80,12 @@ BethelApi.interceptors.response.use(
         throw new Error("No existe un refresh token");
       }
 
-      const { data } = await BethelApi.post("/auth/token/refresh/", {
-        refresh: refreshToken,
-      });
+      const { data } = await BethelApi.post(
+        "/auth/token/refresh/",
+        {
+          refresh: refreshToken,
+        },
+      );
 
       if (data.access) {
         localStorage.setItem("token-access", data.access);

@@ -11,11 +11,17 @@ import { useAuthStore } from "../store/auth.store";
 import { Button } from "@/components/ui/button";
 import { Profile } from "@/icons/Profile";
 import { Exit } from "@/icons/Exit";
-export const AvatarContent = () => {
+
+interface Props {
+  handelCloseSidebar: () => void
+}
+
+export const AvatarContent = ({ handelCloseSidebar }: Props) => {
   const { authStatus, logout } = useAuthStore();
  const navigate = useNavigate();
 const handleRedirect = () => {
   navigate("/profile/me");
+  handelCloseSidebar();
 }
 
   return (
