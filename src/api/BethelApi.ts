@@ -2,7 +2,8 @@ import { useAuthStore } from "@/auth/store/auth.store";
 import axios from "axios";
 
 const BethelApi = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL}/api`,
+  //baseURL: `${import.meta.env.VITE_API_URL}`,
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 declare module "axios" {
