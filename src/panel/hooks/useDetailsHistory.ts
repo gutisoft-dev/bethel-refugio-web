@@ -60,6 +60,8 @@ export const useDetailsHistory = ({
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [loadedFeed, setLoadedFeed] = useState<HistoryFeed | null>(null);
+  const initialStoriesRef = useRef(initialStories);
+  const initialCursorRef = useRef(initialCursor);
   const recordedViews = useRef(new Set<string>());
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const timerSlideId = useRef<string | null>(null);
@@ -95,14 +97,15 @@ export const useDetailsHistory = ({
       }
 
       try {
-        if (initialStories) {
+        const startingStories = initialStoriesRef.current;
+        if (startingStories) {
           const slides = toSlides(
-            getStoriesForModal(initialStories, feed),
+            getStoriesForModal(startingStories, feed),
             feed === "mine",
           );
           if (!isCurrent) return;
           setHistorias(slides);
-          setNextCursor(initialCursor ?? null);
+          setNextCursor(initialCursorRef.current ?? null);
           const initialIndex = initialStoryId
             ? slides.findIndex((slide) => slide.storyId === initialStoryId)
             : -1;
@@ -189,8 +192,6 @@ export const useDetailsHistory = ({
   }, [
     authStatus,
     feed,
-    initialCursor,
-    initialStories,
     initialStoryId,
     reloadKey,
   ]);

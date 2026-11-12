@@ -18,6 +18,7 @@ interface HistoriasCardsProps {
   initialStories?: PublicStory[];
   initialCursor?: string | null;
   onStoryContentDeleted?: (storyId: string, position?: number) => void;
+  onVerseFavorited?: (storyId: string, normalizedReference: string) => void;
 }
 
 const getFeedAriaLabel = (feed: HistoryFeed) => {
@@ -44,6 +45,7 @@ export const HistoriasCards = ({
   initialStories,
   initialCursor,
   onStoryContentDeleted,
+  onVerseFavorited,
 }: HistoriasCardsProps) => {
   const navigate = useNavigate();
   const { authStatus } = useAuthStore();
@@ -179,6 +181,9 @@ export const HistoriasCards = ({
               }}
               onNavigateToProfile={navigateToProfile}
               onViewsDialogOpenChange={setIsViewsDialogOpen}
+              onVerseFavorited={(storyId, normalizedReference) =>
+                onVerseFavorited?.(storyId, normalizedReference)
+              }
               onDownload={() =>
                 void downloadImage(
                   current.storyId,

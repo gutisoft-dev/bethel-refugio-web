@@ -18,9 +18,10 @@ interface FavoriteErrorResponse {
 
 interface Props {
   story: Historia;
+  onSaved?: () => void;
 }
 
-export const SaveVerse = ({ story }: Props) => {
+export const SaveVerse = ({ story, onSaved }: Props) => {
   const queryClient = useQueryClient();
   const { authStatus } = useAuthStore();
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ export const SaveVerse = ({ story }: Props) => {
 
     onSuccess: async () => {
       setSavedReference(story.normalized_reference);
+      onSaved?.();
       await queryClient.invalidateQueries({
         queryKey: ["favorite-verses"],
       });
@@ -49,6 +51,7 @@ export const SaveVerse = ({ story }: Props) => {
         error.response?.data.error?.code === "FAVORITE_VERSE_ALREADY_EXISTS"
       ) {
         setSavedReference(story.normalized_reference);
+        onSaved?.();
         toast.add({
           type: "error",
           description:

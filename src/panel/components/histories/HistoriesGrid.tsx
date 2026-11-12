@@ -33,6 +33,7 @@ export const HistoriesGrid = ({ feed = "mine" }: HistoriesGridProps) => {
     selectedStoryId,
     handleSelectedStoryId,
     handleStoryContentDeleted,
+    handleStoryVerseFavorited,
     loadNextPage,
     setReloadKey,
     scrollContainerRef,
@@ -154,6 +155,7 @@ export const HistoriesGrid = ({ feed = "mine" }: HistoriesGridProps) => {
         selectedStoryId={selectedStoryId}
         handleSelectedStoryId={handleSelectedStoryId}
         handleStoryContentDeleted={handleStoryContentDeleted}
+        handleStoryVerseFavorited={handleStoryVerseFavorited}
         feed={feed}
         stories={stories}
         nextCursor={nextCursor}

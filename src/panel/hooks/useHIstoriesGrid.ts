@@ -172,6 +172,34 @@ export const useHIstoriesGrid = ({ feed = "mine" }: Props) => {
     [stories],
   );
 
+  const handleStoryVerseFavorited = useCallback(
+    (storyId: string, normalizedReference: string) => {
+      setStories((currentStories) =>
+        currentStories.map((story) => {
+          if (story.id !== storyId) return story;
+
+          return {
+            ...story,
+            verses: story.verses.map((item) => {
+              if (item.verse.normalized_reference !== normalizedReference) {
+                return item;
+              }
+
+              return item.is_favorite
+                ? item
+                : {
+                    ...item,
+                    is_favorite: true,
+                    count_favorite: item.count_favorite + 1,
+                  };
+            }),
+          };
+        }),
+      );
+    },
+    [],
+  );
+
   return {
     stories,
     nextCursor,
@@ -182,6 +210,7 @@ export const useHIstoriesGrid = ({ feed = "mine" }: Props) => {
     selectedStoryId,
     handleSelectedStoryId,
     handleStoryContentDeleted,
+    handleStoryVerseFavorited,
     reloadKey,
     setReloadKey,
     scrollContainerRef,

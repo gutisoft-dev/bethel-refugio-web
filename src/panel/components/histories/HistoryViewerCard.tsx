@@ -22,6 +22,7 @@ interface HistoryViewerCardProps {
   onNavigateToProfile: (username: string) => void;
   onViewsDialogOpenChange: (open: boolean) => void;
   onDownload: () => void;
+  onVerseFavorited: (storyId: string, normalizedReference: string) => void;
 }
 
 interface HistoryCaptionProps {
@@ -88,6 +89,7 @@ export const HistoryViewerCard = ({
   onNavigateToProfile,
   onViewsDialogOpenChange,
   onDownload,
+  onVerseFavorited,
 }: HistoryViewerCardProps) => (
   <article
     aria-label={`Historia de ${story.author}: ${story.reference}`}
@@ -187,7 +189,12 @@ export const HistoryViewerCard = ({
       )}
 
       <div className="mt-5 flex w-full items-center justify-between gap-2 border-t border-white/20 pt-4 text-sm text-white/80 sm:gap-4">
-        <SaveVerse story={story} />
+        <SaveVerse
+          story={story}
+          onSaved={() =>
+            onVerseFavorited(story.storyId, story.normalized_reference)
+          }
+        />
         {feed === "mine" && (
           <HistoriesViewsDialog
             storyId={story.storyId}

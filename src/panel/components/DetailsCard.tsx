@@ -5,17 +5,28 @@ import type { HistoryFeed } from "./histories/HistoriesHeader";
 import type { PublicStory } from "../actions/history/story.action";
 import { Close } from "@/icons/Close";
 
-interface Props{
-   feed: HistoryFeed
- selectedStoryId: string | null
-  stories: PublicStory[]
-   nextCursor: string | null
-  handleSelectedStoryId: (id: string | null) => void
-  handleStoryContentDeleted: (storyId: string, position?: number) => void
+interface Props {
+  feed: HistoryFeed;
+  selectedStoryId: string | null;
+  stories: PublicStory[];
+  nextCursor: string | null;
+  handleSelectedStoryId: (id: string | null) => void;
+  handleStoryContentDeleted: (storyId: string, position?: number) => void;
+  handleStoryVerseFavorited: (
+    storyId: string,
+    normalizedReference: string,
+  ) => void;
 }
 
-
-export const DetailsCard = ({ selectedStoryId,handleSelectedStoryId,handleStoryContentDeleted,feed,stories, nextCursor }: Props ) => {
+export const DetailsCard = ({
+  selectedStoryId,
+  handleSelectedStoryId,
+  handleStoryContentDeleted,
+  handleStoryVerseFavorited,
+  feed,
+  stories,
+  nextCursor,
+}: Props) => {
   return (
     <Dialog
       open={selectedStoryId !== null}
@@ -65,6 +76,7 @@ export const DetailsCard = ({ selectedStoryId,handleSelectedStoryId,handleStoryC
             initialStories={stories}
             initialCursor={nextCursor}
             onStoryContentDeleted={handleStoryContentDeleted}
+            onVerseFavorited={handleStoryVerseFavorited}
           />
         )}
       </DialogContent>
