@@ -254,7 +254,11 @@ export const PublishBibleStoryPileDialog = ({
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              onClick={onClear}
+              onClick={() => {
+                onClear();
+                setConfirmClearOpen(false);
+                setOpen(false);
+              }}
               className="bg-red-700 text-white hover:bg-red-800"
             >
               Quitar todo
