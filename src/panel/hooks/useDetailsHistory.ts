@@ -10,6 +10,7 @@ import {
   type PublicStory,
 } from "../actions/history/story.action";
 import axios from "axios";
+import { useAuthStore } from "@/auth/store/auth.store";
 
 const STORY_SLIDE_DURATION_MS = 10_000;
 
@@ -48,6 +49,7 @@ export const useDetailsHistory = ({
   initialCursor,
   isPaused = false,
 }: Props) => {
+  const authStatus = useAuthStore((state) => state.authStatus);
   const [historias, setHistorias] = useState<Historia[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -76,17 +78,23 @@ export const useDetailsHistory = ({
       setNextCursor(null);
       setActiveIndex(0);
 
-      try {
-        if (feed !== "public" && !localStorage.getItem("token-access")) {
-          setNeedsAuthentication(true);
-          setError(
-            feed === "mine"
-              ? "Inicia sesión para consultar tus historias."
-              : "Inicia sesión para consultar las historias que sigues.",
-          );
-          return;
-        }
+      if (feed !== "public" && authStatus === "checking") {
+        setIsLoading(true);
+        return;
+      }
 
+      if (feed !== "public" && authStatus !== "authenticated") {
+        setNeedsAuthentication(true);
+        setError(
+          feed === "mine"
+            ? "Inicia sesión para consultar tus historias."
+            : "Inicia sesión para consultar las historias que sigues.",
+        );
+        setIsLoading(false);
+        return;
+      }
+
+      try {
         if (initialStories) {
           const slides = toSlides(
             getStoriesForModal(initialStories, feed),
@@ -178,10 +186,23 @@ export const useDetailsHistory = ({
     return () => {
       isCurrent = false;
     };
-  }, [feed, initialCursor, initialStories, initialStoryId, reloadKey]);
+  }, [
+    authStatus,
+    feed,
+    initialCursor,
+    initialStories,
+    initialStoryId,
+    reloadKey,
+  ]);
 
   const loadNextPage = useCallback(async () => {
-    if (!nextCursor || isLoadingMore) return;
+    if (
+      !nextCursor ||
+      isLoadingMore ||
+      (feed !== "public" && authStatus !== "authenticated")
+    ) {
+      return;
+    }
 
     setIsLoadingMore(true);
     setPageError(false);
@@ -192,6 +213,12 @@ export const useDetailsHistory = ({
           : feed === "following"
             ? await getFollowingStories(nextCursor)
             : await getStoriesPublic(nextCursor);
+      if (
+        feed !== "public" &&
+        useAuthStore.getState().authStatus !== "authenticated"
+      ) {
+        return;
+      }
       const nextSlides = toSlides(
         getStoriesForModal(response.results, feed),
         feed === "mine",
@@ -206,7 +233,7 @@ export const useDetailsHistory = ({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [feed, nextCursor, isLoadingMore]);
+  }, [authStatus, feed, nextCursor, isLoadingMore]);
 
   const removeStoryContent = useCallback(
     (storyId: string, position?: number) => {
@@ -358,7 +385,7 @@ export const useDetailsHistory = ({
       isLoading ||
       loadedFeed !== feed ||
       !current ||
-      !localStorage.getItem("token-access")
+      authStatus !== "authenticated"
     ) {
       return;
     }
@@ -370,7 +397,7 @@ export const useDetailsHistory = ({
     void registerStoryVerseView(current.storyId, current.position).catch(
       () => {},
     );
-  }, [current, feed, isLoading, loadedFeed]);
+  }, [authStatus, current, feed, isLoading, loadedFeed]);
 
   return {
     current,

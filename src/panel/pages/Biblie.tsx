@@ -82,7 +82,7 @@ export const Biblie = () => {
         JSON.stringify(versePile),
       );
     } catch {
-      // Keep pile interactions working if browser storage is unavailable.
+      //
     }
   }, [versePile]);
 
@@ -146,11 +146,19 @@ export const Biblie = () => {
   };
 
   const removeVerseFromPile = (normalizedReference: string) => {
-    setVersePile((currentPile) =>
-      currentPile.filter(
+    setVersePile((currentPile) => {
+      const itemIndex = currentPile.findIndex(
+        (item) => item.verse.normalized_reference === normalizedReference,
+      );
+      const isAtPileEdge =
+        itemIndex === 0 || itemIndex === currentPile.length - 1;
+
+      if (!isAtPileEdge) return currentPile;
+
+      return currentPile.filter(
         (item) => item.verse.normalized_reference !== normalizedReference,
-      ),
-    );
+      );
+    });
   };
 
   useEffect(() => {
@@ -245,6 +253,7 @@ export const Biblie = () => {
         <PublishBibleStoryPileDialog
           items={versePile}
           onRemove={removeVerseFromPile}
+          onClear={() => setVersePile([])}
           onPublished={() => setVersePile([])}
         />
 

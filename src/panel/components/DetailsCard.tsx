@@ -25,6 +25,21 @@ export const DetailsCard = ({ selectedStoryId,handleSelectedStoryId,handleStoryC
     >
       <DialogContent
         showCloseButton={false}
+        onClick={(event) => {
+          const target = event.target as HTMLElement;
+          const nestedDialog = target.closest(
+            '[data-slot="dialog-content"], [data-slot="alert-dialog-content"]',
+          );
+
+          if (
+            (nestedDialog && nestedDialog !== event.currentTarget) ||
+            target.closest(".histories-grid-card, button")
+          ) {
+            return;
+          }
+
+          handleSelectedStoryId(null);
+        }}
         overlayClassName="bg-black/85 backdrop-blur-xl supports-backdrop-filter:backdrop-blur-xl"
         className="fixed! inset-0! left-0! top-0! z-60! grid! h-dvh! w-screen! max-w-none! translate-x-0! translate-y-0! gap-0! rounded-none! border-0! bg-transparent! p-0! text-white! shadow-none! ring-0! sm:max-w-none!"
       >

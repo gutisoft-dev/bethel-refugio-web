@@ -155,15 +155,16 @@ export const HistoriasCards = ({
               />
             )}
 
-            <button
-              type="button"
-              onClick={goPrevious}
-              aria-label="Historia anterior"
-              disabled={historias.length < 2}
-              className="absolute left-3 top-1/2 z-20 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/80 text-white ring-1 ring-white/20 transition hover:bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-30 sm:flex sm:left-8"
-            >
-              <LeftSmall />
-            </button>
+            {historias.length > 1 && (
+              <button
+                type="button"
+                onClick={goPrevious}
+                aria-label="Historia anterior"
+                className="absolute left-3 top-1/2 z-20 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/80 text-white ring-1 ring-white/20 transition hover:bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:flex sm:left-8"
+              >
+                <LeftSmall />
+              </button>
+            )}
 
             <HistoryViewerCard
               story={current}

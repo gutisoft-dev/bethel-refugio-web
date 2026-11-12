@@ -52,6 +52,12 @@ export const useHIstoriesGrid = ({ feed = "mine" }: Props) => {
       setStories([]);
       setNextCursor(null);
       setSelectedStoryId(null);
+      setPageError(false);
+
+      if (feed !== "public" && authStatus === "checking") {
+        setIsLoading(true);
+        return;
+      }
 
       if (feed !== "public" && authStatus !== "authenticated") {
         setError("Inicia sesión para consultar estas historias.");
@@ -75,16 +81,28 @@ export const useHIstoriesGrid = ({ feed = "mine" }: Props) => {
     return () => {
       isCurrent = false;
     };
-  }, [feed, reloadKey]);
+  }, [authStatus, feed, reloadKey]);
 
   const loadNextPage = useCallback(async () => {
-    if (!nextCursor || loadingMoreRef.current) return;
+    if (
+      !nextCursor ||
+      loadingMoreRef.current ||
+      (feed !== "public" && authStatus !== "authenticated")
+    ) {
+      return;
+    }
 
     loadingMoreRef.current = true;
     setIsLoadingMore(true);
     setPageError(false);
     try {
       const response = await loadStoriesPage(feed, nextCursor);
+      if (
+        feed !== "public" &&
+        useAuthStore.getState().authStatus !== "authenticated"
+      ) {
+        return;
+      }
       setStories((current) => [...current, ...response.results]);
       setNextCursor(response.next);
     } catch {
@@ -93,7 +111,7 @@ export const useHIstoriesGrid = ({ feed = "mine" }: Props) => {
       loadingMoreRef.current = false;
       setIsLoadingMore(false);
     }
-  }, [feed, nextCursor]);
+  }, [authStatus, feed, nextCursor]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;

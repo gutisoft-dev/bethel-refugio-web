@@ -2,6 +2,16 @@ import { useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -29,6 +39,7 @@ import {
 interface PublishBibleStoryPileDialogProps {
   items: BibleVersePileItem[];
   onRemove: (normalizedReference: string) => void;
+  onClear: () => void;
   onPublished: () => void;
 }
 
@@ -46,9 +57,11 @@ const visibilityLabels: Record<StoryVisibility, string> = {
 export const PublishBibleStoryPileDialog = ({
   items,
   onRemove,
+  onClear,
   onPublished,
 }: PublishBibleStoryPileDialogProps) => {
   const [open, setOpen] = useState(false);
+  const [confirmClearOpen, setConfirmClearOpen] = useState(false);
   const [visibility, setVisibility] = useState<StoryVisibility>("public");
   const [isPublishing, setIsPublishing] = useState(false);
 
@@ -147,38 +160,64 @@ export const PublishBibleStoryPileDialog = ({
               </Select>
             </div>
 
+            <div className="flex justify-end">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setConfirmClearOpen(true)}
+                disabled={isPublishing}
+                className="text-xs text-red-700 hover:bg-red-50 hover:text-red-800"
+              >
+                Quitar todo
+              </Button>
+            </div>
+
             <ol className="space-y-2">
-              {items.map(({ verse, caption }, index) => (
-                <li
-                  key={verse.normalized_reference}
-                  className="flex items-start justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3"
-                >
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold text-purple-800">
-                      {index + 1}. {verse.reference}
-                    </p>
-                    <p className="mt-1 line-clamp-2 text-xs italic text-slate-700">
-                      {verse.text}
-                    </p>
-                    {caption && (
-                      <p className="mt-1 line-clamp-2 text-xs text-slate-500">
-                        {caption}
-                      </p>
-                    )}
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onRemove(verse.normalized_reference)}
-                    disabled={isPublishing}
-                    aria-label={`Quitar ${verse.reference} de la pila`}
-                    className="shrink-0 text-slate-500 hover:text-red-700"
+              {items.map(({ verse, caption }, index) => {
+                const isAtPileEdge = index === 0 || index === items.length - 1;
+
+                return (
+                  <li
+                    key={verse.normalized_reference}
+                    className="flex items-start justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3"
                   >
-                    Quitar
-                  </Button>
-                </li>
-              ))}
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-purple-800">
+                        {index + 1}. {verse.reference}
+                      </p>
+                      <p className="mt-1 line-clamp-2 text-xs italic text-slate-700">
+                        {verse.text}
+                      </p>
+                      {caption && (
+                        <p className="mt-1 line-clamp-2 text-xs text-slate-500">
+                          {caption}
+                        </p>
+                      )}
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onRemove(verse.normalized_reference)}
+                      disabled={isPublishing || !isAtPileEdge}
+                      aria-label={
+                        isAtPileEdge
+                          ? `Quitar ${verse.reference} de la pila`
+                          : "Solo puedes quitar versículos de los extremos de la pila"
+                      }
+                      title={
+                        isAtPileEdge
+                          ? undefined
+                          : "Solo puedes quitar versículos de los extremos"
+                      }
+                      className="shrink-0 text-slate-500 hover:text-red-700"
+                    >
+                      Quitar
+                    </Button>
+                  </li>
+                );
+              })}
             </ol>
           </div>
 
@@ -202,6 +241,27 @@ export const PublishBibleStoryPileDialog = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={confirmClearOpen} onOpenChange={setConfirmClearOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Quitar toda la pila?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Se quitarán los {items.length} versículos de la pila. ¿Estás
+              seguro?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={onClear}
+              className="bg-red-700 text-white hover:bg-red-800"
+            >
+              Quitar todo
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

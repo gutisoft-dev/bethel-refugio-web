@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type TouchEvent } from "react";
 import { ChevronLeft } from "@/icons/ChevronLeft";
 
 interface BibleProjectionModalProps {
@@ -31,6 +31,29 @@ export const BibleProjectionModal = ({
   onNext,
 }: BibleProjectionModalProps) => {
   const projectionRef = useRef<HTMLDivElement>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  const handleTouchStart = (event: TouchEvent<HTMLDivElement>) => {
+    const touch = event.changedTouches[0];
+    if (touch) {
+      touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+    }
+  };
+
+  const handleTouchEnd = (event: TouchEvent<HTMLDivElement>) => {
+    const start = touchStartRef.current;
+    const touch = event.changedTouches[0];
+    touchStartRef.current = null;
+
+    if (!start || !touch || !isSequence) return;
+
+    const deltaX = touch.clientX - start.x;
+    const deltaY = touch.clientY - start.y;
+    if (Math.abs(deltaX) < 50 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+
+    if (deltaX < 0) onNext?.();
+    else onPrevious?.();
+  };
 
   useEffect(() => {
     if (!open || !isSequence) return;
@@ -99,7 +122,11 @@ export const BibleProjectionModal = ({
           Proyección de {verse.reference}
         </DialogTitle>
 
-        <div className="relative flex h-dvh w-screen flex-col overflow-hidden">
+        <div
+          className="relative flex h-dvh w-screen flex-col overflow-hidden touch-pan-y"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           <div className="absolute left-5 top-4 z-20">
             <Button
               type="button"
@@ -131,13 +158,12 @@ export const BibleProjectionModal = ({
                 px-4
                 py-1.5
                 text-[11px]
-                uppercase
                 tracking-wide
                 text-white
                 hover:bg-purple-700/80
               "
             >
-              ● {verse.reference}
+              ● {verse.reference } (RVR1960)
             </Badge>
 
             {/* <Badge
