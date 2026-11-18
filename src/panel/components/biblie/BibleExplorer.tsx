@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Search } from "@/icons/Search";
 import { Close } from "@/icons/Close";
 import { Suggestions } from "./Suggestions";
@@ -139,7 +138,7 @@ export const BibleExplorer = ({
             className={`mx-auto w-full max-w-7xl ${isPinned ? "p-2" : "py-3"}`}
           >
             <div
-              className={`flex w-full min-w-0 items-center overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow focus-within:ring-2 focus-within:ring-purple-500/30 ${isPinned ? "h-11" : "h-14"}`}
+              className={`flex w-full min-w-0 items-center overflow-hidden rounded-full border border-slate-200 bg-white shadow-sm transition-shadow focus-within:ring-2 focus-within:ring-purple-500/30 ${isPinned ? "h-11" : "h-14"}`}
             >
               <Search className="ml-5 size-5 shrink-0 text-slate-400" />
               <Input
@@ -167,14 +166,7 @@ export const BibleExplorer = ({
                   <Close className="size-4" />
                 </button>
               )}
-              <Button
-                type="submit"
-                disabled={isSearching}
-                className={`h-full shrink-0 rounded-none rounded-r-[0.9rem] bg-purple-700 px-5 font-semibold text-white hover:bg-purple-800 sm:px-7 ${isPinned ? "text-sm" : "text-base"}`}
-              >
-                <Search className="mr-2 size-4" />
-                {/* {isSearching ? "Buscando..." : "Buscar"} */}
-              </Button>
+             
             </div>
           </form>
           <Suggestions

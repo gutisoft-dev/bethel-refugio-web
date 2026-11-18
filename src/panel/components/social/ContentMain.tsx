@@ -42,6 +42,7 @@ export const ContentMain = ({ user, taps, handleTapsChange }: Props) => {
 
     onError: (error) => {
       if (axios.isAxiosError(error)) {
+       
         toast.add({
           type: "success",
           description: `Ha ocurrido un error `,

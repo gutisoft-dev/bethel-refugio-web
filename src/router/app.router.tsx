@@ -13,6 +13,7 @@ import {
 import { ErrorProfile } from "@/panel/pages/ErrorProfile";
 import { Users } from "@/panel/pages/Users";
 import { Credits } from "@/panel/pages/Credits";
+import { Policies } from "@/panel/pages/Policies";
 
 export const appRouter = createBrowserRouter([
   {
@@ -20,15 +21,27 @@ export const appRouter = createBrowserRouter([
     element: <PanelLayout />,
     children: [
       {
-        path: "biblie",
-        element: <Biblie />,
-      },
-      {
         index: true,
         element: <Home />,
       },
     ],
   },
+
+  {
+    path: "/biblie",
+    element: (
+      <AuthenticatedRoute>
+        <PanelLayout />
+      </AuthenticatedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <Biblie />,
+      },
+    ],
+  },
+
   {
     path: "/profile",
     element: (
@@ -72,6 +85,16 @@ export const appRouter = createBrowserRouter([
       {
         index: true,
         element: <Credits />,
+      },
+    ],
+  },
+  {
+    path: "/policies",
+    element: <PanelLayout />,
+    children: [
+      {
+        index: true,
+        element: <Policies />,
       },
     ],
   },

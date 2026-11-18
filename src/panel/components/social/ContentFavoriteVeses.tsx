@@ -16,12 +16,8 @@ interface Props {
 
 export const ContentFavoriteVeses = ({ id }: Props) => {
   const observerRef = useRef<HTMLDivElement | null>(null);
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useFavoriteVerses(id);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useFavoriteVerses(id);
   const queryClient = useQueryClient();
 
   const verses = useMemo(
@@ -117,16 +113,21 @@ export const ContentFavoriteVeses = ({ id }: Props) => {
         </div>
       </div>
       <div className="grid gap-5">
-        {verses.map((result, index) => (
-          <ContentVerses
-            key={result.normalized_reference}
-            result={result}
-            onOpen={onSelected}
-            index={index}
-            onOpenDeleted={onOpenDeleted}
-          />
-        ))}
-        {verses.length === 0 && (
+        {isLoading ? (
+          <div className="flex justify-center py-10">
+            <ContentEmpty text="Cargando versículos..." />
+          </div>
+        ) : verses.length > 0 ? (
+          verses.map((result, index) => (
+            <ContentVerses
+              key={result.normalized_reference}
+              result={result}
+              onOpen={onSelected}
+              index={index}
+              onOpenDeleted={onOpenDeleted}
+            />
+          ))
+        ) : (
           <ContentEmpty text="No tienes versículos favoritos" />
         )}
       </div>
@@ -164,6 +165,7 @@ export const ContentFavoriteVeses = ({ id }: Props) => {
         open={openDelete}
         onCloseDeleted={onCloseDeleted}
         text="¿Deseas eliminar el verso?"
+        isloading={deleteFavoriteVerseMutation.isPending}
       />
     </div>
   );

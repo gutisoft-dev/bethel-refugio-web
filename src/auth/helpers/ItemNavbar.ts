@@ -3,4 +3,5 @@ export const links = [
   { href: "/biblie", label: "Biblia" },
   { href: "/users", label: "Usuarios" },
   { href: "/credits", label: "Créditos" },
+  { href: "/policies", label: "Politicas" },
 ];

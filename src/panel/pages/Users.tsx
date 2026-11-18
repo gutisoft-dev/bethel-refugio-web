@@ -22,9 +22,7 @@ export const Users = () => {
       </div>
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          {/* <h2 className="text-sm font-semibold text-slate-900">
-            Resultados de búsqueda
-          </h2> */}
+        
         </div>
       </div>
       <div>
@@ -51,7 +49,7 @@ export const Users = () => {
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 p-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 p-2">
         {data?.results.map((result) => (
           <ContentUser
             key={result.id}
@@ -69,6 +67,7 @@ export const Users = () => {
         open={openDelete}
         onCloseDeleted={onCloseDeleted}
         text="¿Deseas eliminar a este seguidor?"
+        isloading={deleteFollowMutation.isPending}
       />
     </div>
   );

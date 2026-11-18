@@ -1,14 +1,19 @@
 import { AvatarContent } from "@/auth/components/Avatar";
 import { SidebarContent } from "@/auth/components/Sidebar";
 import { links } from "@/auth/helpers/ItemNavbar";
+import { messages } from "@/helpers/messages";
 import { Menu } from "@/icons/Menu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 export const Navbar = () => {
+  const [randomMessage, setRandomMessage] = useState("");
   const { pathname } = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+useEffect(() => {
+  const randomIndex = Math.floor(Math.random() * messages.length);
+  setRandomMessage(messages[randomIndex].text);
+}, []);
   const handelCloseSidebar = () => setIsSidebarOpen(false);
   return (
     <header className="border-b border-[#eeeeee] bg-white">
@@ -16,16 +21,18 @@ export const Navbar = () => {
         aria-label="Navegación principal"
         className="mx-auto flex min-h-14 items-stretch justify-between px-2 sm:px-8"
       >
-        <Link
-          to="/"
-          className="flex shrink-0 items-center font-semibold tracking-[-0.04em] text-[#6800b8]"
-        >
+        <Link to="/" className="flex  items-center ">
           <img
-           src="/favicon-light.ico"
+            src="/favicon-light.ico"
             alt="Bethel Refugio"
-            className="h-6 w-6"
+            className="h-10 w-10"
           />
-          Bethel Refugio
+          <div>
+            <p className="font-semibold text-[15px] tracking-[-0.04em] text-[#6800b8]">
+              Bethel Refugio
+            </p>
+            <p className="text-[18px]  fade-in-up  text-slate-500 "> {randomMessage || "..."}</p>
+          </div>
         </Link>
         <div className="hidden items-stretch gap-1 sm:flex sm:gap-7">
           {links.map((link) => {
