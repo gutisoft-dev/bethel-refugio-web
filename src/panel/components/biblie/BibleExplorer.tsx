@@ -138,11 +138,7 @@ export const BibleExplorer = ({
             className="mx-auto w-full max-w-7xl py-3"
           >
             <div
-<<<<<<< HEAD
-              className="flex h-14 w-full min-w-0 items-center overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow focus-within:ring-2 focus-within:ring-purple-500/30"
-=======
               className={`flex w-full min-w-0 items-center overflow-hidden rounded-full border border-slate-200 bg-white shadow-sm transition-shadow focus-within:ring-2 focus-within:ring-purple-500/30 ${isPinned ? "h-11" : "h-14"}`}
->>>>>>> 094cc5eaa0ce05c3c34766598b1f9fb7cc924803
             >
               <Search className="ml-5 size-5 shrink-0 text-slate-400" />
               <Input
@@ -170,18 +166,6 @@ export const BibleExplorer = ({
                   <Close className="size-4" />
                 </button>
               )}
-<<<<<<< HEAD
-              <Button
-                type="submit"
-                disabled={isSearching}
-                className="h-full shrink-0 rounded-none rounded-r-[0.9rem] bg-purple-700 px-5 text-base font-semibold text-white hover:bg-purple-800 sm:px-7"
-              >
-                <Search className="mr-2 size-4" />
-                {/* {isSearching ? "Buscando..." : "Buscar"} */}
-              </Button>
-=======
-             
->>>>>>> 094cc5eaa0ce05c3c34766598b1f9fb7cc924803
             </div>
           </form>
           <Suggestions
