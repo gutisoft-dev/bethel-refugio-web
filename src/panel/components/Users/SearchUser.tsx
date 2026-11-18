@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Close } from "@/icons/Close";
 import { Search } from "@/icons/Search";
@@ -14,7 +13,7 @@ interface Props {
   onSearch: (username: string) => void;
 }
 export const SearchUser = ({ onSearch }: Props) => {
-    const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { register, watch, reset } = useForm<FormData>({
     defaultValues: {
       search: "",
@@ -27,20 +26,20 @@ export const SearchUser = ({ onSearch }: Props) => {
     onSearch(debouncedSearch.trim());
   }, [debouncedSearch, onSearch]);
 
-
   const clearSearch = () => {
     reset({
       search: "",
     });
   };
 
-
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
+      const scrolled = window.scrollY > 10;
+
+      setIsScrolled((prev) => (prev !== scrolled ? scrolled : prev));
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     handleScroll();
 
@@ -51,15 +50,9 @@ export const SearchUser = ({ onSearch }: Props) => {
 
   return (
     <div className="w-full">
-      <section
-        className={
-          isScrolled
-            ? "fixed inset-x-0 top-0 z-40 w-full  px-5 md:px-8"
-            : "w-full py-3"
-        }
-      >
+      <section className={"sticky top-0 z-40 w-full px-5 py-3 md:px-8"}>
         <div className="mx-auto w-full max-w-7xl border-0  py-0 shadow-none ring-0">
-          <div className={isScrolled ? "p-2" : "p-2 md:p-4"}>
+          <div className={isScrolled ? "p-2" : ""}>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -69,7 +62,7 @@ export const SearchUser = ({ onSearch }: Props) => {
               <div
                 className={`
             flex w-full min-w-0 items-center overflow-hidden
-            rounded-2xl border border-slate-200 bg-white
+            rounded-full border border-slate-200 bg-white
             shadow-sm transition-shadow
             focus-within:ring-2 focus-within:ring-purple-500/30
             ${isScrolled ? "h-11" : "h-14"}
@@ -110,7 +103,7 @@ export const SearchUser = ({ onSearch }: Props) => {
                   </button>
                 )}
 
-                <Button
+                {/* <Button
                   type="submit"
                   className={`
               h-full shrink-0 rounded-none
@@ -121,7 +114,7 @@ export const SearchUser = ({ onSearch }: Props) => {
             `}
                 >
                   <Search className="mr-2 size-4" />
-                </Button>
+                </Button> */}
               </div>
             </form>
           </div>

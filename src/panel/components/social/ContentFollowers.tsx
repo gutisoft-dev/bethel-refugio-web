@@ -52,6 +52,7 @@ export const ContentFollowers = ({ id }: Props) => {
         open={openDelete}
         onCloseDeleted={onCloseDeleted}
         text="¿Deseas eliminar a este seguidor?"
+        isloading={deleteFollowMutation.isPending}
       />
     </div>
   );

@@ -20,7 +20,7 @@ export const bibleSuggestions = [
   { slug: "salmos", name: "Salmos" },
   { slug: "proverbios", name: "Proverbios" },
   { slug: "eclesiastes", name: "Eclesiastés" },
-  { slug: "cantares", name: "Cantar de los Cantares" },
+  { slug: "cantares", name: "Cantares" },
   { slug: "isaias", name: "Isaías" },
   { slug: "jeremias", name: "Jeremías" },
   { slug: "lamentaciones", name: "Lamentaciones" },

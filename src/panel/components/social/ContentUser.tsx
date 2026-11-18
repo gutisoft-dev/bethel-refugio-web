@@ -30,7 +30,6 @@ export const ContentUser = ({
   onOpenDeleted,
   isvisible = false,
 }: Props) => {
-  console.log(follower)
   const queryClient = useQueryClient();
 
   const [isFollowing, setIsFollowing] = useState(follower.is_following);

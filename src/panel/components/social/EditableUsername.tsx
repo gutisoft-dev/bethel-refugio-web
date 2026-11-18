@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Close } from "@/icons/Close";
-import { useMutation, } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { UpdateUsername } from "@/panel/actions/social/UpdateUsername";
 import { toast } from "@/components/ui/toast";
 import axios from "axios";
@@ -20,19 +20,15 @@ export const EditableUsername = ({ username }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedUsername, setEditedUsername] = useState(username);
 
-
-useEffect(() => {
-  setEditedUsername(username);
-}, [username])
-
-
+  useEffect(() => {
+    setEditedUsername(username);
+  }, [username]);
 
   const createFollowMutation = useMutation({
     mutationFn: UpdateUsername,
 
     onSuccess: async (resp) => {
       setEditedUsername(resp.username);
-     
 
       toast.add({
         type: "success",
@@ -43,11 +39,15 @@ useEffect(() => {
 
     onError: (error) => {
       if (axios.isAxiosError(error)) {
+        const response = error.response?.data?.error;
+        const message = response?.message;
+        const usernameError = response?.details?.username?.[0];
         toast.add({
           type: "error",
-          description: `Ha ocurrido un error `,
+          description: usernameError || message || "Ha ocurrido un error.",
           priority: "high",
         });
+
         return;
       }
     },

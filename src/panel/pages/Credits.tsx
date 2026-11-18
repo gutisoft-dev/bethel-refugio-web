@@ -64,8 +64,7 @@ export const Credits = () => {
   return (
     <div className="min-h-screen  text-[#171326]">
       <main
-        id="inicio"
-        className="mx-auto max-w-[1080px] px-[22px] pb-[50px] pt-[38px] sm:px-[34px] sm:pb-[72px] sm:pt-[66px]"
+        className="mx-auto max-w-270 px-5.5 pb-12.5 pt-[38px] sm:px-[34px] sm:pb-[72px] sm:pt-[66px]"
       >
         <div className="mb-[30px] max-w-[790px]">
           <p className="mb-2.5 text-[13px] font-bold uppercase tracking-[1.3px] text-[#7800c9]">
