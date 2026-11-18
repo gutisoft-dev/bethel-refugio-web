@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { PublicStory } from "@/panel/actions/history/story.action";
 import type { HistoryFeed } from "./HistoriesHeader";
@@ -51,6 +51,9 @@ export const HistoriasCards = ({
   const { authStatus } = useAuthStore();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isViewsDialogOpen, setIsViewsDialogOpen] = useState(false);
+  const [isManuallyPaused, setIsManuallyPaused] = useState(false);
+  const [isTouchPaused, setIsTouchPaused] = useState(false);
+  const { isDownloading, downloadImage } = useDownloadStoryVerseImage();
   const {
     current,
     previous,
@@ -76,7 +79,12 @@ export const HistoriasCards = ({
     initialStoryId,
     initialStories,
     initialCursor,
-    isPaused: isDeleteDialogOpen || isViewsDialogOpen,
+    isPaused:
+      isManuallyPaused ||
+      isTouchPaused ||
+      isDeleteDialogOpen ||
+      isViewsDialogOpen ||
+      isDownloading,
   });
   const deletion = useHistoryDeletion({
     current,
@@ -86,8 +94,17 @@ export const HistoriasCards = ({
     onRemoveStoryContent: removeStoryContent,
     onStoryContentDeleted,
   });
-  const { isDownloading, downloadImage } = useDownloadStoryVerseImage();
-  const isStoryTimerPaused = deletion.isDialogOpen || isViewsDialogOpen;
+  useEffect(() => {
+    setIsManuallyPaused(false);
+    setIsTouchPaused(false);
+  }, [current?.id]);
+
+  const isStoryTimerPaused =
+    isManuallyPaused ||
+    isTouchPaused ||
+    deletion.isDialogOpen ||
+    isViewsDialogOpen ||
+    isDownloading;
 
   const navigateToProfile = (username: string) => {
     if (username !== "Mi historia") navigate(`/profile/${username}`);
@@ -134,7 +151,7 @@ export const HistoriasCards = ({
           <p className="text-sm text-slate-600">{getEmptyMessage(feed)}</p>
         </div>
       ) : (
-        <div className="flex min-h-0 w-full flex-1 items-center justify-center px-1 sm:px-2">
+          <div className="flex min-h-0 w-full flex-1 items-center justify-center px-0 sm:px-2">
           <div
             className="relative flex h-full w-full touch-pan-y items-center justify-center gap-2 sm:gap-4 lg:gap-5"
             onTouchStart={handleTouchStart}
@@ -175,6 +192,11 @@ export const HistoriasCards = ({
               isDeleting={deletion.isDeleting}
               isDownloading={isDownloading}
               isTimerPaused={isStoryTimerPaused}
+              isManuallyPaused={isManuallyPaused}
+              onTogglePause={() =>
+                setIsManuallyPaused((isPaused) => !isPaused)
+              }
+              onTouchPauseChange={setIsTouchPaused}
               onDeleteClick={() => {
                 deletion.clearError();
                 deletion.setIsDialogOpen(true);

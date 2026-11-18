@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type TouchEvent,
+} from "react";
 import { Button } from "@/components/ui/button";
 import { Book } from "@/icons/Book";
 import type { Historia } from "@/panel/interfaces/History.interface";
@@ -10,6 +16,8 @@ import { Clock } from "@/icons/Clock";
 import { Delete } from "@/icons/Delete";
 import { Download } from "@/icons/Download";
 import { LoaderCircle } from "@/icons/LoaderCircle";
+import { Pause } from "@/icons/Pause";
+import { Play } from "@/icons/Play";
 
 interface HistoryViewerCardProps {
   story: Historia;
@@ -18,6 +26,9 @@ interface HistoryViewerCardProps {
   isDeleting: boolean;
   isDownloading: boolean;
   isTimerPaused: boolean;
+  isManuallyPaused: boolean;
+  onTogglePause: () => void;
+  onTouchPauseChange: (isPaused: boolean) => void;
   onDeleteClick: () => void;
   onNavigateToProfile: (username: string) => void;
   onViewsDialogOpenChange: (open: boolean) => void;
@@ -85,22 +96,54 @@ export const HistoryViewerCard = ({
   isDeleting,
   isDownloading,
   isTimerPaused,
+  isManuallyPaused,
+  onTogglePause,
+  onTouchPauseChange,
   onDeleteClick,
   onNavigateToProfile,
   onViewsDialogOpenChange,
   onDownload,
   onVerseFavorited,
-}: HistoryViewerCardProps) => (
+}: HistoryViewerCardProps) => {
+  const isPausingTouchRef = useRef(false);
+
+  const handleTouchStart = (event: TouchEvent<HTMLElement>) => {
+    const target = event.target;
+    if (
+      target instanceof Element &&
+      target.closest("button, a, input, textarea, select")
+    ) {
+      isPausingTouchRef.current = false;
+      return;
+    }
+
+    const touch = event.touches[0];
+    isPausingTouchRef.current = Boolean(touch);
+    if (touch) onTouchPauseChange(true);
+  };
+
+  const handleTouchEnd = () => {
+    if (isPausingTouchRef.current) onTouchPauseChange(false);
+    isPausingTouchRef.current = false;
+  };
+
+  return (
   <article
     aria-label={`Historia de ${story.author}: ${story.reference}`}
-    className="histories-grid-card relative flex h-[min(680px,calc(100dvh-8rem))] max-h-[min(680px,calc(100dvh-8rem))] min-h-0 w-[min(448px,calc(100vw-32px))] shrink-0 flex-col overflow-hidden rounded-[2rem] border border-primary/40 bg-slate-950 p-0 text-primary-foreground shadow-2xl sm:h-[min(800px,100%)] sm:max-h-200"
+    onTouchStart={handleTouchStart}
+    onTouchEnd={handleTouchEnd}
+    onTouchCancel={() => {
+      if (isPausingTouchRef.current) onTouchPauseChange(false);
+      isPausingTouchRef.current = false;
+    }}
+    className="histories-grid-card relative flex h-dvh max-h-dvh min-h-0 w-full shrink-0 flex-col overflow-hidden rounded-none border-0 bg-slate-950 p-0 text-primary-foreground shadow-2xl sm:h-[min(800px,100%)] sm:max-h-200 sm:w-[min(448px,calc(100vw-32px))] sm:rounded-[2rem] sm:border sm:border-primary/40"
   >
     <span
       className="histories-grid-card-overlay pointer-events-none absolute inset-0 opacity-90"
       aria-hidden="true"
     />
     <div
-      className="absolute inset-x-5 top-5 z-10 flex gap-1.5"
+      className="absolute left-5 right-16 top-5 z-10 flex gap-1.5 sm:inset-x-5"
       aria-label="Progreso de la historia"
     >
       {Array.from({ length: story.totalVerses }).map((_, index) => (
@@ -122,7 +165,7 @@ export const HistoryViewerCard = ({
       ))}
     </div>
 
-    <header className="relative z-10 flex items-center justify-between gap-2 px-6 pt-12 sm:px-8 sm:pt-14">
+    <header className="relative z-10 flex items-center justify-between gap-2 px-6 pt-18 sm:px-8 sm:pt-14">
       <div className="flex min-w-0 items-center gap-3">
         <button
           type="button"
@@ -148,7 +191,20 @@ export const HistoryViewerCard = ({
           </p>
         </div>
       </div>
-      {feed === "mine" && (
+      <div className="flex shrink-0 items-center gap-2">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          aria-label={isTimerPaused ? "Reanudar historia" : "Pausar historia"}
+          aria-pressed={isManuallyPaused}
+          title={isTimerPaused ? "Reanudar historia" : "Pausar historia"}
+          onClick={onTogglePause}
+          className="size-9 rounded-full bg-white/20 p-0 text-white backdrop-blur-md hover:bg-white/30 hover:text-white focus-visible:ring-white [&_svg]:size-4"
+        >
+          {isTimerPaused ? <Play /> : <Pause />}
+        </Button>
+        {feed === "mine" && (
         <Button
           type="button"
           variant="ghost"
@@ -161,7 +217,8 @@ export const HistoryViewerCard = ({
         >
           <Delete className="size-5 " />
         </Button>
-      )}
+        )}
+      </div>
     </header>
 
     <div className="relative z-10 flex min-h-0 flex-1 flex-col justify-start overflow-y-auto overscroll-contain px-5 pb-6 pt-5 text-left [scrollbar-color:rgba(255,255,255,0.3)_transparent] scrollbar-thin sm:justify-end sm:px-8 sm:pb-12 sm:pt-6">
@@ -225,4 +282,5 @@ export const HistoryViewerCard = ({
       </div>
     </div>
   </article>
-);
+  );
+};
