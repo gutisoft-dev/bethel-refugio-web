@@ -1,24 +1,32 @@
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-import path from "path";
+import path from "node:path";
 import { VitePWA } from "vite-plugin-pwa";
-// https://vite.dev/config/
 
 export default defineConfig({
+  // Aplicación publicada en la raíz del dominio
+  base: "/",
+
   plugins: [
     react(),
     tailwindcss(),
 
     VitePWA({
+      // Actualización automática de la PWA
       registerType: "autoUpdate",
 
+      // Manifest de Mi Refugio
       manifest: {
         id: "/",
         name: "Mi Refugio",
-        short_name: "miRefugio",
+        short_name: "Mi Refugio",
         description:
           "Comparte, descubre y guarda la Palabra de Dios.",
+
+        lang: "es",
+        dir: "ltr",
 
         theme_color: "#6D28D9",
         background_color: "#FFFFFF",
@@ -48,12 +56,23 @@ export default defineConfig({
           },
         ],
       },
+
+      // Configuración de Workbox
+      workbox: {
+        cleanupOutdatedCaches: true,
+      },
     }),
   ],
 
+  // Alias para importaciones
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(import.meta.dirname, "./src"),
     },
+  },
+
+  // Configuración de compilación
+  build: {
+    sourcemap: false,
   },
 });

@@ -28,10 +28,12 @@ useEffect(() => {
             className="h-10 w-10"
           />
           <div>
+            {/*
             <p className="font-semibold text-[15px] tracking-[-0.04em] text-[#6800b8]">
               Bethel Refugio
             </p>
-            <p className="text-[18px]  fade-in-up  text-slate-500 "> {randomMessage || "..."}</p>
+            */}
+            <p className="text-[16px]  fade-in-up tracking-[-0.04em]  text-slate-500 "> {randomMessage || "..."}</p>
           </div>
         </Link>
         <div className="hidden items-stretch gap-1 sm:flex sm:gap-7">

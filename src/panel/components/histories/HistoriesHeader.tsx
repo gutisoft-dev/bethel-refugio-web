@@ -14,8 +14,8 @@ interface HistoriasHeaderProps {
 const tabs = [
   { label: "Público", feed: "public", icon: <Market /> },
   { label: "Seguidos", feed: "following", icon: <UserAdd /> },
-  { label: "Guardados", feed: "saved", icon: <Save /> },
-  { label: "Mis Historias", feed: "mine", icon: null },
+  { label: "Favoritos", feed: "saved", icon: <Save /> },
+  { label: "Mis historias", feed: "mine", icon: null },
 ] as const;
 
 export const HistoriasHeader = ({
