@@ -9,12 +9,17 @@ const policies = [
   },
   {
     id: "copyright",
-    title: "2. Derechos de autor",
+    title: "2. Derechos de autor y uso del contenido",
     paragraphs: [
-      "La aplicación incorpora contenido correspondiente a la traducción Reina-Valera 1960 (RVR1960).",
-      "Texto bíblico Reina-Valera 1960® © Sociedades Bíblicas en América Latina, 1960. Derechos renovados 1988, Sociedades Bíblicas Unidas.",
-      "La autorización para utilizar esta traducción dentro de Mi Refugio se encuentra actualmente en trámite ante las entidades correspondientes. No se declara que exista una licencia definitiva concedida.",
-      "El uso del texto bíblico estará sujeto a las condiciones y autorizaciones establecidas por sus titulares. Mi Refugio podrá limitar o retirar contenido cuando sea necesario."
+      "Mi Refugio incorpora contenido identificado como perteneciente a la traducción Reina-Valera 1960 (RVR1960). El archivo utilizado fue obtenido de fuentes disponibles en internet y actualmente no contamos con documentación que permita verificar su procedencia oficial.",
+      
+      "Reconocimiento de derechos: Texto bíblico Reina-Valera 1960® © Sociedades Bíblicas en América Latina, 1960. Derechos renovados 1988, Sociedades Bíblicas Unidas.",
+      
+      "Mi Refugio no reclama la propiedad del texto bíblico ni de los derechos asociados a esta traducción. Actualmente no contamos con una licencia ni autorización formal para reproducir o distribuir este contenido dentro de la aplicación.",
+      
+      "Hemos establecido contacto con la Sociedad Bíblica Boliviana y estamos realizando las gestiones correspondientes para solicitar la autorización de uso. Este proceso se encuentra pendiente de respuesta y aprobación, por lo que no constituye una licencia concedida ni una autorización vigente.",
+      
+      "El uso del contenido estará sujeto a las condiciones que establezcan los titulares de los derechos. Mi Refugio podrá limitar, suspender o retirar el contenido cuando corresponda."
     ],
   },
   {

@@ -1,41 +1,52 @@
+
+import type { ReactNode } from "react";
+
 import { Button } from "@/components/ui/button";
 import { BookOpen } from "@/icons/BookOpen";
-import { Check } from "@/icons/Check";
 import { CheckCircle2 } from "@/icons/CheckCircle2";
-import { Close } from "@/icons/Close";
 import { FileCheck2 } from "@/icons/FileCheck2";
-import { LockKeyhole } from "@/icons/LockKeyhole";
 import { Mail } from "@/icons/Mail";
-import { XCircle } from "@/icons/XCircle";
+import { LockKeyhole } from "@/icons/LockKeyhole";
 
-const allowed = [
-  "Buscar y leer versículos.",
-  "Guardar versículos para tu estudio personal.",
-  "Proyectar versículos durante los servicios de la congregación.",
-  "Compartir un versículo suelto, siempre con su referencia y el aviso de derechos de autor.",
-];
+const styles = {
+  page: "min-h-screen text-[#171326]",
+  container:
+    "mx-auto w-full max-w-6xl px-5 pb-12 pt-9 sm:px-8 sm:pb-16 sm:pt-14",
+  eyebrow:
+    "mb-3 text-xs font-bold uppercase tracking-[0.12em] text-[#7800c9]",
+  heading:
+    "mb-4 text-3xl font-bold leading-tight tracking-tight sm:text-4xl",
+  description:
+    "max-w-3xl text-base leading-relaxed text-[#625c70] sm:text-lg",
+  grid: "grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6",
+  card: "rounded-2xl border border-[#e8e0ed] bg-white p-5 shadow-sm sm:p-6",
+  sectionTitle:
+    "text-lg font-bold leading-snug tracking-tight text-[#211a2e] sm:text-xl",
+  paragraph: "text-sm leading-relaxed text-[#514b5e] sm:text-base",
+};
 
-const restricted = [
-  "Copiar o descargar la Biblia completa o capítulos en bloque.",
-  "Publicar el texto fuera de la aplicación sin su referencia y aviso.",
-  "Usar el texto con fines comerciales.",
-  "Compartir tu acceso con personas no autorizadas.",
-];
-
-
-
-function SectionIcon({
-  children,
-  tone = "purple",
-}: {
-  children: React.ReactNode;
-  tone?: "purple" | "red";
-}) {
+function SectionIcon({ children }: { children: ReactNode }) {
   return (
     <div
-      className={`grid h-10 w-10 shrink-0 place-items-center rounded-[11px] ${tone === "red" ? "bg-[#fdebea] text-[#bd3e37]" : "bg-[#f2e7fa] text-[#7800c9]"}`}
+      className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[#f2e7fa] text-[#7800c9]"
+      aria-hidden="true"
     >
       {children}
+    </div>
+  );
+}
+
+function SectionHeader({
+  icon,
+  title,
+}: {
+  icon: ReactNode;
+  title: string;
+}) {
+  return (
+    <div className="mb-5 flex items-center gap-3.5">
+      <SectionIcon>{icon}</SectionIcon>
+      <h2 className={styles.sectionTitle}>{title}</h2>
     </div>
   );
 }
@@ -45,176 +56,147 @@ function InfoCard({
   className = "",
   id,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   id?: string;
 }) {
   return (
-    <section
-      id={id}
-      className={`rounded-[17px] border border-[#e4ddeb] bg-white p-[22px_23px] shadow-[0_1px_1px_rgba(39,17,64,0.02)] ${className}`}
-    >
+    <section id={id} className={`${styles.card} ${className}`}>
       {children}
     </section>
   );
 }
 
 export const Credits = () => {
-
   return (
-    <div className="min-h-screen  text-[#171326]">
-      <main
-        className="mx-auto max-w-270 px-5.5 pb-12.5 pt-[38px] sm:px-[34px] sm:pb-[72px] sm:pt-[66px]"
-      >
-        <div className="mb-[30px] max-w-[790px]">
-          <p className="mb-2.5 text-[13px] font-bold uppercase tracking-[1.3px] text-[#7800c9]">
-            Información legal
-          </p>
-          <h1 className="mb-[15px] text-3xl font-bold leading-[1.08] tracking-[-1.2px] ">
-            Créditos y uso del texto bíblico
-          </h1>
-          <p className="mb-[22px] max-w-[730px] text-[18px] leading-[1.62] text-[#4e4a5d] sm:leading-[1.55]">
-            Información sobre los derechos del texto bíblico, el estado de la
-            licencia y las condiciones de uso de la aplicación.
-          </p>
-          <div className="inline-flex text-[12px] w-fit items-center gap-2 rounded-full bg-[#f2e7fa] px-[13px] py-2 text-sm font-semibold text-[#5a1196] sm:px-[10px] ">
-            <LockKeyhole />
-            <span>Prototipo cerrado · Licencia en trámite</span>
-          </div>
-        </div>
+    <div className={styles.page}>
+      <main className={styles.container}>
+        {/* Encabezado */}
+        <header className="mb-9 max-w-3xl sm:mb-11">
+          <p className={styles.eyebrow}>Información legal</p>
 
-        <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-2 sm:gap-[22px]">
-          <InfoCard
-            id="texto"
-            className="sm:col-span-2 lg:grid lg:grid-cols-[1fr_1.2fr] lg:gap-x-[42px]"
-          >
-            <div className="mb-[17px] flex items-center gap-[14px] lg:col-span-full">
-              <SectionIcon>
-                <BookOpen />
-              </SectionIcon>
-              <h2 className="text-[21px] font-bold leading-[1.25] tracking-[-0.35px] sm:text-[22px]">
-                Texto bíblico
-              </h2>
-            </div>
-            <dl className="m-0 lg:col-start-1">
-              <div className=" border-b border-[#e4ddeb] pb-[15px]">
-                <dt className="mb-1 text-sm text-[#716b7d]">Versión</dt>
-                <dd className=" leading-[1.4] ">Reina-Valera 1960 (RVR1960)</dd>
-              </div>
-              <div className="mb-[15px] border-b border-[#e4ddeb] pb-[15px]">
-                <dt className="mb-1 text-sm text-[#716b7d]">
-                  Titular de los derechos
-                </dt>
-                <dd className=" leading-[1.4] ">
-                  Sociedades Bíblicas en América Latina, 1960
-                </dd>
-              </div>
-              <div>
-                <dt className="mb-1 text-sm text-[#716b7d]">
-                  Derechos renovados
-                </dt>
-                <dd className=" leading-[1.4]">
-                  1988, Sociedades Bíblicas Unidas
-                </dd>
-              </div>
-            </dl>
-            <p className="my-[25px] rounded-xl border border-[#e7d9ee] bg-[#faf3fd] px-[19px] py-[17px]  leading-[1.7] text-[#4f4759] lg:col-start-2 lg:row-start-2 lg:my-0 lg:self-center">
-              Texto bíblico Reina-Valera 1960® © Sociedades Bíblicas en América
-              Latina, 1960. Derechos renovados 1988, Sociedades Bíblicas Unidas.
-            </p>
-            <p className="m-0 text-base leading-[1.65] text-[#6d6878] lg:col-start-2">
-              Bethel Refugio no es propietaria del texto bíblico ni está
-              afiliada a las Sociedades Bíblicas.
+          <h1 className={styles.heading}>
+            Créditos del proyecto
+          </h1>
+
+          <p className={styles.description}>
+            Información sobre el origen del contenido bíblico,
+            los derechos de uso y el propósito de Mi Refugio.
+          </p>
+
+          <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#fff4d9] px-3.5 py-2 text-xs font-semibold text-[#805c17] sm:text-sm">
+            <FileCheck2 aria-hidden="true" />
+            <span>Proyecto sin fines de lucro · Licencia en trámite</span>
+          </div>
+        </header>
+
+        <div className={styles.grid}>
+          {/* Origen del texto bíblico */}
+          <InfoCard id="texto" className="sm:col-span-2">
+            <SectionHeader
+              icon={<BookOpen />}
+              title="Origen del texto bíblico"
+            />
+
+            <p className={styles.paragraph}>
+              La aplicación incorpora contenido identificado como
+              Reina-Valera 1960 (RVR1960), obtenido de archivos
+              descargados de internet. Actualmente no contamos con
+              documentación que permita verificar su procedencia
+              oficial ni su autorización de uso.
             </p>
           </InfoCard>
 
+          {/* Derechos y licencia */}
           <InfoCard>
-            <div className="mb-[17px] flex items-center gap-[14px]">
-              <SectionIcon>
-                <FileCheck2 />
-              </SectionIcon>
-              <h2 className=" font-bold leading-[1.25] tracking-[-0.35px] ">
-                Estado de la licencia
-              </h2>
-            </div>
-            <span className="mb-[18px] inline-block rounded-full bg-[#fff4d9] px-[14px] py-[7px] text-sm font-bold text-[#805c17]">
+            <SectionHeader
+              icon={<FileCheck2 />}
+              title="Derechos y licencia"
+            />
+
+            <span className="mb-4 inline-flex items-center rounded-full bg-[#fff4d9] px-3.5 py-1.5 text-sm font-semibold text-[#805c17]">
               En trámite
             </span>
-            <p className="m-0 text-[17px] leading-[1.7] text-[#393445]">
-              Estamos gestionando la licencia de uso con la Sociedad Bíblica
-              Boliviana. Mientras tanto, la aplicación funciona como prototipo
-              cerrado, solo para personas autorizadas de la congregación
-              Movimiento Misionero Mundial Tarija.
+
+            <p className={styles.paragraph}>
+              Actualmente no contamos con una licencia de uso.
+              Ya establecimos contacto con la Sociedad Bíblica
+              Boliviana y estamos realizando las gestiones para
+              solicitar la autorización correspondiente.
+            </p>
+
+            <p className="mt-3 text-sm leading-relaxed text-[#716b7d]">
+              La autorización todavía no ha sido concedida.
             </p>
           </InfoCard>
 
-          <InfoCard id="uso">
-            <div className="mb-[17px] flex items-center gap-[14px]">
-              <SectionIcon>
-                <CheckCircle2 />
-              </SectionIcon>
-              <h2 className=" font-bold leading-[1.25] tracking-[-0.35px] ">
-                Qué puedes hacer
-              </h2>
-            </div>
-            <ul className="m-0 grid list-none gap-[17px] p-0">
-              {allowed.map((item) => (
-                <li
-                  className="grid grid-cols-[24px_1fr] gap-[15px]  leading-[1.55] text-[#393445]"
-                  key={item}
-                >
-                  <Check  />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </InfoCard>
+          {/* Propósito y desarrollo */}
           <InfoCard>
-            <div className="mb-[17px] flex items-center gap-[14px]">
-              <SectionIcon tone="red">
-                <XCircle />
-              </SectionIcon>
-              <h2 className="font-bold leading-[1.25] tracking-[-0.35px] ">
-                Qué no está permitido
-              </h2>
-            </div>
-            <ul className="m-0 grid list-none gap-[17px] p-0">
-              {restricted.map((item) => (
-                <li
-                  className="grid grid-cols-[24px_1fr] gap-[15px] text-[17px] leading-[1.55] text-[#393445]"
-                  key={item}
-                >
-                  <Close className="text-[#bd3e37]" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+            <SectionHeader
+              icon={<CheckCircle2 />}
+              title="Propósito y desarrollo"
+            />
+
+            <p className={styles.paragraph}>
+              Mi Refugio es un proyecto personal, gratuito y sin
+              fines de lucro, desarrollado con el propósito de
+              ofrecer herramientas digitales para consultar,
+              compartir y conservar contenido bíblico.
+            </p>
+
+            <p className="mt-3 text-sm leading-relaxed text-[#716b7d]">
+              Desarrollado de manera independiente bajo el nombre
+              Gutisoft, que actualmente no constituye una empresa
+              legalmente establecida.
+            </p>
           </InfoCard>
 
+          {/* Contacto */}
           <InfoCard id="contacto" className="sm:col-span-2">
-            <div className="mb-[17px] flex items-center gap-[14px]">
-              <SectionIcon>
-                <Mail />
-              </SectionIcon>
-              <h2 className=" font-bold leading-[1.25] tracking-[-0.35px] sm:text-[22px]">
-                Contacto
-              </h2>
-            </div>
-            <p className="m-0  leading-[1.7] text-[#393445]">
-              Si eres titular de derechos y tienes alguna observación sobre el
-              uso del texto, escríbenos y la atenderemos de inmediato.
+            <SectionHeader
+              icon={<Mail />}
+              title="Contacto"
+            />
+
+            <p className={`${styles.paragraph} mb-5`}>
+              Para consultas, observaciones o comunicaciones
+              relacionadas con los derechos del contenido,
+              puedes escribirnos.
             </p>
-            <Button>gutisoft.dev@gmail.com</Button>
+
+            <Button
+              type="button"
+              onClick={() =>
+                window.location.assign(
+                  "mailto:gutisoft.dev@gmail.com"
+                )
+              }
+              className="w-full sm:w-auto"
+            >
+              <Mail className="mr-2 h-4 w-4" />
+              gutisoft.dev@gmail.com
+            </Button>
           </InfoCard>
         </div>
       </main>
-      <footer className="mx-auto max-w-[1035px] border-t border-[#e4ddeb] p-3 text-[15px] leading-[1.65] text-[#686274] ">
-        <strong className="text-base text-[#373044]">Bethel Refugio</strong>
-        <p className="m-0 mt-[7px] max-w-[580px]">
-          Desarrollada por Gutisoft para la congregación Movimiento Misionero
-          Mundial Tarija. Aplicación gratuita y sin publicidad.
-        </p>
-        <p className="m-0 mt-[3px]">Versión de prueba · 2026</p>
+
+      {/* Pie de página */}
+      <footer className="mx-auto max-w-6xl border-t border-[#e8e0ed] px-5 py-7 sm:px-8">
+        <div className="max-w-3xl">
+          <strong className="text-base font-bold text-[#373044]">
+            Mi Refugio
+          </strong>
+
+          <p className="mt-2 text-sm leading-relaxed text-[#716b7d]">
+            Proyecto personal desarrollado por Gutisoft,
+            con el propósito de ofrecer gratuitamente
+            la aplicación.
+          </p>
+
+          <p className="mt-2 text-xs text-[#898394]">
+            Versión de prueba · 2026
+          </p>
+        </div>
       </footer>
     </div>
   );

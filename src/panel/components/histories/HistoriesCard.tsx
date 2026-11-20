@@ -206,12 +206,15 @@ export const HistoriasCards = ({
               onVerseFavorited={(storyId, normalizedReference) =>
                 onVerseFavorited?.(storyId, normalizedReference)
               }
-              onDownload={() =>
+              onDownload={() =>{
+                /*
                 void downloadImage(
                   current.storyId,
                   current.position,
                   current.reference,
                 )
+                  */
+              }
               }
             />
 
