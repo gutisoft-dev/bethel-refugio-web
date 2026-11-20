@@ -15,7 +15,7 @@ import { SaveVerse } from "./SaveVerse";
 import { Clock } from "@/icons/Clock";
 import { Delete } from "@/icons/Delete";
 import { Download } from "@/icons/Download";
-import { LoaderCircle } from "@/icons/LoaderCircle";
+//import { LoaderCircle } from "@/icons/LoaderCircle";
 import { Pause } from "@/icons/Pause";
 import { Play } from "@/icons/Play";
 
@@ -94,7 +94,7 @@ export const HistoryViewerCard = ({
   feed,
   isAuthenticated,
   isDeleting,
-  isDownloading,
+  //isDownloading,
   isTimerPaused,
   isManuallyPaused,
   onTogglePause,
@@ -102,7 +102,7 @@ export const HistoryViewerCard = ({
   onDeleteClick,
   onNavigateToProfile,
   onViewsDialogOpenChange,
-  onDownload,
+  //onDownload,
   onVerseFavorited,
 }: HistoryViewerCardProps) => {
   const isPausingTouchRef = useRef(false);

@@ -53,7 +53,8 @@ export const HistoriasCards = ({
   const [isViewsDialogOpen, setIsViewsDialogOpen] = useState(false);
   const [isManuallyPaused, setIsManuallyPaused] = useState(false);
   const [isTouchPaused, setIsTouchPaused] = useState(false);
-  const { isDownloading, downloadImage } = useDownloadStoryVerseImage();
+  //const { isDownloading, downloadImage } = useDownloadStoryVerseImage();
+  const { isDownloading } = useDownloadStoryVerseImage();
   const {
     current,
     previous,

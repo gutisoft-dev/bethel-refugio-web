@@ -6,7 +6,7 @@ import { BookOpen } from "@/icons/BookOpen";
 import { CheckCircle2 } from "@/icons/CheckCircle2";
 import { FileCheck2 } from "@/icons/FileCheck2";
 import { Mail } from "@/icons/Mail";
-import { LockKeyhole } from "@/icons/LockKeyhole";
+//import { LockKeyhole } from "@/icons/LockKeyhole";
 
 const styles = {
   page: "min-h-screen text-[#171326]",
@@ -173,7 +173,9 @@ export const Credits = () => {
               }
               className="w-full sm:w-auto"
             >
-              <Mail className="mr-2 h-4 w-4" />
+              <span className="mr-2 inline-flex [&>svg]:h-4 [&>svg]:w-4">
+                <Mail />
+              </span>
               gutisoft.dev@gmail.com
             </Button>
           </InfoCard>
