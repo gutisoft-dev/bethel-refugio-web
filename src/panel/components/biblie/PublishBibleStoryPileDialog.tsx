@@ -186,7 +186,7 @@ export const PublishBibleStoryPileDialog = ({
                       <p className="text-xs font-semibold text-purple-800">
                         {index + 1}. {verse.reference}
                       </p>
-                      <p className="mt-1 line-clamp-2 text-xs italic text-slate-700">
+                      <p className="mt-1 line-clamp-2 select-none text-xs italic text-slate-700">
                         {verse.text}
                       </p>
                       {caption && (

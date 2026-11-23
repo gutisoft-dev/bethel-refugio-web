@@ -170,7 +170,7 @@ export function VerseProjection({
                   <div className="flex min-h-full items-center justify-center py-3">
                     <p
                       className="
-                        text-4xl font-medium leading-[1.18]
+                        select-none text-4xl font-medium leading-[1.18]
                         tracking-tight text-white
                         md:text-5xl lg:text-6xl xl:text-7xl
                       "

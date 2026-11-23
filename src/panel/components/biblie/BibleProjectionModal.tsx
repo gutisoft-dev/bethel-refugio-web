@@ -189,6 +189,7 @@ export const BibleProjectionModal = ({
               <div className="flex min-h-full items-center justify-center py-3">
                 <p
                   className="
+                    select-none
                     text-4xl
                     font-medium
                     leading-[1.18]
