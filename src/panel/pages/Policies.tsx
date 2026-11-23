@@ -87,7 +87,7 @@ const policies = [
 ];
 export const Policies = () => {
   return (
-    <div className="min-h-screen bg-white text-[#171326]">
+    <div className="min-h-screen  text-[#171326]">
       <main className="mx-auto w-full max-w-270 px-5 pb-14 pt-10 sm:px-8 sm:pb-20 sm:pt-16">
         {/* Encabezado */}
         <header className="mb-8 max-w-3xl sm:mb-10">

@@ -45,7 +45,7 @@ export const EditableUsername = ({ username }: Props) => {
         const usernameError = response?.details?.username?.[0];
         toast.add({
           type: "error",
-          description: usernameError || message || "Ha ocurrido un error.",
+          description: usernameError || message || "Error desconocido",
           priority: "high",
         });
 
