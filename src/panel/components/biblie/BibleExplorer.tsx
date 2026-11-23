@@ -93,7 +93,7 @@ export const BibleExplorer = ({
       if (!query) return;
     }
 
-    timeoutRef.current = setTimeout(() => onSearch(query), 700);
+    timeoutRef.current = setTimeout(() => onSearch(query), 400);
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };

@@ -26,11 +26,11 @@ export const FormEmail = ({ handleEmail, handleStep }: Props) => {
     setIsPosting(true);
     handleEmail(data.email);
     const resp = await login(data.email);
-    if (!resp) {
+    if (!resp.status) {
       setIsPosting(false);
       toast.add({
         type: "error",
-        description: "Error al iniciar sesion",
+        description: resp.message,
         priority: "high",
       });
       return;

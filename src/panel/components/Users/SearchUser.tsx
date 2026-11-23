@@ -20,7 +20,7 @@ export const SearchUser = ({ onSearch }: Props) => {
     },
   });
   const search = watch("search");
-  const debouncedSearch = useDebounce(search, 500);
+  const debouncedSearch = useDebounce(search, 100);
 
   useEffect(() => {
     onSearch(debouncedSearch.trim());

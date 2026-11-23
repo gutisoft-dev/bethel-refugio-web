@@ -10,6 +10,7 @@ import { useAuthStore } from "../store/auth.store";
 import { ButtonSubmit } from "./ButtonSubmit";
 import { toast } from "@/components/ui/toast";
 
+
 interface FormData {
   otp: string;
 }
@@ -27,6 +28,11 @@ export const ContentOtp = ({ handleresetFlow, email }: Props) => {
   } = useForm<FormData>();
   const { loginOtp } = useAuthStore();
   const [isPosting, setIsPosting] = useState(false);
+
+
+ 
+
+
   const onSubmit = async (data: FormData) => {
     setIsPosting(true);
     const resp = await loginOtp(email, data.otp);

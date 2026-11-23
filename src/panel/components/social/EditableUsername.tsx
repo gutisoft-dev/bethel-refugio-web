@@ -32,12 +32,13 @@ export const EditableUsername = ({ username }: Props) => {
 
       toast.add({
         type: "success",
-        description: `Has cambiado tu nombre de usuario`,
+        description: `Has Editado tu nombre correctamente`,
         priority: "high",
       });
     },
 
     onError: (error) => {
+      setEditedUsername(username)
       if (axios.isAxiosError(error)) {
         const response = error.response?.data?.error;
         const message = response?.message;

@@ -17,7 +17,7 @@ interface LoginResponse {
 
 type AuthStore = {
   authStatus: AuthStatus;
-  login: (email: string) => Promise<boolean>;
+  login: (email: string) => Promise<LoginResponse>;
   logout: () => void;
   checkAuthStatus: () => Promise<boolean>;
   loginOtp: (email: string, otp: string) => Promise<LoginResponse>;
@@ -29,10 +29,21 @@ export const useAuthStore = create<AuthStore>()((set) => ({
   login: async (email: string) => {
     try {
       await login(email);
-      return true;
+      return {
+        status: true,
+        message: "Codigo Otp enviado",
+      };
     } catch (error) {
-      console.log(error);
-      return false;
+      if (axios.isAxiosError(error)) {
+        return {
+          message: error.response?.data.error?.message || "Error desconocido",
+          status: false,
+        };
+      }
+      return {
+        message: "Error desconocido",
+        status: false,
+      };
     }
   },
   loginOtp: async (email: string, otp: string) => {
