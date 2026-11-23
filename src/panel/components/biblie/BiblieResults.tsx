@@ -270,7 +270,7 @@ export const BibleResults = ({
                 </div>
 
                 <div className="mt-4 border-l border-purple-300 pl-3">
-                  <p className="text-xl italic leading-6 text-slate-700">
+                  <p className="select-none text-xl italic leading-6 text-slate-700">
                     "{result.text}"
                   </p>
                 </div>

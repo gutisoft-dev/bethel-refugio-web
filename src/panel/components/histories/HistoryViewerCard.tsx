@@ -228,7 +228,7 @@ export const HistoryViewerCard = ({
         <span>♡ {story.favorites} favoritos</span>
       </span>
       <blockquote
-        className="history-verse-text my-auto text-center font-semibold leading-tight tracking-tight text-white transition-[font-size] duration-200 sm:leading-[1.12]"
+        className="history-verse-text my-auto select-none text-center font-semibold leading-tight tracking-tight text-white transition-[font-size] duration-200 sm:leading-[1.12]"
         style={
           {
             "--history-verse-font-size": `${getVerseFontSize(story.verse)}px`,

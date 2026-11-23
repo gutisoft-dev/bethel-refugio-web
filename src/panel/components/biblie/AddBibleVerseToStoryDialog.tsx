@@ -237,6 +237,7 @@ export const AddBibleVerseToStoryDialog = ({
                 <p
                   className="
                     text-[13px]
+                    select-none
                     italic
                     leading-[1.55]
                     text-foreground

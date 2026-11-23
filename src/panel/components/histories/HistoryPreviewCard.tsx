@@ -24,7 +24,7 @@ export const HistoryPreviewCard = ({
       <span className="truncate">{story.author}</span>
     </span>
     <span className="mt-1 text-[8px] text-white/50">{story.reference}</span>
-    <span className="mt-auto line-clamp-3 text-center text-[10px] italic text-white/60">
+    <span className="mt-auto line-clamp-3 select-none text-center text-[10px] italic text-white/60">
       “{story.verse}”
     </span>
     <span className="mt-8 rounded-full bg-black/20 px-2 py-1 text-center text-[8px] text-white/60">
