@@ -42,7 +42,9 @@ export const FormEmail = ({ handleEmail, handleStep }: Props) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-7">
+      {/*
       <div>
+        
         <p className="mb-3 text-sm font-medium text-[#8b7896]">
           Bienvenido a Versa
         </p>
@@ -53,11 +55,13 @@ export const FormEmail = ({ handleEmail, handleStep }: Props) => {
           Ingresa tu email y te enviaremos un código para comenzar a compartir
           la Palabra.
         </p>
+        
       </div>
+      */}
       <Field>
-        <FieldLabel htmlFor="checkout-7j9-card-name-43j">Email</FieldLabel>
+        <FieldLabel htmlFor="checkout-7j9-card-name-43j">Correo electrónico</FieldLabel>
         <Input
-          placeholder="Ingrese su email"
+          placeholder="Escribe aquí"
           className="h-10"
           required
           {...register("email", {
@@ -74,7 +78,7 @@ export const FormEmail = ({ handleEmail, handleStep }: Props) => {
           {errors.email.message}
         </p>
       )}
-      <ButtonSubmit isPosting={isPosting} text="Enviar codigo" />
+      <ButtonSubmit isPosting={isPosting} text="Solicitar código" />
     </form>
   );
 };

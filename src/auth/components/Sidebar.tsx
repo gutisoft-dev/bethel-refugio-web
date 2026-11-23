@@ -28,7 +28,7 @@ export const SidebarContent = ({ isSidebarOpen, handelCloseSidebar }: Props) => 
         <div className="flex h-full flex-col">
           <div className="flex min-h-14 items-center justify-between border-b px-5">
             <span className="font-semibold tracking-[-0.04em] text-[#6800b8]">
-              Biblia Social
+              Menú
             </span>
 
             <button

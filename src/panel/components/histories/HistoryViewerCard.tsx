@@ -15,7 +15,7 @@ import { SaveVerse } from "./SaveVerse";
 import { Clock } from "@/icons/Clock";
 import { Delete } from "@/icons/Delete";
 import { Download } from "@/icons/Download";
-import { LoaderCircle } from "@/icons/LoaderCircle";
+//import { LoaderCircle } from "@/icons/LoaderCircle";
 import { Pause } from "@/icons/Pause";
 import { Play } from "@/icons/Play";
 
@@ -94,7 +94,7 @@ export const HistoryViewerCard = ({
   feed,
   isAuthenticated,
   isDeleting,
-  isDownloading,
+  //isDownloading,
   isTimerPaused,
   isManuallyPaused,
   onTogglePause,
@@ -102,7 +102,7 @@ export const HistoryViewerCard = ({
   onDeleteClick,
   onNavigateToProfile,
   onViewsDialogOpenChange,
-  onDownload,
+  //onDownload,
   onVerseFavorited,
 }: HistoryViewerCardProps) => {
   const isPausingTouchRef = useRef(false);
@@ -266,6 +266,17 @@ export const HistoryViewerCard = ({
             type="button"
             variant="ghost"
             aria-label={`Descargar imagen de ${story.reference}`}
+            title="Descarga temporalmente deshabilitada"
+            disabled
+            className="h-10 flex-1 justify-center gap-2 rounded-lg px-2 text-sm text-white/40 opacity-50 cursor-not-allowed sm:text-base"
+          >
+            <Download className="size-6" />
+          </Button>
+          /*
+          <Button
+            type="button"
+            variant="ghost"
+            aria-label={`Descargar imagen de ${story.reference}`}
             title="Descargar imagen para compartir"
             disabled={isDownloading}
             aria-busy={isDownloading}
@@ -278,6 +289,7 @@ export const HistoryViewerCard = ({
               <Download className="size-6" />
             )}
           </Button>
+          */
         )}
       </div>
     </div>

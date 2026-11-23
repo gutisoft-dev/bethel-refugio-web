@@ -46,7 +46,7 @@ const handleRedirect = () => {
           <DropdownMenuContent align="end" className="w-52">
             <DropdownMenuItem onClick={handleRedirect}>
              <Profile/>
-              Perfil
+              Mi perfil
             </DropdownMenuItem>
             <DropdownMenuSeparator />
 

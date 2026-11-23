@@ -1,6 +1,10 @@
+
 import { cn } from "cn";
 
-function Spinner({ className, ...props }: React.ComponentProps<"svg">) {
+function Spinner({
+  className,
+  ...props
+}: React.ComponentProps<"svg">) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -9,12 +13,12 @@ function Spinner({ className, ...props }: React.ComponentProps<"svg">) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       data-slot="spinner"
       role="status"
-      aria-label="Loading"
+      aria-label="Cargando"
       className={cn("size-4 animate-spin", className)}
       {...props}
     >

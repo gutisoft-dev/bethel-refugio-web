@@ -57,13 +57,13 @@ export const ContentOtp = ({ handleresetFlow, email }: Props) => {
           className="mb-7 cursor-pointer inline-flex items-center gap-2 text-sm font-medium text-[#8b7896] transition hover:text-[#7209b7]"
         >
           <Left aria-hidden="true" />
-          Cambiar email
+          Cambiar correo electrónico
         </button>
         <p className="mb-3 text-sm font-medium text-[#8b7896]">
           Un último paso
         </p>
         <h2 className="text-3xl font-semibold tracking-[-0.04em] text-[#241333]">
-          Confirma tu email
+          Revisa tu email
         </h2>
         <p className="mt-3 text-sm leading-6 text-[#75657d]">
           Enviamos un código de 6 dígitos a
@@ -119,7 +119,7 @@ export const ContentOtp = ({ handleresetFlow, email }: Props) => {
           {errors.otp.message}
         </p>
       )}
-      <ButtonSubmit isPosting={isPosting} text="Continuar" />
+      <ButtonSubmit isPosting={isPosting} text="Validar código" />
     </form>
   );
 };

@@ -72,7 +72,7 @@ export const SearchUser = ({ onSearch }: Props) => {
 
                 <Input
                   id="bible-search"
-                  aria-label="Buscar en la Biblia"
+                  aria-label="Buscar usuarios"
                   placeholder="Buscar el nombre de un usuario..."
                   {...register("search", {
                     required: true,
